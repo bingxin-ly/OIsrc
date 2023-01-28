@@ -1,3 +1,4 @@
+// completed successfully, P1638
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -59,7 +60,7 @@ int main()
     cin >> n >> m >> k;
     edgeset edges(m + 1);
     for (int i = 1; i <= m; i++)
-        cin >> edges[i].u >> edges[i].v >> edges[i].w;
+        scanf("%d %d %d", &edges[i].u, &edges[i].v, &edges[i].w);
     edgeset out = genMST(n, edges.size() - 1, k, edges);
     if (out.empty())
     {

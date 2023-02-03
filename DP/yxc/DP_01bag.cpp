@@ -7,7 +7,7 @@ int N, V;
 int v[MAX], w[MAX];
 int f[MAX][MAX];
 
-int main()
+int main_deprecated()
 {
     cin >> N >> V;
     for (int i = 1; i <= N; i++)
@@ -25,7 +25,7 @@ int main()
 
 int g[MAX];
 
-int main(int argc, char **argv)
+int main()
 {
     cin >> N >> V;
     for (int i = 1; i <= N; i++)

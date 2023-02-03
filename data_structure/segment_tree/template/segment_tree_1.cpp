@@ -1,4 +1,4 @@
-// 区间和线段树
+// 区间加线段树
 #include <bits/stdc++.h>
 #define ls (node << 1)
 #define rs (node << 1 | 1)

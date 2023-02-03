@@ -1,29 +1,68 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define N 500005
-int n;
-int nxt[N];
-int f[N], h[N];
-char s[N];
-signed main()
+
+const int N = 1e4 + 10;
+
+typedef pair<int, int> PII;
+
+int n;                            // 点的数量
+int h[N], w[N], e[N], ne[N], idx; // 邻接表存储所有边
+int dist[N];                      // 存储所有点到1号点的距离
+bool st[N];                       // 存储每个点的最短距离是否已确定
+
+void add(int a, int b, int c)
 {
-    scanf("%s", s + 1);
-    n = strlen(s + 1);
-    nxt[0] = -1;
-    for (int i = 2, j = 0; i <= n; i++)
+    e[idx] = b, ne[idx] = h[a], w[idx] = c, h[a] = idx++;
+}
+
+// 求1号点到n号点的最短距离，如果不存在，则返回-1
+int dijkstra()
+{
+    memset(dist, 0x3f, sizeof dist);
+    dist[1] = 0;
+    priority_queue<PII, vector<PII>, greater<PII>> heap;
+    heap.push({0, 1}); // first存储距离，second存储节点编号
+
+    while (heap.size())
     {
-        while (j != -1 && s[i] != s[j + 1])
-            j = nxt[j];
-        nxt[i] = ++j;
+        auto t = heap.top();
+        heap.pop();
+
+        int ver = t.second, distance = t.first;
+
+        if (st[ver])
+            continue;
+        st[ver] = true;
+
+        for (int i = h[ver]; i != -1; i = ne[i])
+        {
+            int j = e[i];
+            if (dist[j] > distance + w[i])
+            {
+                dist[j] = distance + w[i];
+                heap.push({dist[j], j});
+            }
+        }
     }
-    f[1] = 1;
-    for (int i = 2; i <= n; i++)
+
+    if (dist[n] == 0x3f3f3f3f)
+        return -1;
+    return dist[n];
+}
+
+int main()
+{
+    memset(h, -1, sizeof(h));
+    int n, m, s;
+    cin >> n >> m >> s;
+    int u, v, w;
+    while (m--)
     {
-        f[i] = i;
-        if (h[f[nxt[i]]] >= i - nxt[i])
-            f[i] = f[nxt[i]];
-        h[f[i]] = i;
+        cin >> u >> v >> w;
+        add(u, v, w);
     }
-    cout << f[n];
+    dijkstra();
+    for (int i = 1; i <= n; i++)
+        cout << dist[i] << ' ';
     return 0;
 }

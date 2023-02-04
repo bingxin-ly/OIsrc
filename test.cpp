@@ -52,17 +52,8 @@ int dijkstra()
 
 int main()
 {
-    memset(h, -1, sizeof(h));
-    int n, m, s;
-    cin >> n >> m >> s;
-    int u, v, w;
-    while (m--)
-    {
-        cin >> u >> v >> w;
-        add(u, v, w);
-    }
-    dijkstra();
-    for (int i = 1; i <= n; i++)
-        cout << dist[i] << ' ';
+    f[i][j] = ((f[i][j] + f[i - 1][j]) % mod +
+               f[i - 1][(j - cow[i] + F) % F]) %
+              mod;
     return 0;
 }

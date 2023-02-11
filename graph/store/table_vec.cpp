@@ -1,11 +1,14 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-typedef pair<int, int> int_pair;
 const int MAX = 1e3; // TODO
 
+struct edge
+{
+    int to, w;
+};
+vector<edge> graph[MAX];
 int n;
-vector<int_pair> graph[MAX];
 
 void add(int u, int v, int w = 1)
 {

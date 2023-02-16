@@ -18,6 +18,7 @@ int main()
             f[j] = max(f[j], f[j - v[i]] + w[i]);
 
     cout << f[m] << endl;
+    return 0;
 }
 
 int g[N][N];

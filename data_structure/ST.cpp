@@ -1,8 +1,8 @@
 #include <bits/stdc++.h>
 using namespace std;
 const int logn = 21;
-const int maxn = 2000001;
-int f[maxn][logn + 1], Logn[maxn + 1];
+const int MAX = 2000001;
+int f[MAX][logn + 1], Logn[MAX + 1];
 
 inline int read() // 快读
 {
@@ -26,7 +26,7 @@ void pre() // 准备工作，初始化
 {
     Logn[1] = 0;
     Logn[2] = 1;
-    for (int i = 3; i < maxn; i++)
+    for (int i = 3; i < MAX; i++)
     {
         Logn[i] = Logn[i / 2] + 1;
     }

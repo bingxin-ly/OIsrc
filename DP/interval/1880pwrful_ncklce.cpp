@@ -2,7 +2,7 @@
 using namespace std;
 
 const int MAX = 3e2 + 10;
-int n, e[MAX], s[MAX][MAX], maxn = -1;
+int n, e[MAX], s[MAX][MAX], MAX = -1;
 
 int main()
 {
@@ -14,8 +14,8 @@ int main()
         {
             for (int k = j; k < i; k++)
                 s[j][i] = max(s[j][i], s[j][k] + s[k + 1][i] + e[j] * e[k + 1] * e[i + 1]);
-            maxn = max(s[j][i], maxn);
+            MAX = max(s[j][i], MAX);
         }
-    cout << maxn;
+    cout << MAX;
     return 0;
 }

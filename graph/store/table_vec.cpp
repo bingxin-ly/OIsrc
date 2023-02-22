@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int MAX = 1e3; // TODO
+const int MAX = 0;
 
 struct edge
 {
@@ -10,7 +10,7 @@ struct edge
 vector<edge> graph[MAX];
 int n;
 
-void add(int u, int v, int w = 1)
+inline void add(int u, int v, int w = 1)
 {
     graph[u].push_back({v, w});
 }

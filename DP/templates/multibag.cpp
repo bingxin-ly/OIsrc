@@ -2,7 +2,7 @@
 using namespace std;
 
 // 二进制优化
-const int N = 25000, M = 2010;
+const int N = 1e5 + 10;
 
 int n, m;
 int v[N], w[N];

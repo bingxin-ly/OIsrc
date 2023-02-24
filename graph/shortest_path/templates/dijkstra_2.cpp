@@ -8,14 +8,15 @@ struct edge
     int to, w;
 };
 vector<edge> graph[MAX];
-int dist[MAX];
-bool st[MAX];
 
 inline void add(int a, int b, // 新建一条a->b的边
                 int w = 1)    // 边权为w
 {
     graph[a].push_back({b, w});
 }
+
+int dist[MAX];
+bool st[MAX];
 
 typedef pair<int, int> int_pair;
 void dijkstra(int start = 1)

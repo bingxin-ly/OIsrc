@@ -1,6 +1,6 @@
-int n;                            // 总点数
-int dist[N], cnt[N];              // dist[x]存储1号点到x的最短距离，cnt[x]存储1到x的最短路中经过的点数
-bool st[N];                       // 存储每个点是否在队列中
+int n;               // 总点数
+int dist[N], cnt[N]; // dist[x]存储1号点到x的最短距离，cnt[x]存储1到x的最短路中经过的点数
+bool st[N];          // 存储每个点是否在队列中
 
 // 如果存在负环，则返回true，否则返回false。
 bool spfa()
@@ -40,5 +40,37 @@ bool spfa()
         }
     }
 
+    return false;
+}
+
+// 另一种可能的实现
+bool spfa(int s)
+{
+    queue<int> q;
+    memset(dis, 0x3f, sizeof(dis));
+    dis[s] = 0, vis[s] = true;
+    q.push(s);
+
+    while (!q.empty())
+    {
+        int u = q.front();
+        q.pop();
+        vis[u] = false;
+        for (int i = head[u]; i; i = e[i].next)
+        {
+            int v = e[i].v;
+            if (dis[v] > dis[u] + e[i].w)
+            {
+                dis[v] = dis[u] + e[i].w;
+                if (!vis[v])
+                {
+                    vis[v] = 1, tot[v]++;
+                    if (tot[v] == n + 1)
+                        return true;
+                    q.push(v);
+                }
+            }
+        }
+    }
     return false;
 }

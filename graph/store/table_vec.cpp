@@ -1,14 +1,8 @@
-#include <bits/stdc++.h>
-using namespace std;
-
-const int MAX = 0;
-
 struct edge
 {
     int to, w;
 };
 vector<edge> graph[MAX];
-int n;
 
 inline void add(int u, int v, int w = 1)
 {
@@ -18,8 +12,7 @@ inline void add(int u, int v, int w = 1)
 int main()
 {
     cin >> n;
-    int u, v, w;
-    for (int i = 1; i <= n; i++)
+    for (int i = 1, u, v, w; i <= n; i++)
     {
         cin >> u >> v >> w;
         add(u, v, w);

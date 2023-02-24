@@ -1,11 +1,14 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-typedef pair<int, int> int_pair;
 const int MAX = 1e5 + 10;
 
+struct edge
+{
+    int to, w;
+};
+vector<edge> graph[MAX];
 int dist[MAX];
-vector<int_pair> graph[MAX];
 bool st[MAX];
 
 inline void add(int a, int b, // 新建一条a->b的边
@@ -13,6 +16,8 @@ inline void add(int a, int b, // 新建一条a->b的边
 {
     graph[a].push_back({b, w});
 }
+
+typedef pair<int, int> int_pair;
 void dijkstra(int start = 1)
 {
     for (int i = 0; i < MAX; i++)
@@ -26,17 +31,17 @@ void dijkstra(int start = 1)
     {
         auto t = heap.top();
         heap.pop();
-        int distance = t.first, idx = t.second;
-        if (st[idx])
+        int distance = t.first, ver = t.second;
+        if (st[ver])
             continue;
-        st[idx] = true;
+        st[ver] = true;
 
-        for (auto i : graph[idx])
+        for (auto i : graph[ver])
         {
-            int j = i.first;
-            if (dist[j] > distance + i.second)
+            int j = i.to;
+            if (dist[j] > distance + i.w)
             {
-                dist[j] = distance + i.second;
+                dist[j] = distance + i.w;
                 heap.push({dist[j], j});
             }
         }

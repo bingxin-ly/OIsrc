@@ -19,7 +19,7 @@ void read(int *x)
         c = getchar();
     }
     while (c >= '0' && c <= '9')
-        p = p * 10 + c - '0',
+        p = (p << 3) + (p << 1) + c - '0',
         c = getchar();
     *x = (o * p);
 }

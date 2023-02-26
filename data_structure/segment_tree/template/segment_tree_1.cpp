@@ -1,11 +1,12 @@
-// 区间加线段树
+// 区间求和区间加
 #include <bits/stdc++.h>
 #define ls (node << 1)
 #define rs (node << 1 | 1)
 using namespace std;
 
-int n, m, src[500009];
-size_t seg_tree[4 * 500009], lazy[500009];
+const int MAX = 5e5 + 10;
+int n, m, src[MAX];
+size_t seg_tree[4 * MAX], lazy[MAX];
 
 inline void push_up(int node) // 也可以理解成push_to_here
 {

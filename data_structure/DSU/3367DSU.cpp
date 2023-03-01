@@ -1,5 +1,4 @@
-#include <vector>
-#include <numeric>
+#include <bits/stdc++.h>
 using namespace std;
 
 /**
@@ -31,3 +30,19 @@ struct DSU
         }
     }
 };
+
+int main()
+{
+    int n, m;
+    cin >> n >> m;
+    DSU u(n);
+    for (int i = 1, z, x, y; i <= m; i++)
+    {
+        cin >> z >> x >> y;
+        if (z == 1)
+            u.unite(x, y);
+        else
+            cout << (u.find(x) == u.find(y) ? "Y" : "N") << endl;
+    }
+    return 0;
+}

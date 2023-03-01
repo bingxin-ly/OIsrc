@@ -1,5 +1,5 @@
 #include <iostream>
-#include "include/MST.h"
+#include "../include/MST.h"
 
 int main()
 {

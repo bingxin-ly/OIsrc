@@ -57,7 +57,7 @@ int main()
         cin >> src[i];
     build_t();
     int op, a, b;
-    for (int i = 0; i < m; i++)
+    for (int i = 1; i <= m; i++)
     {
         cin >> op >> a >> b;
         if (op == 1)

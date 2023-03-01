@@ -66,9 +66,6 @@ int main()
     for (int i = 1; i <= n; i++)
         cin >> src[i];
     build(1, 1, n);
-    // for (int i = 1, tmp; i <= n; i++)
-    //     cin >> tmp,
-    //         add(i, tmp, 1, 1, n);
     int op, a, b, c;
     for (int i = 0; i < m; i++)
     {

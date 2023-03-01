@@ -1,0 +1,12 @@
+test.cpp
+*.o
+*.exe
+*.in
+*.out
+*.jpeg
+*.prob
+
+.idea/*
+.vscode/*
+.cph/*
+python/*

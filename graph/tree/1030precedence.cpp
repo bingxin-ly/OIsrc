@@ -1,8 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int MAX = 8;
-
 void solve(string in, string after)
 {
     if (in.size() <= 0)

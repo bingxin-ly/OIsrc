@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int MAX = 10e6 + 10;
+const int MAX = 1e6 + 10;
 int n, k, arr[MAX], mins[MAX], maxs[MAX];
 int qmin[MAX], qmax[MAX]; // 数组模拟队列
 

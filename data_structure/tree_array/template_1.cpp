@@ -2,15 +2,12 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int N = 500010;
+const int MAX = 500010;
 int n, // 树状数组的实际长度
-    m, src[N];
-int tree_array[N], sum[N];
+    m, src[MAX];
+int tree_array[MAX], sum[MAX];
 
-inline int lowbit(int x)
-{
-    return x & -x;
-}
+inline int lowbit(int x) { return x & -x; }
 int prefix_sum(int x)
 {
     int ret = 0;
@@ -60,7 +57,7 @@ int main()
         cin >> src[i];
     build_t();
     int op, a, b;
-    for (int i = 0; i < m; i++)
+    for (int i = 1; i <= m; i++)
     {
         cin >> op >> a >> b;
         if (op == 1)

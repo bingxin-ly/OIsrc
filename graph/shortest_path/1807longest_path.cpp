@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-
 using namespace std;
 
 const int N = 2e5;
@@ -8,7 +7,6 @@ int n, m;
 int h[N], e[N], ne[N], w[N], idx;
 int dist[N];
 bool st[N];
-queue<int> q;
 
 void add(int u, int v, int c)
 {
@@ -21,6 +19,7 @@ void add(int u, int v, int c)
 int SPFA(int s)
 {
     memset(dist, ~0x3f, sizeof(dist));
+    queue<int> q;
     dist[s] = 0;
     st[s] = true;
     q.push(s);

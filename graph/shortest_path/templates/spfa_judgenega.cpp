@@ -43,7 +43,7 @@ bool spfa()
     return false;
 }
 
-// 另一种可能的实现
+// 另一种可能的实现，某种程度上适用更广
 bool spfa(int s)
 {
     queue<int> q;

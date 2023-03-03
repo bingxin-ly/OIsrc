@@ -1,4 +1,4 @@
-// 区间乘区间加线段树
+// 区间乘线段树， not completed!!
 #include <bits/stdc++.h>
 #define ls (node << 1)
 #define rs (node << 1 | 1)

@@ -2,11 +2,10 @@
 using namespace std;
 
 const int MAX = 5e5 + 10;
-vector<int> graph[MAX];
-queue<int> q;
 int n, query, rt, t;
 int f[MAX][20], dep[MAX];
 
+vector<int> graph[MAX];
 inline void add(int u, int v)
 {
     graph[u].push_back(v);
@@ -18,6 +17,7 @@ int main()
 {
     ios::sync_with_stdio(false);
     cin.tie(0), cout.tie(0);
+
     cin >> n >> query >> rt;
     t = int(log(n) / log(2)) + 1;
     for (int i = 1, x, y; i < n; i++)
@@ -37,6 +37,7 @@ int main()
 
 void bfs(int u)
 {
+    queue<int> q;
     dep[u] = 1;
     q.push(u);
     while (!q.empty())

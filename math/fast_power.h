@@ -1,15 +1,14 @@
 #include <algorithm>
 #include <vector>
 using std::vector;
-const int bin = 2;
 
 vector<bool> dec2bin(int src)
 {
     int quotient = src, remainder;
     vector<bool> ret;
     while (quotient)
-        ret.push_back(remainder = quotient % bin),
-            quotient /= bin;
+        ret.push_back(remainder = quotient % 2),
+            quotient /= 2;
     std::reverse(ret.begin(), ret.end());
     return ret;
 }

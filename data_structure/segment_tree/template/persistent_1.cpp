@@ -1,12 +1,12 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int MAXN = 1e6;
+const int MAXN = 1e6 + 10;
 int tot, n, m;
-int per_seg[(MAXN << 5) + 10],
-    rt[MAXN + 10], ls[(MAXN << 5) + 10], rs[(MAXN << 5) + 10];
-int src[MAXN + 10];
-// int len, ind[MAXN + 10]; // 离散化数组
+int per_seg[MAXN << 5],
+    rt[MAXN], ls[MAXN << 5], rs[MAXN << 5];
+int src[MAXN];
+// int len, ind[MAXN]; // 离散化数组
 
 void build(int &rt, int l, int r)
 {

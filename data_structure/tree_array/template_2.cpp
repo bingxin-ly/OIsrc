@@ -1,26 +1,19 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int LEN = 500010;
+const int MAX = 5e5 + 10;
 int n, // 树状数组的实际长度
     m;
-int tree_array[LEN], src[LEN];
+int tree_array[MAX], src[MAX];
 
-inline int lowbit(int x)
-{
-    return x & -x;
-}
-// 求前缀和
-int prefix_sum(int x)
+inline int lowbit(int x) { return x & -x; }
+
+int query(int x) // 求差分上的前缀和
 {
     int ret = 0;
     for (; x; x -= lowbit(x))
         ret += tree_array[x];
     return ret;
-}
-inline int query(int pos)
-{
-    return prefix_sum(pos);
 }
 void add(int pos, int val)
 {
@@ -33,6 +26,7 @@ int main()
     cin >> n >> m;
     for (int i = 1, original; i <= n; i++)
         cin >> src[i];
+
     int op, a, b, c;
     for (int i = 0; i < m; i++)
     {

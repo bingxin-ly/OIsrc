@@ -1,15 +1,15 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int MAX = 1010;
+const int MAXN = 3402, MAXV = 12880;
 
 int N, V;
-int v[MAX], w[MAX];
-int f[MAX];
+int v[MAXN], w[MAXN];
+int f[MAXV];
 
 int main()
 {
-    cin >> V >> N;
+    cin >> N >> V;
     for (int i = 1; i <= N; i++)
         cin >> v[i] >> w[i];
     for (int i = 1; i <= N; i++)
@@ -20,7 +20,7 @@ int main()
 }
 
 // 朴素方法
-int g[MAX][MAX];
+int g[MAXN][MAXV];
 
 int main_deprecated()
 {

@@ -1,4 +1,4 @@
-// 区间乘线段树
+// 区间乘区间加线段树
 #include <bits/stdc++.h>
 #define ls (node << 1)
 #define rs (node << 1 | 1)
@@ -31,7 +31,7 @@ void push_down(int node, int l, int r)
     int mid = (l + r) >> 1;
     {
         // 更新线段树上的值
-        // 儿子的值=此刻儿子的值*爸爸的乘法lazytag+儿子的区间长度*爸爸的加法lazytag
+        // 儿子的值=此刻儿子的值*爸爸的乘法lazytag+儿子的区间长度*爸爸的加法
         segtr[ls] = (segtr[ls] * multg[node] + addtg[node] * (mid - l + 1)) % p;
         segtr[rs] = (segtr[rs] * multg[node] + addtg[node] * (r - mid)) % p;
     }
@@ -47,11 +47,8 @@ void push_down(int node, int l, int r)
         addtg[rs] = (addtg[rs] * multg[node] + addtg[node]) % p;
     }
     multg[node] = 1, addtg[node] = 0;
-    // addtg[ls] += addtg[node], addtg[rs] += addtg[node];
-    // segtr[ls] += (mid - l + 1) * addtg[node], segtr[rs] += (r - mid) * addtg[node];
-    // addtg[node] = 0;
 }
-size_t query(int ql, size_t qr, int node = 1, int l = 1, int r = n) // 区间查询
+size_t query(int ql, int qr, int node = 1, int l = 1, int r = n) // 区间查询
 {
     if (l > qr || r < ql)
         return 0;
@@ -61,7 +58,7 @@ size_t query(int ql, size_t qr, int node = 1, int l = 1, int r = n) // 区间查
     int mid = (l + r) >> 1;
     return query(ql, qr, ls, l, mid) + query(ql, qr, rs, mid + 1, r);
 }
-/*void add(int ql, size_t qr, int val, int node = 1, int l = 1, int r = n) // 区间加
+/*void add(int ql, int qr, int val, int node = 1, int l = 1, int r = n) // 区间加
 {
     if (l > qr || r < ql)
         return;
@@ -94,11 +91,11 @@ void add(int node, int l, int r, int stdl, int stdr, long long k)
     segtr[node] = (segtr[ls] + segtr[rs]) % p;
     return;
 }
-inline void add_single(int qpoint, int val, int node = 1, int gl = 1, size_t gr = n) // 单点加
+inline void add_single(int qpoint, int val, int node = 1, int gl = 1, int gr = n) // 单点加
 {
     add(qpoint, qpoint, val, node, gl, gr);
 }
-void multiply(int node, int ql, int qr, int l, int r, size_t val)
+void multiply(int node, int ql, int qr, int l, int r, int val)
 {
     if (qr < l || r < ql)
         return;

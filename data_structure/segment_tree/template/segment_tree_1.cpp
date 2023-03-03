@@ -1,4 +1,4 @@
-// 区间求和区间加
+// 区间求和区间加, and TLE point
 #include <bits/stdc++.h>
 #define ls (node << 1)
 #define rs (node << 1 | 1)
@@ -6,7 +6,7 @@ using namespace std;
 
 const int MAX = 5e5 + 10;
 int n, m, src[MAX];
-int seg_tree[4 * MAX], lazy[MAX];
+ssize_t seg_tree[4 * MAX], lazy[MAX]; // 里面存的有可能超int
 
 inline void push_up(int node) // 也可以理解成push_to_here
 {
@@ -27,7 +27,7 @@ void push_down(int l, int r, int node)
     seg_tree[ls] += (mid - l + 1) * lazy[node], seg_tree[rs] += (r - mid) * lazy[node];
     lazy[node] = 0;
 }
-int query(int ql, int qr, int node = 1, int ll = 1, int rr = n) // 区间查询
+ssize_t query(int ql, int qr, int node = 1, int ll = 1, int rr = n) // 区间查询，有可能超int
 {
     if (ll > qr || rr < ql)
         return 0;

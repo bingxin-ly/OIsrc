@@ -8,16 +8,12 @@ struct state
 };
 queue<state> qu;
 map<string, bool> vis;
-int n;
 
-inline bool check(string ID)
-{
-    return ID == "123804765";
-}
+inline bool check(string ID) { return ID == "123804765"; }
 inline void save(string proced, int dep)
 {
     if (!vis[proced])
-        qu.push((state){proced, dep + 1});
+        qu.push({proced, dep + 1});
 }
 void bfs()
 {
@@ -67,7 +63,7 @@ int main()
 {
     string id;
     cin >> id;
-    qu.push((state){id, 0});
+    qu.push({id, 0});
     vis[id] = true;
     bfs();
 }

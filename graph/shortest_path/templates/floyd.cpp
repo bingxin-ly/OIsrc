@@ -15,18 +15,24 @@ int main()
     for (int i = 1; i <= n; i++)
         f[i][i] = 0;
     for (int i = 0, u, v, w; i < m; i++)
-        cin >> u >> v >> w, chkmin(f[u][v], w);
+        cin >> u >> v >> w, chkmin(f[u][v], w), chkmin(f[v][u], w);
 
     for (int k = 1; k <= n; k++)
         for (int i = 1; i <= n; i++)
             for (int j = 1; j <= n; j++)
                 chkmin(f[i][j], f[i][k] + f[k][j]);
 
-    ssize_t ans;
+    /* ssize_t ans;
     for (int i = 1; i <= n; i++)
     {
         for (int j = 1; j <= n; j++)
             ans += j * f[i][j];
         cout << ans << endl, ans = 0;
+    } */
+    for (int i = 1; i <= n; i++)
+    {
+        for (int j = 1; j <= n; j++)
+            cout << f[i][j] << ' ';
+        puts("");
     }
 }

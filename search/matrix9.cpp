@@ -12,10 +12,7 @@ short table[4][4], px, py, nx, ny;
 void bfs()
 {
     if (st == ed)
-    {
-        printf("0");
-        return;
-    }
+        return cout << 0, void();
 
     q.push(st), q.push(ed);
     ans[st] = 0, ans[ed] = 1;

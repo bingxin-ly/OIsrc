@@ -13,6 +13,17 @@ vector<bool> dec2bin(int src)
     return ret;
 }
 
+long long binpow(long long a, long long b)
+{
+    if (b == 0)
+        return 1;
+    long long res = binpow(a, b / 2);
+    if (b % 2)
+        return res * res * a;
+    else
+        return res * res;
+}
+
 size_t fast_pow(size_t a, int k)
 {
     size_t result = 1;

@@ -1,7 +1,9 @@
 import os
-import json
+from io import BytesIO
+from json import loads
 import requests
 
+out_module = __name__ == '__main__'
 url_set = [
     'https://api.anosu.top/api', 'https://moe.anosu.top/api',
     'https://api.anosu.top/img', 'https://moe.anosu.top/img',
@@ -9,14 +11,12 @@ url_set = [
     'https://api.jitsu.top/img', 'https://moe.jitsu.top/img'
 ]
 form_header = {
-    'User-Agent':
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36',
-    'Host':
-    '',
+    'Accept':
+    'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
     'Accept-Language':
     'zh-CN,zh;q=0.9',
-    'Accept':
-    'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'
+    'User-Agent':
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36'
 }
 
 
@@ -27,12 +27,12 @@ def bar(i, num):
 
 
 def get_image(num):
-    not_module = __name__ == '__main__'
-    url = ""
+    # 找到可用的url
     for url in url_set:
-        code = requests.get(url, allow_redirects=False).status_code
-        if code // 100 == 3:
-            print('The link being used now is: %s' % url)
+        if requests.get(url, headers=form_header, allow_redirects=False
+                        ).status_code // 100 == 3:
+            if out_module:
+                print('The link being used now is: %s' % url)
             break
         else:
             if url == url_set[-1]:
@@ -40,34 +40,36 @@ def get_image(num):
                 exit(-1)
             continue
 
-    form_header['Host'] = url.split('//')[1]
-    response = requests.get(url + '/?num=%d' % num)
+    response = requests.get(url + '/?num=%d' % num, headers=form_header)
     if response.url == url:
         print('Unable to access the server, please try again later')
         exit(-1)
 
     # save the image
-    img_names = []
-    try:
-        imageurls = json.loads(response.content)['pics']
-    except UnicodeDecodeError:
-        imageurls = [response.url]
+    imageurls = [response.url] if num == 1 else loads(response.content)['pics']
+    imgs = []
     for i in range(len(imageurls)):
         image_name = imageurls[i].split('/')[-1]
-        img_names.append(image_name)
-        image = requests.get(imageurls[i]).content
+        image = requests.get(imageurls[i], headers=form_header).content
+        imgs.append((image_name, BytesIO(image)))
+
+        # process bar
+        if out_module:
+            bar(i + 1, num)
+    return imgs
+
+
+def save(imgs):
+    for i in range(len(imgs)):
+        image_name = imgs[i][0]
+        image = imgs[i][1]
 
         if not os.path.exists('./pics/'):
             os.mkdir('./pics/')
         with open('./pics/%s' % image_name, 'wb') as file:
-            file.write(image)
-
-        # process bar
-        if not_module:
-            bar(i + 1, num)
-    return img_names
+            file.write(image.getbuffer())
 
 
-if __name__ == '__main__':
+if out_module:
     n = int(input('获取图片数量（整数）：'))
-    get_image(n)
+    save(get_image(n))

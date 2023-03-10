@@ -1,4 +1,4 @@
-// 不会，植物，百乐
+// 不会，植物，白蓝
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -46,4 +46,15 @@ int main()
         cout << calc(r) - calc(l - 1) << endl;
     }
     return 0;
+}
+
+// 离谱又逆天
+#include <math.h>
+long long n, a = 1, f[60], i = 59, j, k;
+int main()
+{
+    for (scanf("%lld%d", &n, &k); i >= k; a += f[i--])
+        for (f[i] = powl(n, 1. / i) - 1, j = i * 2; j < 60; j += i)
+            f[i] -= f[j];
+    printf("%lld", a);
 }

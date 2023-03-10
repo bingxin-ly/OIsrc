@@ -1,21 +1,22 @@
 import tkinter as tk
-from queue import Queue
 from PIL import Image, ImageTk
 from pic import get_image
 
+std_size = 200
+img_name = ''
 img_open = None
 img_sized = None
 img_transed = None
-cached_pics = Queue()
 
-pull_image = lambda: [cached_pics.put(x) for x in get_image(1)]
-update_pos = lambda width, height: window.geometry(
-    '%dx%d+%d+%d' % (width, height, (window.winfo_screenwidth() - width) / 2,
-                     (window.winfo_screenheight() - height) / 2))
+
+def update_pos(width, height):
+    window.geometry('%dx%d+%d+%d' %
+                    (width, height + 60, (window.winfo_screenwidth() - width - 20),
+                     (window.winfo_screenheight() - height - 150)))
 
 
 def f(n):
-    std_size = 300
+    global std_size
     if n < std_size:
         return n
     return int((n / std_size)**0.3 * std_size)
@@ -37,30 +38,29 @@ def adjust(img, size):
 
 
 def refresh():
-    global img_open, img_sized, img_transed
+    global img_name, img_open, img_sized, img_transed
 
-    if cached_pics.empty():
-        pull_image()
-
-    img_open = Image.open("./pics/%s" % cached_pics.get_nowait())
+    img = get_image(1)
+    img_name = img[0][0]
+    img_open = Image.open(img[0][1])
     imgx, imgy = img_open.size
     img_sized = adjust(img_open, f(max(imgx, imgy)))
 
     width, height = img_sized.size
-    window.geometry('%dx%d' % (width + 20, height + 200))
+    # window.geometry('%dx%d' % (width, height))
+    update_pos(width, height)
 
     img_transed = ImageTk.PhotoImage(img_sized)
     label_img = tk.Label(window, image=img_transed)
-    label_img.grid(row=1)
+    label_img.grid(row=2, sticky='nw')
 
 
 if __name__ == '__main__':
     window = tk.Tk()
-    update_pos(500, 700)
 
-    pull_image()
-    button = tk.Button(window, text="  刷新  ", command=refresh, bd=1)
-    button.grid(row=0)
+    tk.Button(window, text='  刷新  ', command=refresh, bd=1).grid(row=0)
+    tk.Button(window, text='  保存  ', command=lambda:
+              img_open.save('./pics/%s' % img_name), bd=1).grid(row=1)
     refresh()
 
     window.mainloop()

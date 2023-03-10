@@ -28,7 +28,7 @@ struct ufs//
 }s;
 int main()
 {
-	int n, m;
+	int n;int m;
 	scanf("%d%d",&n,&m);
 	s.init(n);
 	for(int i=1;i<=m;i++)

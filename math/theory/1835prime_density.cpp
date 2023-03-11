@@ -5,7 +5,7 @@ const int N = 1e6 + 10;
 vector<int> primes(N);
 vector<bool> vis(N);
 int cnt;
-int euler()
+void euler()
 {
     for (int i = 2; i <= N; ++i)
     {
@@ -20,15 +20,13 @@ int euler()
                 break;
         }
     }
-    return cnt;
 }
 
 int main()
 {
     size_t l, r;
     cin >> l >> r;
-    if (l == 1)
-        l = 2;
+    l = l == 1 ? 2 : l;
     euler();
     vis.assign(N, false);
     for (int i = 0; i < cnt; i++)

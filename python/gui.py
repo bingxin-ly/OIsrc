@@ -2,20 +2,20 @@ import tkinter as tk
 from PIL import Image, ImageTk
 from pic import get_image
 
+std_mode = True
 std_size = 200
-img_name = ''
-img_open = None
-img_sized = None
+# 用全局变量来保存当前显示的图片，否者，无之
 img_transed = None
 
 
 def update_pos(width, height):
-    window.geometry('%dx%d+%d+%d' %
-                    (width, height + 60, (window.winfo_screenwidth() - width - 20),
-                     (window.winfo_screenheight() - height - 150)))
+    global std_mode
+    posx = window.winfo_screenwidth() - width - 20 if std_mode else 20
+    poxy = window.winfo_screenheight() - height - 150
+    window.geometry('%dx%d+%d+%d' % (width, height + 60, posx, poxy))
 
 
-def f(n):
+def get_size(n):
     global std_size
     if n < std_size:
         return n
@@ -44,7 +44,7 @@ def refresh():
     img_name = img[0][0]
     img_open = Image.open(img[0][1])
     imgx, imgy = img_open.size
-    img_sized = adjust(img_open, f(max(imgx, imgy)))
+    img_sized = adjust(img_open, get_size(max(imgx, imgy)))
 
     width, height = img_sized.size
     # window.geometry('%dx%d' % (width, height))
@@ -58,9 +58,9 @@ def refresh():
 if __name__ == '__main__':
     window = tk.Tk()
 
-    tk.Button(window, text='  刷新  ', command=refresh, bd=1).grid(row=0)
+    tk.Button(window, text='  刷新  ', command=refresh, bd=1).grid(row=0, sticky='n')
     tk.Button(window, text='  保存  ', command=lambda:
-              img_open.save('./pics/%s' % img_name), bd=1).grid(row=1)
+              img_open.save('./pics/%s' % img_name), bd=1).grid(row=1, sticky='n')
     refresh()
 
     window.mainloop()

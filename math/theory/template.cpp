@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 // 好用的 mod，像 python一样
-#define mod(_, _p) (_ % _p + _p) % _p
+#define mod(_, _p) ((_ % _p + _p) % _p)
 using namespace std;
 
 const int N = 1e8;
@@ -32,6 +32,10 @@ vector<int> breakdown(int n)
         result.push_back(n);
     return result;
 }
+/*  对于一个数n，n = p1^a1 * p2^a2 * ... * pk ^ ak1
+    则其约数个数为 (a1 + 1)(a2 + 1)...(ak + 1)
+    https://img-blog.csdnimg.cn/9af18991f0b44982af18aa73ccbf251e.png
+    https://img-blog.csdnimg.cn/903dee1c9d7045a78b2b761f1b5e14f2.png */
 
 // 欧拉函数（单个）：在分解质因数过程中求
 int phi(int n)
@@ -146,11 +150,11 @@ void euler(int n)
     for (int i = 2; i <= n; ++i)
     {
         if (!vis[i])
-            primes[cnt++] = i; // 这个++不能后置，维生素B
-        for (int j = 0; j < cnt; ++j)
+            primes[cnt++] = i; // 注意++
+        for (int j = 0; j < cnt && 1ll * i * primes[j] <= n; ++j)
         {
-            if (1ll * i * primes[j] > n)
-                break;
+            // if (1ll * i * primes[j] > n)
+            //     break;
             vis[i * primes[j]] = 1;
             if (i % primes[j] == 0)
                 /* i % primes[j] == 0 换言之，i 之前被 primes[j] 筛过了
@@ -165,28 +169,34 @@ void euler(int n)
 int phis[N];
 int euler_phi(int n)
 {
+    int cnt = 0;
     // for (int i = 1; i <= n; i++)
     //     is_prime[i] = true;
     memset(is_prime, true, n + 1);
-    int cnt = 0;
     is_prime[1] = is_prime[0] = false;
     phis[1] = 1;
     for (int i = 2; i <= n; i++)
     {
         if (is_prime[i])
-            primes[++cnt] = i,   // 刚才是后置++现在又是后置++了真烦/kk
+            primes[++cnt] = i,   // 刚才是后置++现在又是后置++了
                 phis[i] = i - 1; // 质数的特殊情况下等于 i - 1
-        for (int j = 1; j <= cnt && i * primes[j] <= n; j++)
+        for (int j = 1, d = i * primes[j]; j <= cnt && d <= n; j++)
         {
-            is_prime[i * primes[j]] = false;
-            phis[i * primes[j]] = phis[i] * (i % primes[j] ? phis[primes[j]] : primes[j]);
+            d = i * primes[j];
+            is_prime[d] = false;
+            phis[d] = phis[i] *
+                      (i % primes[j] ? /* phis[primes[j]] */ primes[j] - 1 : primes[j]);
         }
     }
 }
+
+// 费马小定理：若 (a,n)，则 a ^ phi(n) ≡ 1 (mod n)
+
 // Bézout's lemma，一个关于最大公约数的定理
 // 设 a,b∈ Z∗，则存在整数 x, y, 使得 ax+by=gcd(a,b)
-// 求乘法逆元：在模意义下的倒数
+
 // 扩展欧几里得
+// https://img-blog.csdnimg.cn/4e0adc662dd14f509a8204356370c647.png
 int exgcd(int a, int b, int &x, int &y)
 {
     if (!b)
@@ -199,7 +209,7 @@ int exgcd(int a, int b, int &x, int &y)
     y -= a / b * x;
     return d;
 }
-void exgcd(int a, int b, int &x, int &y)
+void exgcd(int a, int b, ssize_t &x, ssize_t &y)
 {
     if (!b)
         return x = 1, y = 0, void();
@@ -207,6 +217,7 @@ void exgcd(int a, int b, int &x, int &y)
     y -= a / b * x;
 }
 
+// 求乘法逆元：在模意义下的倒数
 auto inverse = [](int a, int p)
 { int x, y; exgcd(a, p, x, y); return (x % p + p) % p; };
 
@@ -244,18 +255,45 @@ bool solve(int a, int b, int c, int &x, int &y)
     3.方程组在模 n 意义下的唯一解为：
     x = sum{i=1 -> K} a_i * c_i (mod n)。*/
 // 数据大记得开ssize_t
-ssize_t CRT(int k, int *rs, // 余数
-                   int *ps) // 模数
+int CRT(int k, int *rs, // 余数
+        int *ps)        // 模数
 {
-    ssize_t n = 1, ans = 0;
+    int n = 1, ans = 0;
     for (int i = 1; i <= k; i++)
         n = n * ps[i];
     for (int i = 1; i <= k; i++)
     {
-        ssize_t m = n / ps[i], b, y;
+        int m = n / ps[i], b, y;
         exgcd(m, ps[i], b, y); // b * m mod ps[i] = 1
         ans = (ans + rs[i] * m * b % n) % n;
     }
     // return (ans % n + n) % n;
     return mod(ans, n);
+}
+
+/*  x ≡ a1 (mod m1)、x ≡ a2 (mod m2);
+    x = m1 * p + a1 = m2 * q + a2;
+    m1 * p - m2 * q = a2 - a1 */
+/*  解不定方程：可以通过裴蜀定理判断有没有解，
+    可以用扩展欧几里得算法(exgcd)给出(k1,k2)的整个解系 */
+/*  k1p1 - k2p2 = (r2 - r1) / d
+    x = r1 + k1m1 = r1 + (r2 - r1) / d * λ1m1 */
+ssize_t a, b, A, B, x, y;
+bool merge()
+{
+    int d = exgcd(a, A, x, y);
+
+    ssize_t c = B - b;
+    if (c % d)
+        return false; // 裴蜀定理判是否可行
+        
+    x = x * c / d % (A / d);
+    if (x < 0)
+        x += A / d;
+    ssize_t p = lcm(a, A);
+    b = (a * x + b) % p;
+    if (b < 0)
+        b += p;
+    a = p;
+    return true;
 }

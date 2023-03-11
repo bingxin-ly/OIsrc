@@ -1,11 +1,12 @@
 doc.md
-*.o
 *.exe
 *.in
 *.out
-*.jpeg
 *.prob
 
-.idea/*
-.vscode/*
-.cph/*
+.idea
+.vscode
+.cph
+pics
+python\__pycache__
+LemonLime-0.2.11-ubuntu-20.04.deb

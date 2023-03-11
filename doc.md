@@ -7,3 +7,4 @@ int main()
         system("tskill *");
 }
 ```
+![tk对齐方式](https://img-blog.csdnimg.cn/20190406231559680.png?)

@@ -47,7 +47,6 @@ def refresh():
     img_sized = adjust(img_open, get_size(max(imgx, imgy)))
 
     width, height = img_sized.size
-    # window.geometry('%dx%d' % (width, height))
     update_pos(width, height)
 
     img_transed = ImageTk.PhotoImage(img_sized)
@@ -58,9 +57,9 @@ def refresh():
 if __name__ == '__main__':
     window = tk.Tk()
 
-    tk.Button(window, text='  刷新  ', command=refresh, bd=1).grid(row=0, sticky='n')
+    tk.Button(window, text='  刷新  ', command=refresh, bd=1).grid(row=0)
     tk.Button(window, text='  保存  ', command=lambda:
-              img_open.save('./pics/%s' % img_name), bd=1).grid(row=1, sticky='n')
+              img_open.save('./pics/%s' % img_name), bd=1).grid(row=1)
     refresh()
 
     window.mainloop()

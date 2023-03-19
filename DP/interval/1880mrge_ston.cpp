@@ -10,7 +10,7 @@ inline int get_sum(int i, int j)
 {
     return sum[j] - sum[i - 1];
 }
-// 转移方程：f[i][j] = max(f[i][k]+f[k+1][j]+get_sum[i][j];
+// 转移方程：f[i][j] = max(f[i][k]+f[k+1][j]+get_sum[i][j]);
 int main()
 {
     cin >> n;

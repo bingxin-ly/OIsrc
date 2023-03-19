@@ -2,8 +2,8 @@ import tkinter as tk
 from PIL import Image, ImageTk
 from pic import get_image
 
-std_mode = True
-std_size = 200
+std_mode = False
+std_size = 100
 # 用全局变量来保存当前显示的图片，否者，无之
 img_transed = None
 
@@ -57,9 +57,9 @@ def refresh():
 if __name__ == '__main__':
     window = tk.Tk()
 
-    tk.Button(window, text='  刷新  ', command=refresh, bd=1).grid(row=0)
+    tk.Button(window, text='  刷新  ', command=refresh, bd=1).grid(row=0, column=0)
     tk.Button(window, text='  保存  ', command=lambda:
-              img_open.save('./pics/%s' % img_name), bd=1).grid(row=1)
+              img_open.save('./pics/%s' % img_name), bd=1).grid(row=1, column=0)
     refresh()
 
     window.mainloop()

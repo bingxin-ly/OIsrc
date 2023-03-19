@@ -1,28 +1,26 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int MAX = 1e5 + 10;
-
+const int N = 5e1 + 5, M = 1e3 + 10, K = 5e1 + 1;
+int n, m, k;
 struct edge
 {
     int to, w;
 };
-vector<edge> graph[MAX];
+vector<edge> graph[N * K];
 
-inline void add(int a, int b, // 新建一条a->b的边
-                int w = 1)    // 边权为w
+inline void add(int u, int v, int w = 1)
 {
-    graph[a].push_back({b, w});
+    graph[u].push_back({v, w});
 }
 
-int dist[MAX];
-bool st[MAX];
+int dist[N * K];
+bool st[N * K];
 
 typedef pair<int, int> PII;
 void dijkstra(int start = 1)
 {
-    for (int i = 0; i < MAX; i++)
-        dist[i] = INT_MAX;
+    memset(dist, 0x7f, sizeof(dist));
     dist[start] = 0;
 
     priority_queue<PII, vector<PII>, greater<>> heap;
@@ -48,19 +46,23 @@ void dijkstra(int start = 1)
         }
     }
 }
-
 int main()
 {
-    int n, m, s;
-    cin >> n >> m >> s;
-    int u, v, w;
-    while (m--)
+    cin >> n >> m >> k;
+    for (int i = 1, x, y, z; i <= m; i++)
     {
-        cin >> u >> v >> w;
-        add(u, v, w);
+        cin >> x >> y >> z;
+        for (int j = 0; j <= k; j++)
+            add(j * n + x, j * n + y, z), add(j * n + y, j * n + x, z);
+        for (int j = 0; j < k; j++)
+            add(j * n + x, (j + 1) * n + y, z / 2), add(j * n + y, (j + 1) * n + x, z / 2);
     }
-    dijkstra(s);
-    for (int i = 1; i <= n; i++)
-        cout << dist[i] << ' ';
+
+    dijkstra();
+    int min = INT_MAX;
+    for (int i = 0; i <= k; i++)
+        if (min > dist[i * n + n])
+            min = dist[i * n + n];
+    cout << min;
     return 0;
 }

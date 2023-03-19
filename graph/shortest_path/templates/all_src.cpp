@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-#define chkmin(a, b) a = min(a, b)
 using namespace std;
 
 const ssize_t INF = 1e9; // 虽然1e9没有溢出，但运算中极易出问题！
@@ -19,51 +18,10 @@ ssize_t dist[MAXN], // dist[x]存储 1号点到 x的最短距离
     h[MAXN];        // 势能数组
 bool vis[MAXN];     // 存储每个点是否在队列中
 
-bool spfa(int s);
-void dijkstra(int s);
+
 inline void add(int u, int v, int w = 1)
 {
     graph[u].push_back({v, w});
-}
-
-int main()
-{
-    ios::sync_with_stdio(false);
-    cin >> n >> m;
-    // memset(f, 0x3f, sizeof(f));
-    // for (int i = 1; i <= n; i++)
-    //     f[i][i] = 0;
-    for (int i = 1, u, v, w; i <= m; i++)
-    {
-        cin >> u >> v >> w;
-        add(u, v, w);
-    }
-    for (int i = 1; i <= n; i++)
-        add(0, i, 0);
-
-    if (spfa(0))
-    {
-        cout << -1 << endl;
-        return 0;
-    }
-    for (int u = 1; u <= n; u++)
-        for (auto &i : graph[u])
-            i.w += h[u] - h[i.to];
-    for (int i = 1; i <= n; i++)
-    {
-        dijkstra(i);
-        ssize_t ans = 0;
-
-        for (int j = 1; j <= n; j++)
-        {
-            if (dist[j] == INF)
-                ans += j * INF;
-            else
-                ans += j * (dist[j] + h[j] - h[i]);
-        }
-        cout << ans << endl;
-    }
-    return 0;
 }
 
 // 如果存在负环，则返回true，否则返回false。
@@ -112,7 +70,6 @@ bool spfa(int s)
 
     return false;
 }
-
 typedef pair<int, int> PII;
 
 // 求1号点到n号点的最短距离，如果不存在，则返回-1
@@ -146,4 +103,44 @@ void dijkstra(int s)
             }
         }
     }
+}
+
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin >> n >> m;
+    // memset(f, 0x3f, sizeof(f));
+    // for (int i = 1; i <= n; i++)
+    //     f[i][i] = 0;
+    for (int i = 1, u, v, w; i <= m; i++)
+    {
+        cin >> u >> v >> w;
+        add(u, v, w);
+    }
+    for (int i = 1; i <= n; i++)
+        add(0, i, 0);
+
+    if (spfa(0))
+    {
+        cout << -1 << endl;
+        return 0;
+    }
+    for (int u = 1; u <= n; u++)
+        for (auto &i : graph[u])
+            i.w += h[u] - h[i.to];
+    for (int i = 1; i <= n; i++)
+    {
+        dijkstra(i);
+        ssize_t ans = 0;
+
+        for (int j = 1; j <= n; j++)
+        {
+            if (dist[j] == INF)
+                ans += j * INF;
+            else
+                ans += j * (dist[j] + h[j] - h[i]);
+        }
+        cout << ans << endl;
+    }
+    return 0;
 }

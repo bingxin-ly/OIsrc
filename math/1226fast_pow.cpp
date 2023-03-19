@@ -1,21 +1,23 @@
 #include <bits/stdc++.h>
 using namespace std;
+int fast_pow(size_t a, int k, int m)
+{
+    a %= m;
+    size_t res = 1;
+    while (k)
+    {
+        if (k & 1)
+            res = res * a % m;
+        a = a * a % m;
+        k >>= 1;
+    }
+    return res;
+}
 
 int main()
 {
-    size_t a, b, p;
+    int a, b, p;
     cin >> a >> b >> p;
-    char s[30];
-    sprintf(s, "%d^%d", a, b);
-    a %= p;
-    size_t result = 1;
-    while (b)
-    {
-        if (b & 1)
-            result = result * a % p;
-        a = a * a % p;
-        b >>= 1;
-    }
-    printf("%s mod %lld=%lld\n", s, p, result);
+    printf("%d^%d mod %d=%d\n", a, b, p, fast_pow(a, b, p));
     return 0;
 }

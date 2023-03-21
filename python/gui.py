@@ -57,9 +57,10 @@ def refresh():
 if __name__ == '__main__':
     window = tk.Tk()
 
-    tk.Button(window, text='  刷新  ', command=refresh, bd=1).grid(row=0, column=0)
+    tk.Button(window, text='  刷新  ', command=refresh,
+              bd=1).grid(row=0, column=0, sticky='w')
     tk.Button(window, text='  保存  ', command=lambda:
-              img_open.save('./pics/%s' % img_name), bd=1).grid(row=1, column=0)
+              img_open.save('./pics/%s' % img_name), bd=1).grid(row=1, column=0, sticky='w')
     refresh()
 
     window.mainloop()

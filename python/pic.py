@@ -7,8 +7,7 @@ out_module = __name__ == '__main__'
 url_set = [
     'https://api.anosu.top/api', 'https://moe.anosu.top/api',
     'https://api.anosu.top/img', 'https://moe.anosu.top/img',
-    'https://api.jitsu.top/api', 'https://moe.jitsu.top/api',
-    'https://api.jitsu.top/img', 'https://moe.jitsu.top/img'
+    'https://moe.jitsu.top/api', 'https://moe.jitsu.top/img'
 ]
 form_header = {
     'Accept':
@@ -40,13 +39,14 @@ def get_image(num):
                 exit(-1)
             continue
 
-    response = requests.get(url + '/?num=%d' % num, headers=form_header)
+    response = requests.get(url + '/?num=%d' %
+                            num, headers=form_header)
     if response.url == url:
         print('Unable to access the server, please try again later')
         exit(-1)
 
     # save the image
-    imageurls = [response.url] if num == 1 else loads(response.content)['pics']
+    imageurls = [response.url] if response.encoding == None else loads(response.content)['pics']
     imgs = []
     for i in range(len(imageurls)):
         image_name = imageurls[i].split('/')[-1]

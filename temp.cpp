@@ -1,57 +1,90 @@
-#include <bits/stdc++.h>
+#include <cstdio>
+#include <stack>
+#define MAXN 10005
+#define MAXM 5000005
 using namespace std;
-
-const int maxn = 10005, maxm = 10005, inf = 0x3f3f3f3f;
-
-int x[maxn], y[maxn], dp[maxn][maxm];
-int n, m, k, cnt = 1;
-struct node
+int n;
+int index, low[MAXN], dfn[MAXN];
+stack<int> s;
+int f[MAXN];
+int scc_cnt, scc[MAXN];
+int In, Out, in[MAXN], out[MAXN];
+int max(int x, int y) { return x > y ? x : y; }
+struct graph
 {
-    int p, h, l;
-    bool operator<(const node &a) const { return p < a.p; }
-} pipes[maxn];
-
+    int tot, hd[MAXN];
+    int nxt[MAXM], to[MAXM];
+    void add(int x, int y)
+    {
+        tot++;
+        nxt[tot] = hd[x];
+        hd[x] = tot;
+        to[tot] = y;
+    }
+} g;
+void Tarjan(int x)
+{
+    dfn[x] = low[x] = ++index;
+    s.push(x);
+    f[x] = true;
+    for (int i = g.hd[x]; i; i = g.nxt[i])
+        if (!dfn[g.to[i]])
+        {
+            Tarjan(g.to[i]);
+            low[x] = min(low[x], low[g.to[i]]);
+        }
+        else if (f[g.to[i]])
+            low[x] = min(low[x], dfn[g.to[i]]);
+    if (dfn[x] == low[x])
+    {
+        scc[x] = ++scc_cnt;
+        while (s.top() != x)
+        {
+            scc[s.top()] = scc_cnt;
+            f[s.top()] = false;
+            s.pop();
+        }
+        f[x] = false;
+        s.pop();
+    }
+    return;
+} // 板子，不多说。
 int main()
 {
-    ios::sync_with_stdio(false);
-
-    cin >> n >> m >> k;
-    for (int i = 1; i <= n; i++)
-        cin >> x[i] >> y[i];
-    for (int i = 1; i <= k; i++)
-        cin >> pipes[i].p >> pipes[i].l >> pipes[i].h;
-    sort(pipes + 1, pipes + k + 1);
-
+    scanf("%d", &n);
     for (int i = 1; i <= n; i++)
     {
-        for (int j = 0; j <= m; j++)
-            dp[i % 2][j] = inf;
-            
-        for (int j = x[i] + 1; j <= x[i] + m; j++)
-            dp[i % 2][j] = min(dp[i % 2 ^ 1][j - x[i]] + 1, dp[i % 2][j - x[i]] + 1);
-        for (int j = m + 1; j <= x[i] + m; j++)
-            dp[i % 2][m] = min(dp[i % 2][m], dp[i % 2][j]);
-        for (int j = 1; j <= m - y[i]; j++)
-            dp[i % 2][j] = min(dp[i % 2][j], dp[i % 2 ^ 1][j + y[i]]);
-        if (i == pipes[cnt].p)
-        {
-            for (int j = 0; j <= pipes[cnt].l; j++)
-                dp[i % 2][j] = inf;
-            for (int j = pipes[cnt].h; j <= m; j++)
-                dp[i % 2][j] = inf;
-            int ans = inf;
-            for (int j = 1; j <= m; j++)
-                ans = min(dp[i % 2][j], ans);
-            if (ans == inf)
-                return puts("0"), cout << cnt - 1, 0;
-            cnt++;
-        }
+        int v;
+        while (scanf("%d", &v) && v)
+            g.add(i, v);
     }
-    int ans = inf;
-    for (int j = 1; j <= m; j++)
-        ans = min(dp[n % 2][j], ans);
-        
-    cout << 1 << '\n'
-         << ans << endl;
+    for (int i = 1; i <= n; i++)
+        if (!dfn[i])
+            Tarjan(i); // 先做Tarjan
+    for (int i = 1; i <= n; i++)
+        for (int j = g.hd[i]; j; j = g.nxt[j])
+        {
+            int u = scc[i], v = scc[g.to[j]];
+            if (v != u) // 不在同一个强连通分量里
+            {
+                in[v]++;
+                out[u]++;
+                // 记录他们的入度和出度
+            }
+        }
+    for (int i = 1; i <= scc_cnt; i++)
+    {
+        if (!in[i])
+            In++;
+        if (!out[i])
+            Out++;
+        // 分别记录入度为0的点的数量和出度为0的点的数量
+    }
+    printf("%d\n", In); // 第一问
+    if (scc_cnt == 1)
+        printf("0");
+    else
+        printf("%d", max(In, Out));
+    // 第二问，记得特判
     return 0;
 }

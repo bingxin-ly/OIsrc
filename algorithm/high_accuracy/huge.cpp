@@ -1,6 +1,4 @@
-#include <iostream>
-#include <vector>
-#include <string>
+#include <bits/stdc++.h>
 using namespace std;
 struct huge : vector<int> // 用标准库vector做基类，完美解决位数问题，同时更易于实现
 {
@@ -181,26 +179,14 @@ huge pow(const huge &n, const huge &k)
     return pow(pow(n, k / 2), 2);
 }
 
-int mainpl()
+int main()
 {
     huge a, b;
     cin >> a >> b;
-    cout << a + b << endl;
+    cout << a + b << endl
+         << (a >= b ? "" : "-") << a - b << endl
+         << a * b << endl
+         << a / b << endl
+         << a % b << endl;
     return 0;
-}
-int mainmi()
-{
-    huge a, b;
-    cin >> a >> b;
-    if (a < b)
-        cout << '-' << b - a << endl;
-    else
-        cout << a - b << endl;
-    return 0;
-}
-int maindi()
-{
-    huge a, b;
-    cin >> a >> b;
-    cout << a / b << endl;
 }

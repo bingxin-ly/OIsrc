@@ -21,9 +21,9 @@ bool st[MAX];
 typedef pair<int, int> PII;
 void dijkstra(int start = 1)
 {
-    for (int i = 0; i < MAX; i++)
-        dist[i] = INT_MAX;
+    memset(dist, 0x3f, sizeof(dist));
     dist[start] = 0;
+    st[start] = true;
 
     priority_queue<PII, vector<PII>, greater<>> heap;
     heap.push({0, start});

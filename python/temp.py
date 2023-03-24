@@ -1,7 +1,2 @@
-from tkinter import *
-win = Tk()
-win.geometry("700x350")
-win.config(bg='#4fe3a5')
-Label(win, text = "你好世界！").pack()
-Label(win, text = "你好世界!!").pack()
-win.mainloop()
+list = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+print(list[::-1])

@@ -1,49 +1,44 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int maxn = 100100;
-const int maxm = 500500;
+const int N = 1e5 + 10, M = 5e5 + 10, K = 2e1 + 1;
 
-int nextt[maxm * 42], w[maxm * 42], to[maxm * 42], head[maxn * 42], cnt = 0;
-
+int cnt, nxt[M * K * 2], w[M * K * 2], e[M * K * 2], head[N * K];
 void add(int u, int v, int cost)
 {
-    cnt++;
-    nextt[cnt] = head[u];
-    head[u] = cnt;
-    to[cnt] = v;
+    e[++cnt] = v;
     w[cnt] = cost;
+    nxt[cnt] = head[u];
+    head[u] = cnt;
 }
 
 struct node
 {
     int u, dis;
-    bool operator<(const node x) const
-    {
-        return dis > x.dis;
-    }
+    bool operator<(const node x) const { return dis > x.dis; }
 };
 
 priority_queue<node> q;
-int dist[maxn * 21];
+int dist[N * K];
 
-void dij(int s)
+void dijkstra(int s)
 {
     memset(dist, 0x3f, sizeof(dist));
     dist[s] = 0;
     q.push({s, 0});
+    
     while (!q.empty())
     {
-        node fr = q.top();
+        node x = q.top();
         q.pop();
-        int u = fr.u, dis = fr.dis;
-        if (dis != dist[u])
+        int u = x.u, dis = x.dis;
+        if (dis != dist[u]) // 省去了vis
             continue;
-        for (int v = head[u]; v; v = nextt[v])
-            if (dist[to[v]] > dist[u] + w[v])
+        for (int v = head[u]; v; v = nxt[v])
+            if (dist[e[v]] > dist[u] + w[v])
             {
-                dist[to[v]] = dist[u] + w[v];
-                q.push((node){to[v], dist[to[v]]});
+                dist[e[v]] = dist[u] + w[v];
+                q.push({e[v], dist[e[v]]});
             }
     }
 }
@@ -66,7 +61,9 @@ int main()
             add(n * (j - 1) + v, n * j + u, 0);
         }
     }
-    dij(1);
+
+    dijkstra(1);
+
     int ans = dist[n];
     for (int i = 1; i <= k; i++)
         ans = min(ans, dist[i * n + n]);

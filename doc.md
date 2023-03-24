@@ -11,3 +11,5 @@ int main()
 
 ![tk对齐方式](https://img-blog.csdnimg.cn/20190406231559680.png?)  
 $$t[1](n-t[1])+t[2](n-t[2])+\cdots+t[a](n-t[a])+(n-1)+(1+sum)(n-sum-1)$$
+
+![iyPCMt.png](https://i.328888.xyz/2023/03/24/iyPCMt.png)

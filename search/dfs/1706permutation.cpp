@@ -3,20 +3,21 @@ using namespace std;
 
 int n, arr[10];
 bool vis[10];
-void dfs(int step)
+void dfs(int now)
 {
-    if (step == n + 1)
+    if (now == n)
     {
-        for (int i = 1; i <= n; i++)
+        for (int i = 0; i < n; i++)
             cout << setw(5) << arr[i];
-        return puts(""), void();
+        puts("");
+        return;
     }
-    for (int i = 1; i <= n; i++)
+    for (int i = 0; i < n; i++)
         if (!vis[i])
         {
             vis[i] = true;
-            arr[step] = i;
-            dfs(step + 1);
+            arr[now] = i;
+            dfs(now + 1);
             vis[i] = false;
         }
 }
@@ -24,8 +25,8 @@ void dfs(int step)
 int main()
 {
     cin >> n;
-    // dfs(1);
-    iota(arr, arr + n, 1);
+    dfs(0);
+/*     iota(arr, arr + n, 1);
     reverse(arr, arr + n);
     int fact = 1;
     for (int i = 1; i <= n; i++)
@@ -36,6 +37,6 @@ int main()
         for (int i = 0; i < n; i++)
             cout << setw(5) << arr[i];
         puts("");
-    }
+    } */
     return 0;
 }

@@ -30,6 +30,7 @@ inline void add(int pos, int val)
 
 int main()
 {
+    // 二维偏序问题
     ios::sync_with_stdio(false);
     cin.tie(0);
 

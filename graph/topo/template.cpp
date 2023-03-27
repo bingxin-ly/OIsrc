@@ -1,25 +1,25 @@
-queue<int> q;
-
-bool toposort()
+int d[N], q[N];
+bool topsort()
 {
+    int hh = 0, tt = -1;
+
     // d[i] 存储点i的入度
     for (int i = 1; i <= n; i++)
         if (!d[i])
-            q.push(i);
+            q[++tt] = i;
 
-    while (!q.empty())
+    while (hh <= tt)
     {
-        int u = q.front();
-        q.pop();
+        int t = q[hh++];
 
-        for (auto i : graph[u])
+        for (int i = h[t]; i != -1; i = ne[i])
         {
-            int j = i.to;
-            if (!--d[j])
-                q.push(j);
+            int j = e[i];
+            if (--d[j] == 0)
+                q[++tt] = j;
         }
     }
 
     // 如果所有点都入队了，说明存在拓扑序列；否则不存在拓扑序列。
-    return q.size() == n;
+    return tt == n - 1;
 }

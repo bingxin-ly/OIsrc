@@ -5,14 +5,14 @@ int n, arr[10];
 bool vis[10];
 void dfs(int now)
 {
-    if (now == n)
+    if (now == n + 1)
     {
-        for (int i = 0; i < n; i++)
+        for (int i = 1; i <= n; i++)
             cout << setw(5) << arr[i];
         puts("");
         return;
     }
-    for (int i = 0; i < n; i++)
+    for (int i = 1; i <= n; i++)
         if (!vis[i])
         {
             vis[i] = true;
@@ -25,8 +25,9 @@ void dfs(int now)
 int main()
 {
     cin >> n;
-    dfs(0);
-/*     iota(arr, arr + n, 1);
+    dfs(1);
+/*     
+    iota(arr, arr + n, 1);
     reverse(arr, arr + n);
     int fact = 1;
     for (int i = 1; i <= n; i++)
@@ -37,6 +38,7 @@ int main()
         for (int i = 0; i < n; i++)
             cout << setw(5) << arr[i];
         puts("");
-    } */
+    }
+*/
     return 0;
 }

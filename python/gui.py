@@ -2,7 +2,7 @@ import tkinter as tk
 from PIL import Image, ImageTk
 from pic import get_image
 
-std_mode = False
+std_mode = True
 std_size = 100
 # 用全局变量来保存当前显示的图片，否者，无之
 img_transed = None

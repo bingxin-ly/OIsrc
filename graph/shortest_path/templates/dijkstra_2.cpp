@@ -23,7 +23,6 @@ void dijkstra(int start = 1)
 {
     memset(dist, 0x3f, sizeof(dist));
     dist[start] = 0;
-    st[start] = true;
 
     priority_queue<PII, vector<PII>, greater<>> heap;
     heap.push({0, start});

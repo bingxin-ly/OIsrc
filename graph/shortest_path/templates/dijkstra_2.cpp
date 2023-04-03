@@ -1,47 +1,36 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int MAX = 1e5 + 10;
-
-struct edge
-{
-    int to, w;
-};
-vector<edge> graph[MAX];
-
-inline void add(int a, int b, // 新建一条a->b的边
-                int w = 1)    // 边权为w
-{
-    graph[a].push_back({b, w});
-}
-
-int dist[MAX];
-bool st[MAX];
-
+const int N = 1e4 + 10, M = 5e5 + 10;
 typedef pair<int, int> PII;
-void dijkstra(int start = 1)
+vector<PII> graph[N];
+
+int dist[N], vis[N];
+void dijkstra(int s, int n)
 {
-    memset(dist, 0x3f, sizeof(dist));
-    dist[start] = 0;
+    for (int i = 1; i <= n; i++)
+        dist[i] = INT_MAX;
+    dist[s] = 0;
 
     priority_queue<PII, vector<PII>, greater<>> heap;
-    heap.push({0, start});
+    heap.push({0, s});
 
     while (!heap.empty())
     {
         auto t = heap.top();
         heap.pop();
-        int distance = t.first, ver = t.second;
-        if (st[ver])
+        auto dis = t.first, ver = t.second;
+
+        if (vis[ver])
             continue;
-        st[ver] = true;
+        vis[ver] = true;
 
         for (auto i : graph[ver])
         {
-            int j = i.to;
-            if (dist[j] > distance + i.w)
+            int j = i.first;
+            if (dist[j] > dis + i.second)
             {
-                dist[j] = distance + i.w;
+                dist[j] = dis + i.second;
                 heap.push({dist[j], j});
             }
         }
@@ -52,13 +41,11 @@ int main()
 {
     int n, m, s;
     cin >> n >> m >> s;
-    int u, v, w;
-    while (m--)
-    {
-        cin >> u >> v >> w;
-        add(u, v, w);
-    }
-    dijkstra(s);
+    for (int i = 1, u, v, w; i <= m; i++)
+        cin >> u >> v >> w, graph[u].push_back({v, w});
+
+    dijkstra(s, n);
+
     for (int i = 1; i <= n; i++)
         cout << dist[i] << ' ';
     return 0;

@@ -1,75 +1,79 @@
-// 区间求和区间加, and TLE point
 #include <bits/stdc++.h>
-#define ls (node << 1)
-#define rs (node << 1 | 1)
+#define ls (rt << 1)
+#define rs ((rt << 1) | 1)
+typedef long long ll;
 using namespace std;
 
-const int MAX = 5e5 + 10;
-int n, m, src[MAX];
-ssize_t seg_tree[4 * MAX], lazy[MAX]; // 里面存的有可能超int
-
-inline void push_up(int node) // 也可以理解成push_to_here
+const int N = 1e5 + 10;
+ll arr[N], segtr[4 * N], lazy[4 * N];
+void pushup(int rt) { segtr[rt] = segtr[ls] + segtr[rs]; }
+void pushdown(int rt, int l, int r)
 {
-    seg_tree[node] = seg_tree[ls] + seg_tree[rs];
+    int mid = (l + r) >> 1;
+    segtr[ls] += (mid - l + 1) * lazy[rt], segtr[rs] += (r - mid) * lazy[rt];
+
+    lazy[ls] += lazy[rt], lazy[rs] += lazy[rt];
+    lazy[rt] = 0;
 }
-void build(int node, int l, int r)
+
+void build(int rt, int l, int r)
 {
     if (l == r)
-        return seg_tree[node] = src[l], void();
+       return segtr[rt] = arr[l], void();
     int mid = (l + r) >> 1;
     build(ls, l, mid), build(rs, mid + 1, r);
-    push_up(node);
+    pushup(rt);
 }
-void push_down(int l, int r, int node)
+ll query(int rt, int l, int r, const int ll, const int rr)
 {
-    lazy[ls] += lazy[node], lazy[rs] += lazy[node];
-    int mid = (l + r) >> 1;
-    seg_tree[ls] += (mid - l + 1) * lazy[node], seg_tree[rs] += (r - mid) * lazy[node];
-    lazy[node] = 0;
-}
-ssize_t query(int ql, int qr, int node = 1, int ll = 1, int rr = n) // 区间查询，有可能超int
-{
-    if (ll > qr || rr < ql)
+    if (l > rr || r < ll)
         return 0;
-    if (ql <= ll && rr <= qr)
-        return seg_tree[node];
-    push_down(ll, rr, node);
-    int mid = (ll + rr) >> 1;
-    return query(ql, qr, ls, ll, mid) + query(ql, qr, rs, mid + 1, rr);
+    if (ll <= l && r <= rr)
+        return segtr[rt];
+
+    pushdown(rt, l, r);
+    int mid = (l + r) >> 1;
+    return query(ls, l, mid, ll, rr) + query(rs, mid + 1, r, ll, rr);
 }
-void add(int ql, int qr, int val, int node = 1, int gl = 1, int gr = n) // 区间加
+void modify(int rt, int l, int r, const int ll, const int rr, const int val)
 {
-    if (gl > qr || gr < ql)
+    if (l > rr || r < ll)
         return;
-    if (ql <= gl && gr <= qr)
-        return lazy[node] += val, seg_tree[node] += (gr - gl + 1) * val, void();
-    push_down(gl, gr, node);
-    int mid = (gl + gr) >> 1;
-    add(ql, qr, val, ls, gl, mid), add(ql, qr, val, rs, mid + 1, gr);
-    push_up(node);
-}
-inline void add_singal(int qpoint, int val, int node = 1, int gl = 1, int gr = n) // 单点加
-{
-    add(qpoint, qpoint, val, node, gl, gr);
+    if (ll <= l && r <= rr)
+    {
+        segtr[rt] += (r - l + 1) * val;
+        lazy[rt] += val;
+        return;
+    }
+    pushdown(rt, l, r);
+    int mid = (l + r) >> 1;
+    modify(ls, l, mid, ll, rr, val), modify(rs, mid + 1, r, ll, rr, val);
+    pushup(rt);
 }
 
 int main()
 {
     ios::sync_with_stdio(false);
+    int n, m;
     cin >> n >> m;
     for (int i = 1; i <= n; i++)
-        cin >> src[i];
+        cin >> arr[i];
+
     build(1, 1, n);
-    int op, a, b, c;
-    for (int i = 0; i < m; i++)
+    for (int i = 1, op; i <= m; i++)
     {
         cin >> op;
+        int x, y, k;
         if (op == 1)
-            cin >> a >> b >> c,
-                add(a, b, c);
+        {
+            cin >> x >> y >> k;
+            modify(1, 1, n, x, y, k);
+        }
         else
-            cin >> a >> b,
-                cout << query(a, b) << endl;
+        {
+            cin >> x >> y;
+            cout << query(1, 1, n, x, y) << endl;
+        }
     }
     return 0;
 }

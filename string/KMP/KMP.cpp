@@ -1,18 +1,17 @@
-#include <iostream>
+#include <bits/stdc++.h>
 using namespace std;
 
-const int N = 10010, M = 100010;
-
-int n, m;
-char p[N], s[M];
-int nxt[N];
+const int N = 1e6 + 10;
+char s[N], p[N];
+int n, m, nxt[N];
 
 int main()
 {
-    cin >> n >> p + 1 >> m >> s + 1;
+    cin >> (s + 1) >> (p + 1);
+    n = strlen(s + 1), m = strlen(p + 1);
 
     // 求nxt数组
-    for (int i = 2, j = 0; i <= n; i++)
+    for (int i = 2, j = 0; i <= m; i++)
     {
         while (j && p[i] != p[j + 1])
             j = nxt[j];
@@ -22,17 +21,20 @@ int main()
     }
 
     // kmp匹配过程
-    for (int i = 1, j = 0; i <= m; i++)
+    for (int i = 1, j = 0; i <= n; i++)
     {
         while (j && s[i] != p[j + 1])
             j = nxt[j];
         if (s[i] == p[j + 1])
             j++;
-        if (j == n)
+        if (j == m)
         {
-            printf("%d", i - n);
+            cout << i - m + 1 << endl;
             j = nxt[j];
         }
     }
+
+    for (int i = 1; i <= m; i++)
+        cout << nxt[i] << ' ';
     return 0;
 }

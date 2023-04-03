@@ -1,28 +1,26 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int MAX = 2e5 + 10;
-vector<bool> connected;
-
-struct Edge
+const int N = 5e3 + 10, M = 2e5 + 10;
+struct edge
 {
     int u, v, w;
-    bool operator<(const Edge &other) const { return w < other.w; }
+    bool operator<(const edge &other) const { return w < other.w; }
 };
-typedef vector<Edge> edgeset;
+typedef vector<edge> edgeset;
 
 struct DSU
 {
-    int fa[MAX];
+    int fa[N];
     explicit DSU(int size)
     {
         // 重组预留的初始化
-        for (int i = 0; i <= size; i++)
-            fa[i] = i;
+        iota(fa, fa + size + 1, 0);
     }
     int find(int x)
     {
-        return fa[x] == x ? x : fa[x] = find(fa[x]);
+        // 注意找的是 fa!
+        return x == fa[x] ? x : fa[x] = find(fa[x]);
     }
     bool unite(int x, int y)
     {
@@ -37,19 +35,16 @@ struct DSU
     }
 };
 
-edgeset generate(int n, int m, edgeset graph)
+vector<int> genMST(int n, int m, edgeset &edges)
 {
     DSU s(n);
-    sort(graph.begin(), graph.end());
-    int cnt = 0;
-    edgeset result;
+    vector<int> res;
+
+    sort(edges.begin(), edges.end());
     for (int i = 0; i < m; i++)
-        if (s.unite(graph[i].u, graph[i].v))
-            result.push_back(graph[i]), cnt++;
-    if (cnt != n - 1)
-        return {};
-    else
-        return result;
+        if (s.unite(edges[i].u, edges[i].v))
+            res.push_back(i);
+    return res;
 }
 
 int main()
@@ -60,14 +55,13 @@ int main()
     for (int i = 0; i < m; i++)
         cin >> graph[i].u >> graph[i].v >> graph[i].w;
 
-    edgeset mintr = generate(n, m, graph);
-    if (mintr.empty())
-    {
-        cout << "orz" << endl;
-        return 0;
-    }
+    auto MST = genMST(n, m, graph);
+    if (MST.size() != n - 1)
+        return cout << "orz", 0;
+
     int ans = 0;
-    for (auto i : mintr)
-        ans += i.w;
-    cout << ans << endl;
+    for (auto i : MST)
+        ans += graph[i].w;
+    cout << ans;
+    return 0;
 }

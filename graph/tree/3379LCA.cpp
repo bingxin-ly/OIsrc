@@ -1,40 +1,15 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int MAX = 5e5 + 10;
+const int N = 5e5 + 10;
 int n, query, rt, t;
-int f[MAX][20], dep[MAX];
+int f[N][20], dep[N];
 
-vector<int> graph[MAX];
+vector<int> graph[N];
 inline void add(int u, int v)
 {
     graph[u].push_back(v);
 }
-inline void bfs(int u);
-inline int lca(int x, int y);
-
-int main()
-{
-    ios::sync_with_stdio(false);
-    cin.tie(0), cout.tie(0);
-
-    cin >> n >> query >> rt;
-    t = int(log(n) / log(2)) + 1;
-    for (int i = 1, x, y; i < n; i++)
-    {
-        cin >> x >> y;
-        add(x, y), add(y, x);
-    }
-    bfs(rt); // pre
-    int x, y;
-    while (query--)
-    {
-        cin >> x >> y;
-        cout << lca(x, y) << endl;
-    }
-    return 0;
-}
-
 void bfs(int u)
 {
     queue<int> q;
@@ -69,4 +44,25 @@ int lca(int x, int y)
         if (f[x][i] != f[y][i])
             x = f[x][i], y = f[y][i];
     return f[x][0];
+}
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin.tie(0), cout.tie(0);
+
+    cin >> n >> query >> rt;
+    t = int(log(n) / log(2)) + 1;
+    for (int i = 1, x, y; i < n; i++)
+    {
+        cin >> x >> y;
+        add(x, y), add(y, x);
+    }
+    bfs(rt); // pre
+    int x, y;
+    while (query--)
+    {
+        cin >> x >> y;
+        cout << lca(x, y) << endl;
+    }
+    return 0;
 }

@@ -76,8 +76,7 @@ bool isprime(int n)
 // 埃氏筛
 int eratosthenes(int n)
 {
-
-    int p = 0;
+    int cnt = 0;
     // for (int i = 0; i <= n; ++i)
     //     is_prime[i] = 1;
     memset(is_prime, true, n + 1); // 让我们先假定所有数都是质数
@@ -88,15 +87,15 @@ int eratosthenes(int n)
         可能要手动处理了（悲） */
         if (is_prime[i])
         {
-            // primes[p]是i,后置自增运算代表当前素数数量，前置后置自己可以调
-            primes[++p] = i;
+            // primes[cnt]是i,后置自增运算代表当前素数数量，前置后置自己可以调
+            primes[++cnt] = i;
             if (1ll * i * i <= n) // 意义不明的判断/kk
                 for (int j = i * i; j <= n; j += i)
                     // 因为从 2 到 i - 1 的倍数我们之前筛过了, 比如 i * 2已经被 2 * i筛过了
                     // 这里直接从 i 的倍数开始，提高了运行速度
                     is_prime[j] = 0; // 是i的倍数的均不是素数
         }
-    return p;
+    return cnt;
 }
 // 神奇分块筛。由于不怎么用，所以它最好是无副作用的/hanx
 int count_primes(int n)

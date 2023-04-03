@@ -4,8 +4,13 @@ using namespace std;
 const int N = 1e3 + 10, M = 6e5 + 10;
 int idx, head[N];
 pair<int, int> e[M << 1];
-auto add = [](int u, int v)
-{ e[++idx].first = v, e[idx].second = head[u], head[u] = idx; };
+
+void add(int u, int v)
+{
+    e[++idx].first = v;
+    e[idx].second = head[u];
+    head[u] = idx;
+};
 
 int match[N], vis[N];
 bool find(int u)

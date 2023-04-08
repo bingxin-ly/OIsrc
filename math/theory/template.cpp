@@ -97,48 +97,6 @@ int eratosthenes(int n)
         }
     return cnt;
 }
-// 神奇分块筛。由于不怎么用，所以它最好是无副作用的/hanx
-int count_primes(int n)
-{
-    const int S = 1e4;
-    /*对于每一对块和区间 [1, √n] 中的素数都要进行除法，
-    而对于较小的块来说，这种情况要糟糕得多。
-    因此，在选择常数 S 时要保持平衡。块大小 S 取 10^4 到 10^5 之间，可以获得最佳的速度。*/
-    vector<int> primes;
-    int nsqrt = sqrt(n);
-    vector<char> is_prime(nsqrt + 1, true);
-    for (int i = 2; i <= nsqrt; i++)
-    {
-        if (is_prime[i])
-        {
-            primes.push_back(i);
-            for (int j = i * i; j <= nsqrt; j += i)
-                is_prime[j] = false;
-        }
-    }
-    int result = 0;
-    vector<char> block(S);
-    for (int k = 0; k * S <= n; k++)
-    {
-        fill(block.begin(), block.end(), true);
-        int start = k * S;
-        for (int p : primes)
-        {
-            int start_idx = (start + p - 1) / p;
-            int j = max(start_idx, p) * p - start;
-            for (; j < S; j += p)
-                block[j] = false;
-        }
-        if (k == 0)
-            block[0] = block[1] = false;
-        for (int i = 0; i < S && start + i <= n; i++)
-        {
-            if (block[i])
-                result++;
-        }
-    }
-    return result;
-}
 
 bool vis[N];
 // 欧拉筛（线性筛），比较常用。所以加一个全局变量应该配得上/hanx

@@ -1,41 +1,36 @@
-// 排列组合
-/* 排列就是指从给定个数的元素中取出指定个数的元素进行排序
-   组合则是指从给定个数的元素中仅仅取出指定个数的元素，不考虑排序 */
+// 组合数学
 #include <bits/stdc++.h>
+typedef long long loong;
 using namespace std;
 
-// 写得最（不）满意的阶乘函数
-map<int, size_t> fac = {{0, 1}, {1, 1}};
-size_t get_fac(int n)
+map<int, loong> fac = {{0, 1}, {1, 1}};
+loong get_fac(int n)
 {
     if (n < 0)
-        return -1; // size_t的 -1
-    if (fac.find(n) != fac.end())
+        return -1;
+    if (fac.count(n))
         return fac[n];
-    else
-    {
-        // 神奇的部分：staitc 时不知道为什么初始值为 1，且cbegin会自动创建元素，所以能正常运行
-        size_t lastn = fac.cbegin()->first, lastv = fac.cbegin()->second;
-        for (int i = lastn + 1; i <= n; i++)
-            lastv *= i, fac[i] = lastv;
-        return lastv;
-    }
+    // 反向迭代器！！！
+    int lastn = fac.crbegin()->first;
+    loong lastv = fac.crbegin()->second;
+    for (int i = lastn + 1; i <= n; i++)
+        lastv *= i, fac[i] = lastv;
+    return lastv;
 }
 // 加法 & 乘法原理
 
+/* 排列就是指从给定个数的元素中取出指定个数的元素进行排序
+   组合则是指从给定个数的元素中仅仅取出指定个数的元素，不考虑排序 */
 /* 排列数 A(n, m) = n(n - 1)(n - 2)...(n - m + 1) = n!/(n - m)!
-   全排列 A(n, n) = n(n - 1)...3 * 2 * 1 = n!
+   全排列 A(n, n) = n(n - 1)...3 * 2 * 1 = n! */
+int A(int n, int m) { return get_fac(n) / get_fac(n - m); };
 
-   组合数 C(n, m) = A(n, m) / m! = n!/(m!(n - m))!
+/* 组合数 C(n, m) = A(n, m) / m! = n!/(m!(n - m))!
    特别地，规定当 m > n 时，C(n, m) = A(n, m) = 0 */
-
-auto A = [](int n, int m)
-// { return get_fac(n) / get_fac(n - m); };
-{ return m <= n ? get_fac(n) / get_fac(n - m) : 0; };
 /* 组合数性质：C(n, m) = C(n, n - m)
    C(n, m) = C(n - 1, m - 1) + C(n - 1, m) */
-auto C = [](int n, int m)
-{ return A(n, m) / get_fac(m); };
+// 规定：C(n, 0)=1 C(n, n)=1 C(0, 0)=1
+int C(int n, int m) { return A(n, m) / get_fac(m); };
 
 // 插板法：C(n + k - 1, n)
 

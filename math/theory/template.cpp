@@ -81,7 +81,7 @@ int eratosthenes(int n)
     //     is_prime[i] = 1;
     memset(is_prime, true, n + 1); // 让我们先假定所有数都是质数
     is_prime[0] = is_prime[1] = false;
-    for (int i = 2, up = sqrt(n); i <= n; ++i)
+    for (int i = 2, up = sqrt(n); i <= up; ++i)
         /* √n也可（换成up）, 但这样primes会受影响，
         比如100，筛到10即可处理出所有的质数，但11也就不会加到primes里面
         可能要手动处理了（悲） */
@@ -179,7 +179,19 @@ auto inverse = [](int a, int p)
 { int x, y; exgcd(a, p, x, y); return (x % p + p) % p; };
 
 // 带模快速幂
-ssize_t fast_pow(ssize_t a, int k, int m);
+int fast_pow(size_t a, int k, int m)
+{
+    a %= m;
+    size_t res = 1;
+    while (k)
+    {
+        if (k & 1)
+            res = res * a % m;
+        a = a * a % m;
+        k >>= 1;
+    }
+    return res;
+}
 auto inverse = [](int a, int p)
 { return fast_pow(a, p - 2, p); }; // x是a在mod p下的逆元
 
@@ -235,15 +247,15 @@ int CRT(int k, int *rs, // 余数
     可以用扩展欧几里得算法(exgcd)给出(k1,k2)的整个解系 */
 /*  k1p1 - k2p2 = (r2 - r1) / d
     x = r1 + k1m1 = r1 + (r2 - r1) / d * λ1m1 */
-ssize_t a, b, A, B, x, y;
-bool merge()
+bool merge_exgcd()
 {
+    static int a, b, A, B, x, y;
     int d = exgcd(a, A, x, y);
 
     ssize_t c = B - b;
     if (c % d)
         return false; // 裴蜀定理判是否可行
-        
+
     x = x * c / d % (A / d);
     if (x < 0)
         x += A / d;

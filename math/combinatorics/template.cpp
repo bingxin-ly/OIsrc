@@ -39,7 +39,7 @@ int C(int n, int m) { return A(n, m) / get_fac(m); };
 // (杨辉三角)
 
 // 卢卡斯定理：C(n, m) mod p = C(n/p, m/p) * C(n mod p, m mod p) mod p
-ssize_t lucas(ssize_t n, ssize_t m, ssize_t p)
+loong lucas(loong n, loong m, int p)
 {
     if (m == 0)
         return 1;

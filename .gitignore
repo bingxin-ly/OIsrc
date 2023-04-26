@@ -1,12 +1,12 @@
 doc.md
 *.exe
-*.in
-*.out
 *.prob
+*.spec
 
 .idea
 .vscode
 .cph
 pics
+build
 python/__pycache__
 LemonLime-0.2.11-ubuntu-20.04.deb

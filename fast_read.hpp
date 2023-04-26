@@ -1,4 +1,15 @@
-#include <cstdio>
+#define get(_) _ = read()
+typedef long long loong;
+inline loong read()
+{
+    loong p = 0;
+    char c = getchar();
+    while (!isdigit(c))
+        c = getchar();
+    while (isdigit(c))
+        p = p * 10 + c - '0', c = getchar();
+    return p;
+}
 int read()
 {
     int o = 1, p = 0;

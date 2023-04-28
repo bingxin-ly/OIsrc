@@ -5,18 +5,14 @@ using namespace std;
 const int N = 2e5 + 10;
 
 int n, p, fr[N], to[N], f[N];
-struct node
+struct board
 {
     int x, y, mpy, idx;
+    bool operator<(const board &o) const
+    {
+        return x == o.x ? y < o.y : x < o.x;
+    }
 } bs[N];
-bool cmp(node aa, node bb)
-{
-    return aa.x == bb.x ? aa.y < bb.y : aa.x < bb.x;
-}
-bool ycmp(node aa, node bb)
-{
-    return aa.y < bb.y;
-}
 
 int tr[N];
 void add(int x, int val)
@@ -41,12 +37,14 @@ int main()
         cin >> bs[i + p].x >> bs[i + p].y;
         bs[i].idx = bs[i + p].idx = i;
     }
-    sort(bs + 1, bs + p * 2 + 1, ycmp);
+    // 离散化跳板
+    sort(bs + 1, bs + p * 2 + 1, [](board a, board b)
+         { return a.y < b.y; });
     bs[0].y = -1;
     for (int i = 1; i <= p * 2; i++)
         bs[i].mpy = bs[i - 1].mpy + (bs[i - 1].y != bs[i].y);
 
-    sort(bs + 1, bs + p * 2 + 1, cmp);
+    sort(bs + 1, bs + p * 2 + 1);
     for (int i = 1; i <= p * 2; i++)
         if (fr[bs[i].idx])
             to[bs[i].idx] = i;

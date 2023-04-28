@@ -8,5 +8,5 @@ doc.md
 .cph
 pics
 build
-python/__pycache__
+__pycache__
 LemonLime-0.2.11-ubuntu-20.04.deb

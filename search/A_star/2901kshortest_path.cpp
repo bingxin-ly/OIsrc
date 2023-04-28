@@ -41,7 +41,10 @@ struct node
 {
     int pos;
     long long len;
-    bool operator<(const node &otr) const { return len + dist[pos] > otr.len + dist[otr.pos]; }
+    bool operator<(const node &otr) const
+    {
+        return len + dist[pos] > otr.len + dist[otr.pos];
+    }
 };
 void A_star()
 {

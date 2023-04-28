@@ -1,6 +1,8 @@
+from logging import *
 from io import BytesIO
 from time import strftime
 from hashlib import sha256
+from log import setup_logger
 from json import dumps, loads
 
 # 网络连接控件
@@ -13,13 +15,9 @@ from tkinter import simpledialog, messagebox, scrolledtext
 from PIL import Image, ImageTk, ImageGrab
 
 _buf = 1024
-_length = 100
+_length = 70
+_encoding = 'GBK'
 images = {}
-
-
-def debug(x):
-    print(x, ',')
-    return x
 
 
 class Zoom(Toplevel):
@@ -30,8 +28,8 @@ class Zoom(Toplevel):
 
     def create_widgets(self, ww, wh):
         Label(self, image=self.img).pack()
-        ww += 32
-        wh += 1
+        print(self.winfo_height(), self.winfo_depth())
+        ww += 20
         self.geometry('+%d+%d' % ((root.winfo_screenwidth() - ww) / 2,
                                   (root.winfo_screenheight() - wh) / 2))
 
@@ -83,7 +81,6 @@ class ATPWindow(Frame):
             self.entry.image_create(END, image=photo)
 
     def print(self, type, sender, data):
-        debug(len(data))
         self.text.insert(END, '[{}]\n[{}]: '.format
                          (strftime('%H:%M:%S'), sender))
 
@@ -93,7 +90,7 @@ class ATPWindow(Frame):
             sized_image = ImageTk.PhotoImage(image.resize((60 * x // y, 60)))
 
             self.text.mark_set(INSERT, END)
-            pos = debug(self.text.index(INSERT))
+            pos = self.text.index(INSERT)
             images[pos] = (sized_image, image)
 
             self.text.image_create(END, image=sized_image)
@@ -103,14 +100,14 @@ class ATPWindow(Frame):
             self.text.insert(END, '\n')
 
         else:
-            self.text.insert(END, data.decode())
+            self.text.insert(END, data.decode(_encoding))
         self.text.insert(END, '\n')
         self.text.see(END)
 
 
 def send(msg, type: str):
     if type == 'str':
-        data = msg.encode()
+        data = msg.encode(_encoding)
     else:
         io = BytesIO()
         msg.save(io, 'jpeg')
@@ -120,24 +117,20 @@ def send(msg, type: str):
         'type': type,
         'sender': app.nick,
         'size': len(data)
-    })
-    if len(head) > _length:
-        messagebox.showerror('发送的消息实在是太多了')
+    }, ensure_ascii=False)
+    if len(head.encode(_encoding)) > _length:
+        messagebox.showerror('你发送的消息实在太多了')
     else:
-        head += ' ' * (_length - len(head))
-    sock.sendall(head.encode())
-    sock.sendall(data)
+        head += ' ' * (_length - len(head.encode(_encoding)))
+        sock.sendall(head.encode(_encoding))
+        sock.sendall(data)
 
 
 def recv():
     while True:
         ''' 我们使用三个属性来描述数据: type: str, sender: str, size: uint32 '''
-        head = loads(debug(sock.recv(_length).decode()))
+        head = loads(sock.recv(_length).decode(_encoding))
         data = b''
-        # How stupid I was | Why I was that stupid
-        # for _ in range(head['size'] // _buf):
-        #     data += sock.recv(_buf)
-        # data += sock.recv(head['size'] % _buf)
         while len(data) < head['size']:
             data += sock.recv(_buf)
         app.print(head['type'], head['sender'], data)
@@ -165,8 +158,8 @@ def verify():
     with open(__file__, 'rb') as f:
         data = f.read()
     version = sha256(data).hexdigest()
-    sock.sendall((version + ' ' * (_length - len(version))).encode())
-    response = loads(sock.recv(_length).decode())
+    sock.sendall((version + ' ' * (_length - len(version))).encode(_encoding))
+    response = loads(sock.recv(_length).decode(_encoding))
     if not response['res']:
         messagebox.showwarning('错误', '你的chatATP版本错误，请检查！')
         exit()
@@ -175,20 +168,21 @@ def verify():
 def ask_nick():
     while True:
         nick = simpledialog.askstring('', prompt='请输入使用的昵称：').lower()
-        if len(nick) > 30:
+        if len(nick.encode(_encoding)) > 20:
             messagebox.showwarning('错误', '昵称太长了，太大了')
             continue
-        nick += ' ' * (30 - len(nick))
-        sock.sendall(nick.encode())
+        nick += ' ' * (20 - len(nick.encode(_encoding)))
+        sock.sendall(nick.encode(_encoding))
 
-        response = loads(sock.recv(_length).decode())
+        response = loads(sock.recv(_length).decode(_encoding))
         if (response['res'] != 'ok'):
             messagebox.showwarning('错误', response['reason'])
-        else:
-            return nick.strip()
+            continue
+        return nick.strip()
 
 
 if __name__ == '__main__':
+    logger = setup_logger()
     display()
     access()
     verify()

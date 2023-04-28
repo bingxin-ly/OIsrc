@@ -1,49 +1,46 @@
 import socket
-from time import strftime
+from logging import *
+from log import setup_logger
 from json import dumps, loads
 from socketserver import BaseRequestHandler, ThreadingTCPServer
 
 _buf = 1024
-_length = 100
-_version = 'd91ea1514cadc6f17ad20d241fad8c1194f97d98a96d9ba5d67fe3e4e8c47bb3'
+_length = 70
+_encoding = 'GBK'
+_version = '9db591838e0635abc46ddc828df417ac1845678ea20467df39eaf33dffd8ab76'
 connected = {}
 
 
-def debug(x):
-    print(x)
-    return x
-
-
 def chk_version(conn: socket.socket):
-    res = conn.recv(_length).decode().strip() == _version
-    conn.sendall(dumps({'res': res}).encode())
+    res = conn.recv(_length).decode(_encoding).strip() == _version
+    conn.sendall(dumps({'res': res}).encode(_encoding))
     return res
 
 
 def chk_nick(conn: socket.socket):
-    nick = conn.recv(30).decode().strip()
+    nick = conn.recv(20).decode(_encoding).strip()
     res = None
     if nick == '':
         response = dumps({
             'res': 'err',
             'reason': '昵称不可为空！'
-        })
+        }, ensure_ascii=False)
     elif nick in connected.keys():
         response = dumps({
             'res': 'err',
             'reason': '这个名称已被使用！'
-        })
+        }, ensure_ascii=False)
     else:
         response = dumps({
             'res': 'ok'
-        })
+        }, ensure_ascii=False)
         res = nick
     response += ' ' * (_length - len(response))
-    return (res, response.encode())
+    return (res, response.encode(_encoding))
 
 
 def broadcast(head, data):
-    ''' 我们使用三个属性来描述数据: type: str, from: str, size: uint32 '''
+    ''' 我们使用三个属性来描述数据: type, sender, size '''
     for v in connected.values():
         v.sendall(head)
         v.sendall(data)
@@ -63,54 +60,49 @@ class ATPHandler(BaseRequestHandler):
         connected[self.nick] = self.request
         self.success = True
 
-        print('[{}]: {} from {} connected'
-              .format(strftime('%H:%M:%S'), self.nick, self.client_address))
-        msg = f'{self.nick}加入了聊天室\n'.encode()
+        logger.info(f'{self.nick} from {self.client_address} connected')
+        msg = ('{}加入了聊天室\n当前在线的用户有: {}\n'.format
+               (self.nick, '、'.join(connected.keys()))).encode(_encoding)
         head = dumps({
             'type': 'str',
             'sender': 'Server',
             'size': len(msg)
         })
         head += ' ' * (_length - len(head))
-        broadcast(head.encode(), msg)
+        broadcast(head.encode(_encoding), msg)
 
     def handle(self) -> None:
         if not self.success:
             return
         try:
             while True:
-                ''' 我们使用三个属性来描述数据: type: str, from: str, size: uint32 '''
-                head = debug(self.request.recv(_length))
-                prased = loads(head.decode())
+                ''' 我们使用三个属性来描述数据: type, sender, size '''
+                head = self.request.recv(_length)
+                prased = loads(head.decode(_encoding))
                 data = b''
-                # How stupid I was | Why I was that stupid
-                # for _ in range(debug(prased['size']) // _buf):
-                #     data += self.request.recv(_buf)
-                # data += self.request.recv(prased['size'] % _buf)
                 while len(data) < prased['size']:
                     data += self.request.recv(_buf)
-                debug(len(data))
                 broadcast(head, data)
         except socket.error as e:
-            print('[{}]: {} lost connection\ncause: {}'
-                  .format(strftime('%H:%M:%S'), self.nick, e))
+            logger.info(f'{self.nick} lost connection\ncause: {e}')
             return
         except Exception as e:
-            print(e.args)
+            logger.exception('')
             return
 
     def finish(self) -> None:
         connected.pop(self.nick, None)
-        msg = f'{self.nick}离开了聊天室，（悲\n'.encode()
+        msg = f'{self.nick}离开了聊天室，（悲\n'.encode(_encoding)
         broadcast(dumps({
             'type': 'str',
             'sender': 'Server',
             'size': len(msg)
-        }).encode(), msg)
+        }).encode(_encoding), msg)
         self.request.close()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     s = ThreadingTCPServer(('192.168.6.205', 12332), ATPHandler)
-    print('Server running...')
+    logger = setup_logger()
+    logger.info('Server running...')
     s.serve_forever()

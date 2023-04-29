@@ -61,7 +61,7 @@ int merge(int L, int R)
     }
 }
 
-int insert(int x)
+void insert(int x)
 {
     int L, R;
     split(root, x, L, R);
@@ -69,7 +69,7 @@ int insert(int x)
     root = merge(merge(L, cnt), R);
 }
 
-int del(int x)
+void del(int x)
 {
     int L, R, p;
     split(root, x, L, R);
@@ -82,8 +82,9 @@ int rnk(int x)
 {
     int L, R;
     split(root, x - 1, L, R);
+    int res = t[L].size + 1;
     root = merge(L, R);
-    return t[L].size + 1;
+    return res;
 }
 
 int kth(int u, int k)
@@ -99,5 +100,51 @@ int kth(int u, int k)
 
 int precursor(int x)
 {
-    
+    int L, R;
+    split(root, x - 1, L, R);
+    int ans = t[kth(L, t[L].size)].key;
+    root = merge(L, R);
+    return ans;
+}
+
+int succssor(int x)
+{
+    int L, R;
+    split(root, x, L, R);
+    int ans = t[kth(R, 1)].key;
+    root = merge(L, R);
+    return ans;
+}
+
+int main()
+{
+    int n;
+    cin >> n;
+    while (n--)
+    {
+        int opt, x;
+        cin >> opt >> x;
+        switch (opt)
+        {
+        case 1:
+            insert(x);
+            break;
+        case 2:
+            del(x);
+            break;
+        case 3:
+            cout << rnk(x) << endl;
+            break;
+        case 4:
+            cout << t[kth(root, x)].key << endl;
+            break;
+        case 5:
+            cout << precursor(x) << endl;
+            break;
+        case 6:
+            cout << succssor(x) << endl;
+            break;
+        }
+    }
+    return 0;
 }

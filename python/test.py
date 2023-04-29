@@ -1,10 +1,2 @@
-with open('D:\src\python\\1') as f:
-    lines = f.readlines()
-n = int(lines[0])
-insert = []
-for line in lines[1:]:
-    n, m = map(int, line.split())
-    if n == 1:
-        insert.append(m)
-insert.sort()
-[print(x) for x in insert]
+# print((1*499955829*1+2*333303886*1+11*213702*1353+11*28074*31254) % 999911658)
+print(pow(333303886, 3 - 2, 3))

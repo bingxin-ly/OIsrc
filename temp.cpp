@@ -1,68 +1,37 @@
 #include <bits/stdc++.h>
-#define chkmin(a, b) b < a ? a = b : a
 using namespace std;
 
-const int N = 2e5 + 10;
-
-int n, p, fr[N], to[N], f[N];
-struct node
-{
-    int x, y, mpy, idx;
-} bs[N];
-bool cmp(node aa, node bb)
-{
-    return aa.x == bb.x ? aa.y < bb.y : aa.x < bb.x;
-}
-bool ycmp(node aa, node bb)
-{
-    return aa.y < bb.y;
-}
-
-int tr[N];
-void add(int x, int val)
-{
-    for (; x <= p * 2; x += (x & -x))
-        chkmin(tr[x], val);
-}
-int query(int x)
-{
-    int res = 0;
-    for (; x; x -= (x & -x))
-        chkmin(res, tr[x]);
-    return res;
-}
+const int N = 5e3 + 10, K = 1e6 + 10;
+int n, q;
+int a[N], cnt[2 * K];
+long long s[N][N];
 
 int main()
 {
-    cin >> n >> p;
-    for (int i = 1; i <= p; i++)
+    cin >> n >> q;
+    for (int i = 1; i <= n; ++i)
+        cin >> a[i], a[i] += K;
+    for (int i = 1; i <= n; ++i)
     {
-        cin >> bs[i].x >> bs[i].y;
-        cin >> bs[i + p].x >> bs[i + p].y;
-        bs[i].idx = bs[i + p].idx = i;
+        for (int j = i + 1; j <= n; ++j)
+        {
+            if (j > i + 1)
+                if (a[i] + a[j] <= K * 3 && a[i] + a[j] >= K)
+                    s[i][j] = cnt[K * 3 - a[i] - a[j]];
+            cnt[a[j]]++;
+        }
+        for (int j = i + 1; j <= n; ++j)
+            cnt[a[j]]--;
     }
-    sort(bs + 1, bs + p * 2 + 1, ycmp);
-    bs[0].y = -1;
-    for (int i = 1; i <= p * 2; i++)
-        bs[i].mpy = bs[i - 1].mpy + (bs[i - 1].y != bs[i].y);
-
-    sort(bs + 1, bs + p * 2 + 1, cmp);
-    for (int i = 1; i <= p * 2; i++)
-        if (fr[bs[i].idx])
-            to[bs[i].idx] = i;
-        else
-            fr[bs[i].idx] = i;
-
-    // 状态转移：f_i=dp_i−x_i−x_j=dp_k−x_i−y_i=f_k+x_k+y_k−x_i−y_i
-    int res = 0;
-    for (int i = 1; i <= p * 2; i++)
+    for (int i = 1; i <= n; ++i)
+        for (int j = 1; j <= n; ++j)
+            s[i][j] += s[i - 1][j] + s[i][j - 1] - s[i - 1][j - 1];
+    int l, r;
+    while (q--)
     {
-        chkmin(f[i], query(bs[i].mpy));
-        if (fr[bs[i].idx] == i)
-            chkmin(f[to[bs[i].idx]], f[i] + bs[i].x + bs[i].y - bs[to[bs[i].idx]].x - bs[to[bs[i].idx]].y);
-        add(bs[i].mpy, f[i]);
-        chkmin(res, f[i]);
+        cin >> l >> r;
+        cout << s[r][r] - s[l - 1][r] - s[r][l - 1] + s[l - 1][l - 1] << endl;
     }
-    cout << res + n + n << endl;
+
     return 0;
 }

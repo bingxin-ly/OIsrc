@@ -1,46 +1,37 @@
 #include <bits/stdc++.h>
 using namespace std;
-typedef long long loong;
 
-inline int input()
-{
-    int o = 1, p = 0;
-    char c = getchar();
-    while (c < '0' || c > '9')
-    {
-        if (c == '-')
-            o = -1;
-        c = getchar();
-    }
-    while (c >= '0' && c <= '9')
-        p = p * 10 + c - '0',
-        c = getchar();
-    return o * p;
-}
-
-const int N = 5e3 + 10;
-int arr[N];
-
-loong process(int a, int b)
-{
-    loong cnt = 0;
-    for (int i = a; i <= b - 2; i++)
-        for (int j = i + 1; j <= b - 1; j++)
-            for (int k = j + 1; k <= b; k++)
-                if (arr[i] + arr[j] + arr[k] == 0)
-                    cnt++;
-    return cnt;
-}
+const int N = 5e3 + 10, K = 1e6 + 10;
+int n, q;
+int a[N], cnt[2 * K];
+long long s[N][N];
 
 int main()
 {
-    int n = input(), q = input();
-    for (int i = 1; i <= n; i++)
-        arr[i] = input();
-    for (int i = 1; i <= q; i++)
+    cin >> n >> q;
+    for (int i = 1; i <= n; ++i)
+        cin >> a[i], a[i] += K;
+    for (int i = 1; i <= n; ++i)
     {
-        int a = input(), b = input();
-        printf("%lld\n", process(a, b));
+        for (int j = i + 1; j <= n; ++j)
+        {
+            if (j > i + 1)
+                if (a[i] + a[j] <= K * 3 && a[i] + a[j] >= K)
+                    s[i][j] = cnt[K * 3 - a[i] - a[j]];
+            cnt[a[j]]++;
+        }
+        for (int j = i + 1; j <= n; ++j)
+            cnt[a[j]]--;
     }
+    for (int i = 1; i <= n; ++i)
+        for (int j = 1; j <= n; ++j)
+            s[i][j] += s[i - 1][j] + s[i][j - 1] - s[i - 1][j - 1];
+    int l, r;
+    while (q--)
+    {
+        cin >> l >> r;
+        cout << s[r][r] - s[l - 1][r] - s[r][l - 1] + s[l - 1][l - 1] << endl;
+    }
+
     return 0;
 }

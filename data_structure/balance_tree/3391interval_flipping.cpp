@@ -1,4 +1,3 @@
-// 排名树，FHQ实现 P4008文本编辑器
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -8,7 +7,7 @@ struct node
     int num, pri, size;
     int lazy;
 
-    explicit node(char x) : num(x), size(1)
+    explicit node(int x) : num(x), size(1)
     {
         ls = rs = nullptr;
         pri = rand();
@@ -16,8 +15,6 @@ struct node
 
     int lssz() const { return ls ? ls->size : 0; }
     int rssz() const { return rs ? rs->size : 0; }
-    int lslz() const { return ls ? ls->lazy : 0; }
-    int rslz() const { return rs ? rs->lazy : 0; }
 } *root;
 
 void update(node *u)
@@ -29,7 +26,10 @@ void pushdown(node *u)
     if (u->lazy)
     {
         swap(u->ls, u->rs);
-        u->ls->lazy ^= 1, u->rs->lazy ^= 1;
+        if (u->ls)
+            u->ls->lazy ^= 1;
+        if (u->rs)
+            u->rs->lazy ^= 1;
         u->lazy = 0;
     }
 }
@@ -80,20 +80,20 @@ void inorder(node *u)
         return;
     pushdown(u);
     inorder(u->ls);
-    printf("%c ", u->num);
+    printf("%d ", u->num);
     inorder(u->rs);
 }
 
 int main()
 {
     int n, m;
-    cin >> n >> m;
+    scanf("%d%d", &n, &m);
     for (int i = 1; i <= n; i++)
         root = merge(root, new node(i));
     while (m--)
     {
         int x, y;
-        cin >> x >> y;
+        scanf("%d%d", &x, &y);
         node *L, *R, *p;
         split(root, y, L, R);
         split(L, x - 1, L, p);

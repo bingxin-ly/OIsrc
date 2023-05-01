@@ -10,12 +10,13 @@ ui rand_num(ui &seed, ui last, const ui m)
     seed = seed * 17 + last;
     return seed % m + 1;
 }
+ui last = 7;
 UIpair get_rand(ui &seed, const ui m)
 {
-    static ui last = 7;
     UIpair res;
     last = res.x = rand_num(seed, last, m);
     last = res.y = rand_num(seed, last, m);
+    return res;
 }
 
 struct node
@@ -71,19 +72,33 @@ node *merge(node *L, node *R)
     }
 }
 
+UIpair operator-(const UIpair &a, const int &b)
+{
+    return (UIpair){a.x, a.y - b};
+}
+
 int rnk(UIpair x)
 {
     node *L, *R;
-    split(root, x, L, R);
-    int ans = L ? L->size : 0;
+    split(root, x - 1, L, R);
+    int ans = R ? R->size : 0;
     root = merge(L, R);
     return ans;
 }
 
-UIpair &operator-(const UIpair &a, const int &b)
+void inorder(node *u)
 {
-    return (UIpair){a.x, a.y - b};
+    if (!u)
+        return;
+    inorder(u->ls);
+    printf("{%d, %d}\n", u->val.x, u->val.y);
+    inorder(u->rs);
 }
+void debug(node *u)
+{
+    inorder(u), puts("");
+}
+
 unordered_map<ui, UIpair> bastards;
 int main()
 {
@@ -96,9 +111,19 @@ int main()
         cin >> m >> n >> seed;
         while (n--)
         {
-            auto res = get_rand(seed, m);
-            auto &person = bastards[res.x];
-            split(root, person, L, R), split()
+            auto person = get_rand(seed, m);
+            auto &marks = bastards[person.x];
+            marks.x += 1, marks.y += person.y;
+            printf("ori: "), debug(root);
+            split(root, marks, L, R), split(L, marks - 1, L, p);
+            if (p)
+                p->val = marks;
+            else
+                p = new node(marks);
+            printf("p: "), debug(p);
+            root = merge(merge(L, p), R);
+            printf("root: "), debug(root);
+            cout << rnk(marks) - 1 << endl;
         }
     }
     return 0;

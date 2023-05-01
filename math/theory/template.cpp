@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 // 好用的 mod，像 python一样
 #define mod(_, _p) ((_ % _p + _p) % _p)
+typedef long long loong;
 using namespace std;
 
 const int N = 1e8;
@@ -166,7 +167,7 @@ int exgcd(int a, int b, int &x, int &y)
     y -= a / b * x;
     return d;
 }
-void exgcd(int a, int b, ssize_t &x, ssize_t &y)
+void exgcd(int a, int b, loong &x, loong &y)
 {
     if (!b)
         return x = 1, y = 0, void();
@@ -252,14 +253,14 @@ bool merge_exgcd()
     static int a, b, A, B, x, y;
     int d = exgcd(a, A, x, y);
 
-    ssize_t c = B - b;
+    loong c = B - b;
     if (c % d)
         return false; // 裴蜀定理判是否可行
 
     x = x * c / d % (A / d);
     if (x < 0)
         x += A / d;
-    ssize_t p = lcm(a, A);
+    loong p = lcm(a, A);
     b = (a * x + b) % p;
     if (b < 0)
         b += p;

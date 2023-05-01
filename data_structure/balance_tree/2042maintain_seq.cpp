@@ -2,7 +2,7 @@
 #define max(_a, _b) (((_a) > (_b)) ? (_a) : (_b))
 using namespace std;
 
-/* int read()
+int read()
 {
     int o = 1, p = 0;
     char c = getchar();
@@ -16,7 +16,7 @@ using namespace std;
         p = p * 10 + c - '0',
         c = getchar();
     return o * p;
-} */
+}
 
 struct node
 {
@@ -33,57 +33,54 @@ struct node
         val = sum = maxn = x;
         lmax = rmax = max(x, 0);
     }
-};
+} *root;
 
 void update(node *u)
 {
-    bool hasls = u->ls, hasrs = u->rs;
+    u->size = (u->ls ? u->ls->size : 0) + (u->rs ? u->rs->size : 0) + 1;
+    u->sum = (u->ls ? u->ls->sum : 0) + (u->rs ? u->rs->sum : 0) + u->val;
 
-    u->size = (hasls ? u->ls->size : 0) + (hasrs ? u->rs->size : 0) + 1;
-    u->sum = (hasls ? u->ls->sum : 0) + (hasrs ? u->rs->sum : 0) + u->val;
-    u->lmax = max(hasls ? u->ls->lmax : ~0xffff, (hasls ? u->ls->sum : 0) + u->val + (hasrs ? u->rs->lmax : 0));
-    u->rmax = max(hasrs ? u->rs->rmax : ~0xffff, (hasrs ? u->rs->sum : 0) + u->val + (hasls ? u->ls->rmax : 0));
-    u->maxn = max(u->val, u->val + (hasls ? u->ls->rmax : 0) + (hasrs ? u->rs->lmax : 0));
-    if (hasls)
+    u->lmax = max(max(u->ls ? u->ls->lmax : ~0xffff, (u->ls ? u->ls->sum : 0) + u->val + (u->rs ? u->rs->lmax : 0)), 0);
+    u->rmax = max(max(u->rs ? u->rs->rmax : ~0xffff, (u->rs ? u->rs->sum : 0) + u->val + (u->ls ? u->ls->rmax : 0)), 0);
+    u->maxn = max(u->val, u->val + (u->ls ? u->ls->rmax : 0) + (u->rs ? u->rs->lmax : 0));
+    if (u->ls)
         u->maxn = max(u->maxn, u->ls->maxn);
-    if (hasrs)
+    if (u->rs)
         u->maxn = max(u->maxn, u->rs->maxn);
 }
 
-/* void reverse(node *u)
+void reverse(node *u)
 {
     swap(u->ls, u->rs);
     swap(u->rmax, u->lmax);
     u->reved ^= 1;
-} */
-void cover(node *u)
+}
+void cover(node *u, int x)
 {
-    u->sum = u->size * u->val;
+    u->val = x;
+    u->sum = u->size * x;
     u->lmax = u->rmax = max(0, u->sum);
-    u->maxn = max(u->val, u->sum);
+    u->maxn = max(x, u->sum);
     u->coved = true;
 }
 void pushdown(node *u)
 {
     if (u->reved)
     {
-        swap(u->ls, u->rs), swap(u->rmax, u->lmax);
         if (u->ls)
-            // reverse(u->ls);
-            u->ls->reved ^= 1;
+            reverse(u->ls);
         if (u->rs)
-            // reverse(u->rs);
-            u->rs->reved ^= 1;
+            reverse(u->rs);
         u->reved = false;
     }
     if (u->coved)
     {
         if (u->ls)
-            u->ls->val = u->val,
-            cover(u->ls);
+            // u->ls->val = u->val,
+            cover(u->ls, u->val);
         if (u->rs)
-            u->rs->val = u->val,
-            cover(u->rs);
+            // u->rs->val = u->val,
+            cover(u->rs, u->val);
         u->coved = false;
     }
 }
@@ -128,15 +125,6 @@ node *merge(node *L, node *R)
     }
 }
 
-// node *root = nullptr;
-/* void build(int n)
-{
-    for (int i = 1, x; i <= n; i++)
-        // x = read(),
-        cin >> x,
-        root = merge(root, new node(x));
-} */
-
 void delnode(node *u)
 {
     if (!u)
@@ -145,47 +133,27 @@ void delnode(node *u)
     delete u;
 }
 
-void inorder(node *u)
-{
-    if (!u)
-        return;
-    pushdown(u);
-    inorder(u->ls);
-    printf("At val %d: \nls: %d, rs: %d, lmax: %d, rmax: %d, maxn: %d\n", 
-    u->val, u->ls ? u->ls->val : 0, u->rs ? u->rs->val : 0,
-    u->lmax, u->rmax, u->maxn);
-    inorder(u->rs);
-}
-
-node *root, *p, *L, *R;
 int main()
 {
-    freopen("./0.in", "r", stdin);
-
-    // int n = read(), m = read();
-    int n, m;
-    cin >> n >> m;
-    // build(n);
+    int n = read(), m = read();
     for (int i = 1, x; i <= n; i++)
-    // x = read(),
-        cin >> x,
+        x = read(),
         root = merge(root, new node(x));
 
+    node *p, *L, *R;
     while (m--)
     {
         int pos, tot;
         char opt[10];
         cin >> opt;
         if (opt[2] != 'X')
-            // pos = read(), tot = read();
-            cin >> pos >> tot;
+            pos = read(), tot = read();
         switch (opt[2])
         {
         case 'S':
             split(root, pos, L, R);
             for (int i = 1, x; i <= tot; i++)
-                // x = read(),
-                cin >> x,
+                x = read(),
                 L = merge(L, new node(x));
             root = merge(L, R);
             break;
@@ -196,29 +164,23 @@ int main()
             break;
         case 'K':
             split(root, pos - 1 + tot, L, R), split(L, pos - 1, L, p);
-            cin >> p->val,
-            /* p->val = read(), */ p->coved = true;
+            cin >> p->val, cover(p, p->val);
             root = merge(merge(L, p), R);
             break;
         case 'V':
             split(root, pos - 1 + tot, L, R), split(L, pos - 1, L, p);
-            // inorder(L), printf(" "), inorder(p), printf(" "), inorder(R);
-            p->reved ^= 1;
-            // reverse(p);
-            // inorder(p);
+            reverse(p);
             root = merge(merge(L, p), R);
             break;
         case 'T':
             split(root, pos - 1 + tot, L, R), split(L, pos - 1, L, p);
-            printf("%d\n", p->sum);
+            printf("%d\n", p ? p->sum : 0);
             root = merge(merge(L, p), R);
             break;
         case 'X':
-            inorder(p);
-            printf("\n%d\n", root->maxn);
+            printf("%d\n", root->maxn);
             break;
         }
-        puts(opt), inorder(root), puts("");
     }
     return 0;
 }

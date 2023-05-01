@@ -114,15 +114,15 @@ int main()
             auto person = get_rand(seed, m);
             auto &marks = bastards[person.x];
             marks.x += 1, marks.y += person.y;
-            // printf("ori: "), debug(root);
+            printf("ori: "), debug(root);
             split(root, marks, L, R), split(L, marks - 1, L, p);
             if (p)
                 p->val = marks;
             else
                 p = new node(marks);
-            // printf("p: "), debug(p);
+            printf("p: "), debug(p);
             root = merge(merge(L, p), R);
-            // printf("root: "), debug(root);
+            printf("root: "), debug(root);
             cout << rnk(marks) - 1 << endl;
         }
     }

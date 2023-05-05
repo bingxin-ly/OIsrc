@@ -13,14 +13,11 @@ struct node
         ls = rs = nullptr;
         pri = rand();
     }
-
-    int lssz() const { return ls ? ls->size : 0; }
-    int rssz() const { return rs ? rs->size : 0; }
 } *root;
 
 void update(node *u)
 {
-    u->size = u->lssz() + u->rssz() + 1;
+    u->size = (u->ls ? u->ls->size : 0) + (u->rs ? u->rs->size : 0) + 1;
 }
 
 // 排名分裂
@@ -28,10 +25,11 @@ void split(node *u, int x, node *&L, node *&R)
 {
     if (!u)
         return L = R = nullptr, void();
-    if (u->lssz() + 1 <= x) // modified
+    int less = (u->ls ? u->ls->size : 0) + 1;
+    if (less <= x)
     {
         L = u;
-        split(u->rs, x - u->lssz() - 1, u->rs, R); // modified
+        split(u->rs, x - less, u->rs, R);
     }
     else
     {

@@ -1,9 +1,8 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int N = 5e5 + 10;
-int n, q, rt, t;
-int f[N][20], dep[N];
+const int N = 3e5 + 10;
+int t, dep[N], f[N][20];
 
 vector<int> graph[N];
 inline void add(int u, int v)
@@ -45,24 +44,44 @@ int lca(int x, int y)
             x = f[x][i], y = f[y][i];
     return f[x][0];
 }
+
+int seq[N], diff[N], ans[N];
+void dfs(int u, int fa)
+{
+    for (auto v : graph[u])
+        if (v != fa)
+        {
+            dfs(v, u);
+            diff[u] += diff[v];
+        }
+}
+
 int main()
 {
-    ios::sync_with_stdio(false);
-    cin.tie(0), cout.tie(0);
-
-    cin >> n >> q >> rt;
+    int n;
+    cin >> n;
     t = int(log(n) / log(2)) + 1;
+    for (int i = 1; i <= n; i++)
+        cin >> seq[i];
+
     for (int i = 1, x, y; i < n; i++)
     {
         cin >> x >> y;
         add(x, y), add(y, x);
     }
-    bfs(rt); // pre
-    int x, y;
-    while (q--)
+
+    bfs(1);
+    ans[seq[1]]++;
+    for (int i = 2; i <= n; i++)
     {
-        cin >> x >> y;
-        cout << lca(x, y) << endl;
+        int u = seq[i - 1], v = seq[i];
+        int top = lca(u, v);
+        diff[u]++, diff[v]++, diff[top]--, diff[f[top][0]]--;
+        ans[u]--;
     }
+    ans[seq[n]]--;
+    dfs(1, 0);
+    for (int i = 1; i <= n; i++)
+        cout << ans[i] + diff[i] << endl;
     return 0;
 }

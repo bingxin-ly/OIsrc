@@ -7,22 +7,19 @@ class FHQ
     struct node
     {
         node *ls, *rs;
-        int key, pri;
-        int size;
+        int val;
+        int size, pri;
 
-        node(int x) : key(x), size(1)
+        node(int x) : val(x), size(1)
         {
             ls = rs = nullptr;
             pri = rand();
         }
-
-        int lssz() { return ls ? ls->size : 0; }
-        int rssz() { return rs ? rs->size : 0; }
     };
 
     void update(node *u)
     {
-        u->size = u->lssz() + u->rssz() + 1;
+        u->size = (u->ls ? u->ls->size : 0) + (u->rs ? u->rs->size : 0) + 1;
     }
 
     // 权值分裂
@@ -30,7 +27,7 @@ class FHQ
     {
         if (!u)
             return L = R = nullptr, void();
-        if (u->key <= x)
+        if (u->val <= x)
         {
             L = u;
             split(u->rs, x, u->rs, R);
@@ -90,9 +87,9 @@ public:
 
     int kth(node *u, int k)
     {
-        int less = u->lssz() + 1;
+        int less = (u->ls ? u->ls->size : 0) + 1;
         if (k == less)
-            return u->key;
+            return u->val;
         if (k < less)
             return kth(u->ls, k);
         if (k > less)

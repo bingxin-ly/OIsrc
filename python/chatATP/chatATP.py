@@ -3,6 +3,7 @@ from io import BytesIO
 from time import strftime
 from hashlib import sha256
 from json import dumps, loads
+from winotify import Notification
 
 # 网络连接控件
 from socket import *
@@ -97,11 +98,17 @@ class ATPWindow(Frame):
             self.text.tag_bind(f'{pos}', '<Double-Button-1>',
                                lambda _: Zoom(images[pos][1]))
             self.text.insert(END, '\n')
+            msg = '图片消息'
 
         else:
-            self.text.insert(END, data.decode(_encoding))
+            msg = data.decode(_encoding)
+            self.text.insert(END, msg)
         self.text.insert(END, '\n')
         self.text.see(END)
+        if root.state() == 'iconic':
+            Notification(app_id="charATP",
+                         title="有新消息",
+                         msg=msg).show()
 
 
 def send(msg, type: str):

@@ -1,12 +1,9 @@
 doc.md
 *.exe
-*.prob
-*.spec
 
+.cph
 .idea
 .vscode
-.cph
 pics
-build
+output
 __pycache__
-LemonLime-0.2.11-ubuntu-20.04.deb

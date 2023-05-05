@@ -4,7 +4,6 @@
 #include <cstdio>
 #define maxn 100005
 #define M 6000005
-#define re register
 #define LL long long
 #define max(a, b) ((a) > (b) ? (a) : (b))
 #define min(a, b) ((a) < (b) ? (a) : (b))
@@ -35,7 +34,7 @@ void dfs1(int x)
 {
     sum[x] = 1;
     int maxx = -1;
-    for (re int i = head[x]; i; i = e[i].nxt)
+    for (int i = head[x]; i; i = e[i].nxt)
         if (!deep[e[i].v])
         {
             deep[e[i].v] = deep[x] + 1, fa[e[i].v] = x;
@@ -51,7 +50,7 @@ void dfs2(int x, int topf)
     if (!son[x])
         return;
     dfs2(son[x], topf);
-    for (re int i = head[x]; i; i = e[i].nxt)
+    for (int i = head[x]; i; i = e[i].nxt)
         if (!top[e[i].v])
             dfs2(e[i].v, e[i].v);
 }
@@ -110,7 +109,7 @@ int merge(int a, int b, int x, int y)
 }
 void Redfs(int x)
 {
-    for (re int i = head[x]; i; i = e[i].nxt)
+    for (int i = head[x]; i; i = e[i].nxt)
         if (deep[e[i].v] > deep[x])
             Redfs(e[i].v), rt[x] = merge(rt[x], rt[e[i].v], 1, R);
     if (d[rt[x]])
@@ -120,12 +119,12 @@ int main()
 {
     n = read(), m = read();
     int x, y, z;
-    for (re int i = 1; i < n; i++)
+    for (int i = 1; i < n; i++)
         x = read(), y = read(), add(y, x), add(x, y);
     deep[1] = 1, dfs1(1), dfs2(1, 1);
-    for (re int i = 1; i <= m; i++)
+    for (int i = 1; i <= m; i++)
         X[i] = read(), Y[i] = read(), Z[i] = read(), R = max(R, Z[i]);
-    for (re int i = 1; i <= m; i++)
+    for (int i = 1; i <= m; i++)
     {
         int lca = LCA(X[i], Y[i]);
         rt[X[i]] = change(rt[X[i]], 1, R, Z[i], 1), rt[Y[i]] = change(rt[Y[i]], 1, R, Z[i], 1);
@@ -134,7 +133,7 @@ int main()
             rt[fa[lca]] = change(rt[fa[lca]], 1, R, Z[i], -1);
     }
     Redfs(1);
-    for (re int i = 1; i <= n; i++)
+    for (int i = 1; i <= n; i++)
         printf("%d\n", Ans[i]);
     return 0;
 }

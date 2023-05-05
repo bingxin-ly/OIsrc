@@ -76,10 +76,8 @@ void pushdown(node *u)
     if (u->coved)
     {
         if (u->ls)
-            // u->ls->val = u->val,
             cover(u->ls, u->val);
         if (u->rs)
-            // u->rs->val = u->val,
             cover(u->rs, u->val);
         u->coved = false;
     }
@@ -145,8 +143,8 @@ int main()
     {
         int pos, tot;
         char opt[10];
-        cin >> opt;
-        if (opt[2] != 'X')
+        scanf("%s", opt);
+        if (strlen(opt) != 3)
             pos = read(), tot = read();
         switch (opt[2])
         {
@@ -164,7 +162,7 @@ int main()
             break;
         case 'K':
             split(root, pos - 1 + tot, L, R), split(L, pos - 1, L, p);
-            cin >> p->val, cover(p, p->val);
+            p->val = read(), cover(p, p->val);
             root = merge(merge(L, p), R);
             break;
         case 'V':
@@ -173,12 +171,26 @@ int main()
             root = merge(merge(L, p), R);
             break;
         case 'T':
-            split(root, pos - 1 + tot, L, R), split(L, pos - 1, L, p);
-            printf("%d\n", p ? p->sum : 0);
-            root = merge(merge(L, p), R);
+            if (strlen(opt) != 3)
+            {
+                split(root, pos - 1 + tot, L, R), split(L, pos - 1, L, p);
+                printf("%d\n", p ? p->sum : 0);
+                root = merge(merge(L, p), R);
+            }
+            // added from 2710
+            else
+            {
+                pos = read();
+                split(root, pos, L, R), split(L, pos - 1, L, p);
+                printf("%d\n", p->val);
+                root = merge(merge(L, p), R);
+            }
             break;
         case 'X':
-            printf("%d\n", root->maxn);
+            // printf("%d\n", root->maxn);
+            split(root, pos - 1 + tot, L, R), split(L, pos - 1, L, p);
+            printf("%d\n", p->maxn);
+            root = merge(merge(L, p), R);
             break;
         }
     }

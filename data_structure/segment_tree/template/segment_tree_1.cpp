@@ -8,7 +8,6 @@ const int N = 1e5 + 10;
 loong arr[N];
 class seg_tree
 {
-    // loong segtr[4 * N], lazy[4 * N]; // crash in the win env
     loong *segtr = new loong[4 * N](), *lazy = new loong[4 * N]();
     void pushup(int rt) { segtr[rt] = segtr[ls] + segtr[rs]; }
     void pushdown(int rt, int l, int r)
@@ -29,22 +28,22 @@ public:
         build(ls, l, mid), build(rs, mid + 1, r);
         pushup(rt);
     }
-    loong query(int rt, int l, int r, const int loong, const int rr)
+    loong query(int rt, int l, int r, const int ll, const int rr)
     {
-        if (l > rr || r < loong)
+        if (l > rr || r < ll)
             return 0;
-        if (loong <= l && r <= rr)
+        if (ll <= l && r <= rr)
             return segtr[rt];
 
         pushdown(rt, l, r);
         int mid = (l + r) >> 1;
-        return query(ls, l, mid, loong, rr) + query(rs, mid + 1, r, loong, rr);
+        return query(ls, l, mid, ll, rr) + query(rs, mid + 1, r, ll, rr);
     }
-    void modify(int rt, int l, int r, const int loong, const int rr, const int val)
+    void modify(int rt, int l, int r, const int ll, const int rr, const int val)
     {
-        if (l > rr || r < loong)
+        if (l > rr || r < ll)
             return;
-        if (loong <= l && r <= rr)
+        if (ll <= l && r <= rr)
         {
             segtr[rt] += (r - l + 1) * val;
             lazy[rt] += val;
@@ -52,7 +51,7 @@ public:
         }
         pushdown(rt, l, r);
         int mid = (l + r) >> 1;
-        modify(ls, l, mid, loong, rr, val), modify(rs, mid + 1, r, loong, rr, val);
+        modify(ls, l, mid, ll, rr, val), modify(rs, mid + 1, r, ll, rr, val);
         pushup(rt);
     }
 };

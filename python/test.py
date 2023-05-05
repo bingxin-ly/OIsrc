@@ -1,24 +1,7 @@
-from math import gcd, lcm
-n = 1000
-file = open('ans.txt', 'w')
 
+from urllib.parse import unquote
+ 
+# 对字符串‘%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1’进行解密
+text = unquote("file:///C:/Users/PC/Desktop/%E5%A4%87%E4%BB%BD%202023.2.28/%E5%A4%87%E4%BB%BD%202023.2.28/%E5%9B%BE%E7%89%87/wallhaven-kx82d6_1920x1080.png", 'utf-8')
+print(text)
 
-def f(n):
-    res = 0
-    for i in range(1, n + 1):
-        for j in range(1, n + 1):
-            for k in range(1, n + 1):
-                if i + j + k == n:
-                    res += lcm(i, gcd(j, k)) % 998244353
-    with open(f'ans/{n}', 'w') as file:
-        file.write(str(res) + ',')
-    return
-
-
-for i in range(1, n + 1):
-    try:
-        with open(f'./ans/{i}', 'r') as tmp:
-            file.write(tmp.readline().strip())
-    except FileNotFoundError:
-        print(f'{i} not found')
-        f(i)

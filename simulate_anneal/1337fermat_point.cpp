@@ -1,3 +1,4 @@
+// 概率 = e ^ (-deltaE/T)
 #include <bits/stdc++.h>
 using namespace std;
 

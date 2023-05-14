@@ -4,10 +4,10 @@ using namespace std;
 const int N = 1e5 + 10;
 vector<int> graph[N];
 
-int fa[N], dep[N], siz[N];          // normal
-int son[N], top[N], dfn[N], rnk[N]; // decomposition
+int fa[N], dep[N], siz[N];
+int son[N], top[N], dfn[N];
 
-void dfs1(int o) // build
+void dfs1(int o)
 {
     son[o] = -1, siz[o] = 1;
     for (auto v : graph[o])
@@ -22,10 +22,10 @@ void dfs1(int o) // build
 }
 
 int cnt, w[N], nw[N];
-void dfs2(int o, int t) // decomposition
+void dfs2(int o, int t)
 {
     top[o] = t, cnt++;
-    dfn[o] = cnt, rnk[cnt] = o, nw[cnt] = w[o];
+    dfn[o] = cnt, nw[cnt] = w[o];
     if (son[o] == -1)
         return;
     dfs2(son[o], t);
@@ -34,56 +34,47 @@ void dfs2(int o, int t) // decomposition
             dfs2(v, v);
 }
 
-int lca(int u, int v)
+struct col
 {
-    while (top[u] != top[v])
-        if (dep[top[u]] > dep[top[v]])
-            u = fa[top[u]];
-        else
-            v = fa[top[v]];
-    return dep[u] > dep[v] ? v : u;
-}
-
-int mod;
+    int num, lc, rc;
+    bool operator==(const col &otr) const { return num == otr.num && lc == otr.lc && rc == otr.rc; }
+} const ZERO{0, 0, 0};
 class segment_tree
 {
     struct node
     {
         node *ls, *rs;
         int l, r, // 维护的左、右端点
-            val, lazy;
-        explicit node(int _l = 0, int _r = 0, int _val = 0) : l(_l), r(_r), val(_val), lazy(0)
+            lazy;
+        col val{};
+        node(int _l, int _r, int col_ = 0) : l(_l), r(_r), lazy(0)
         {
             ls = rs = nullptr;
+            val.num = 1, val.lc = val.rc = col_;
         }
     } *root;
 
     static void pushup(node *p)
     {
-        p->val = (p->ls ? p->ls->val : 0) + (p->rs ? p->rs->val : 0);
-        p->val %= mod;
+        assert(p->ls), assert(p->rs);
+        p->val = {p->ls->val.num + p->rs->val.num - (p->ls->val.rc == p->rs->val.lc), p->ls->val.lc, p->rs->val.rc};
     }
     static void pushdown(node *p)
     {
         if (p->lazy)
         {
-            int mid = (p->l + p->r) >> 1;
-            p->ls->val += (mid - p->l + 1) * p->lazy, p->ls->val %= mod;
-            p->rs->val += (p->r - mid) * p->lazy, p->rs->val %= mod;
-
-            p->ls->lazy += p->lazy, p->rs->lazy += p->lazy;
+            p->ls->val = p->rs->val = {1, p->lazy, p->lazy};
+            p->ls->lazy = p->rs->lazy = p->lazy;
             p->lazy = 0;
         }
     }
 
     void build(node *&p, int l, int r, const int *arr)
     {
-        p = new node(l, r);
         if (l == r)
-        {
-            p->val = arr[l];
-            return;
-        }
+            return p = new node(l, r, arr[l]), void();
+        else
+            p = new node(l, r);
         int mid = (l + r) >> 1;
         build(p->ls, l, mid, arr), build(p->rs, mid + 1, r, arr);
         pushup(p);
@@ -92,11 +83,7 @@ class segment_tree
     void update(node *p, int l, int r, int v)
     {
         if (l <= p->l && p->r <= r)
-        {
-            p->val += (p->r - p->l + 1) * v;
-            p->lazy += v;
-            return;
-        }
+            return p->val.num = 1, p->val.lc = p->val.rc = p->lazy = v, void();
         pushdown(p);
         int mid = (p->l + p->r) >> 1;
         if (l <= mid)
@@ -114,48 +101,52 @@ class segment_tree
         pushup(p);
     }
 
-    int query(node *p, int l, int r)
+    col query(node *p, int l, int r)
     {
         if (!p)
-            return 0;
+            return ZERO;
         if (l <= p->l && p->r <= r)
             return p->val;
 
         pushdown(p);
         int mid = (p->l + p->r) >> 1;
-        int ans = 0;
+        col lans = ZERO, rans = ZERO;
         if (l <= mid)
-            ans += query(p->ls, l, r);
+            lans = query(p->ls, l, r);
         if (r > mid)
-            ans += query(p->rs, l, r);
-        return ans % mod;
+            rans = query(p->rs, l, r);
+        if (lans == ZERO || rans == ZERO)
+            return lans == ZERO ? rans : lans;
+        else
+            return {lans.num + rans.num - (lans.rc == rans.lc), lans.lc, rans.rc};
     }
 
 public:
     void build(int n, const int *arr) { build(root, 1, n, arr); }
     void update(int l, int r, int v) { update(root, l, r, v); }
-    int query(int l, int r) { return query(root, l, r); }
+    col query(int l, int r) { return query(root, l, r); }
 } segtr;
 
 int q_path(int u, int v)
 {
-    int tot = 0;
+    int tot = 0, ans1 = 0, ans2 = 0;
     while (top[u] != top[v])
     {
         if (dep[top[u]] < dep[top[v]])
-            swap(u, v);
-        tot += segtr.query(dfn[top[u]], dfn[u]), tot %= mod;
-        u = fa[top[u]]; // 跳过轻边
+            swap(u, v), swap(ans1, ans2);
+        auto res = segtr.query(dfn[top[u]], dfn[u]);
+        tot += res.num - (res.rc == ans1);
+        ans1 = res.lc, u = fa[top[u]]; // 跳过轻边
     }
     if (dep[u] > dep[v])
-        swap(u, v);
-    tot += segtr.query(dfn[u], dfn[v]), tot %= mod;
+        swap(u, v), swap(ans1, ans2);
+    auto res = segtr.query(dfn[u], dfn[v]);
+    tot += res.num - (ans1 == res.lc) - (ans2 == res.rc);
     return tot;
 }
 
 void u_path(int u, int v, int val)
 {
-    val %= mod;
     while (top[u] != top[v])
     {
         if (dep[top[u]] < dep[top[v]])
@@ -168,44 +159,32 @@ void u_path(int u, int v, int val)
     segtr.update(dfn[u], dfn[v], val);
 }
 
-int q_son(int u) { return segtr.query(dfn[u], dfn[u] + siz[u] - 1); }
-
-void u_son(int u, int k) { segtr.update(dfn[u], dfn[u] + siz[u] - 1, k); }
-
 int main()
 {
-    int n, m, r;
-    cin >> n >> m >> r >> mod;
+    int n, m;
+    cin >> n >> m;
     for (int i = 1; i <= n; i++)
-        cin >> w[i], w[i] %= mod;
+        cin >> w[i];
     for (int i = 1, u, v; i < n; i++)
         cin >> u >> v,
             graph[u].push_back(v), graph[v].push_back(u);
 
-    dep[r] = 1, dfs1(r), dfs2(r, r);
+    dep[1] = 1, dfs1(1), dfs2(1, 1);
     segtr.build(n, nw);
     while (m--)
     {
-        int op, x, y, z;
+        char op;
         cin >> op;
-        switch (op)
+        int a, b, c;
+        if (op == 'Q')
         {
-        case 1:
-            cin >> x >> y >> z;
-            u_path(x, y, z);
-            break;
-        case 2:
-            cin >> x >> y;
-            cout << q_path(x, y) << endl;
-            break;
-        case 3:
-            cin >> x >> z;
-            u_son(x, z);
-            break;
-        case 4:
-            cin >> x;
-            cout << q_son(x) << endl;
-            break;
+            cin >> a >> b;
+            cout << q_path(a, b) << endl;
+        }
+        else
+        {
+            cin >> a >> b >> c;
+            u_path(a, b, c);
         }
     }
     return 0;

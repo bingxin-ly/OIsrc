@@ -26,7 +26,7 @@ inline int read()
         p = p * 10 + c - '0', c = getchar();
     return p;
 }
-int read()
+inline int read()
 {
     int o = 1, p = 0;
     char c = getchar();
@@ -41,7 +41,7 @@ int read()
         c = getchar();
     return o * p;
 }
-void write(int x)
+inline void write(int x)
 {
     if (x < 0)
         putchar('-'),

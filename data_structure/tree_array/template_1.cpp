@@ -2,7 +2,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int MAX = 500010;
+const int MAX = 5e5 + 10;
 int n, // 树状数组的实际长度
     m, src[MAX];
 int tree_array[MAX], sum[MAX];
@@ -22,7 +22,7 @@ void build_t()
     {
         sum[i] = sum[i - 1] + src[i];
         tree_array[i] = sum[i] - sum[i - lowbit(i)];
-        /* 求原数组前缀和，再更新线段树 O(n) */
+        /* 求原数组前缀和，再更新树状数组 O(n) */
     }
 }
 void build_m()
@@ -56,8 +56,7 @@ int main()
     for (int i = 1; i <= n; i++)
         cin >> src[i];
     build_t();
-    int op, a, b;
-    for (int i = 1; i <= m; i++)
+    for (int i = 1, op, a, b; i <= m; i++)
     {
         cin >> op >> a >> b;
         if (op == 1)

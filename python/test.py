@@ -1,7 +1,29 @@
+import requests
+import random
 
-from urllib.parse import unquote
- 
-# 对字符串‘%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1’进行解密
-text = unquote("file:///C:/Users/PC/Desktop/%E5%A4%87%E4%BB%BD%202023.2.28/%E5%A4%87%E4%BB%BD%202023.2.28/%E5%9B%BE%E7%89%87/wallhaven-kx82d6_1920x1080.png", 'utf-8')
-print(text)
 
+def get_random_image_urls(count):
+    '''Generates count random image urls by querying Unsplash APT'''
+    url = 'https://api.unsplash.com/photos/random'
+    params = {' client_id': '你的客户端ID', 'count': count}
+    response = requests.get(url, params=params)
+    data = response.json()
+    return [photo[' urls']['full'] for photo in data]
+
+
+def save_images(urls):
+    '''Downloads the images from the given urls and saves them'''
+    for url in urls:
+
+        filename = url.split('/')[-1]
+        r = requests.get(url)
+        with open(filename, 'wb') as f:
+            f.write(r.content)
+
+
+if __name__ == '__main__':
+    # Get count random image urls
+    count = 10  # Get 10 images
+    urls = get_random_image_urls(count)
+    # Save the images
+    save_images(urls)

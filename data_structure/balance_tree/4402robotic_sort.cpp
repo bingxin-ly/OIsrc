@@ -112,7 +112,7 @@ int a[N], b[N], cnt[N];
 int main()
 {
     int n;
-    while (cin >> n, n)
+    while (n = read(), n)
     {
         memset(b, 0, sizeof(b)), memset(a, 0, sizeof(a)), memset(cnt, 0, sizeof(cnt)), root = nullptr;
         for (int i = 1; i <= n; i++)

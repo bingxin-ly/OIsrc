@@ -1,4 +1,3 @@
-// nnd卡 vector存图我今天总算是遇到了
 #include <bits/stdc++.h>
 using namespace std;
 

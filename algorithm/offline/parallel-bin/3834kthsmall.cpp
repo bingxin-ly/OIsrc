@@ -7,18 +7,18 @@ struct BIT
 {
     int val[N];
     static inline int lowbit(int x) { return x & -x; }
+    void add(int p, int x)
+    {
+        for (; p <= n; p += lowbit(p))
+            val[p] += x;
+    }
+
     int presum(int p)
     {
         int ans = 0;
         for (; p; p -= lowbit(p))
             ans += val[p];
         return ans;
-    }
-
-    void add(int p, int x)
-    {
-        for (; p <= n; p += lowbit(p))
-            val[p] += x;
     }
 } tr;
 
@@ -40,7 +40,6 @@ void solve(int l, int r, int ql, int qr)
     }
     int mid = (l + r) / 2, cnt1 = 0, cnt2 = 0;
     for (int i = ql; i <= qr; i++)
-    {
         if (q[i].type == 1)
         {
             if (q[i].l <= mid)
@@ -56,7 +55,6 @@ void solve(int l, int r, int ql, int qr)
             else
                 q[i].k -= x, q2[++cnt2] = q[i];
         }
-    }
     // rollback changes
     for (int i = 1; i <= cnt1; i++)
         if (q1[i].type == 1)

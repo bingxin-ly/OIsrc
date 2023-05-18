@@ -14,7 +14,7 @@ void insert(const char *str)
             son[p][u] = ++idx;
         p = son[p][u];
     }
-    cnt[p]++; // 位置灵活
+    cnt[p]++;
 }
 int query(const char *str)
 {

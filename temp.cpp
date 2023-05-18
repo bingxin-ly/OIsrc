@@ -1,111 +1,32 @@
-#include <bits/stdc++.h>
-using namespace std;
+int son[N][26], cnt[N], idx;
+// 0号点既是根节点，又是空节点
+// son[][]存储树中每个节点的子节点
+// cnt[]存储以每个节点结尾的单词数量
 
-typedef long long LL;
-const int N = 50003;
-
-LL seg[N << 2], tag[N << 2];
-LL ans[N];
-inline void pushup(int x) { seg[x] = seg[x << 1] + seg[x << 1 | 1]; }
-inline void pushdown(int x, int L, int R)
+// 插入一个字符串
+void insert(char *str)
 {
-    int mid = L + R >> 1;
-    seg[x << 1] += tag[x] * (mid - L + 1);
-    seg[x << 1 | 1] += tag[x] * (R - mid);
-    tag[x << 1] += tag[x];
-    tag[x << 1 | 1] += tag[x];
-    tag[x] = 0;
-}
-inline void change(int x, int L, int R, int l, int r, int v)
-{
-    if (l <= L && R <= r)
+    int p = 0;
+    for (int i = 0; str[i]; i++)
     {
-        seg[x] += (R - L + 1) * v;
-        tag[x] += v;
-        return;
+        int u = str[i] - 'a';
+        if (!son[p][u])
+            son[p][u] = ++idx;
+        p = son[p][u];
     }
-    int mid = L + R >> 1;
-    pushdown(x, L, R);
-    if (l <= mid)
-        change(x << 1, L, mid, l, r, v);
-    if (mid < r)
-        change(x << 1 | 1, mid + 1, R, l, r, v);
-    pushup(x);
+    cnt[p]++;
 }
-inline LL query(int x, int L, int R, int l, int r)
-{
-    if (l <= L && R <= r)
-        return seg[x];
-    int mid = L + R >> 1;
-    LL ans = 0;
-    pushdown(x, L, R);
-    if (l <= mid)
-        ans += query(x << 1, L, mid, l, r);
-    if (mid < r)
-        ans += query(x << 1 | 1, mid + 1, R, l, r);
-    return ans;
-}
-struct Query
-{
-    int l, r, id, opt;
-    LL c;
-} q[N], q1[N], q2[N];
-int n, m;
 
-inline void solve(LL l, LL r, int ql, int qr)
+// 查询字符串出现的次数
+int query(char *str)
 {
-    if (ql > qr || l > r)
-        return;
-    if (l == r)
+    int p = 0;
+    for (int i = 0; str[i]; i++)
     {
-        for (int i = ql; i <= qr; i++)
-            if (q[i].opt == 2)
-                ans[q[i].id] = l;
-        return;
+        int u = str[i] - 'a';
+        if (!son[p][u])
+            return 0;
+        p = son[p][u];
     }
-    LL mid = l + r >> 1, sum = 0;
-    for (int i = ql; i <= qr; i++)
-        if (q[i].opt == 1 && q[i].c > mid)
-            change(1, 1, n, q[i].l, q[i].r, 1);
-        else if (q[i].opt == 2)
-            sum = query(1, 1, n, q[i].l, q[i].r);
-    for (int i = ql; i <= qr; i++)
-        if (q[i].opt == 1 && q[i].c > mid)
-            change(1, 1, n, q[i].l, q[i].r, -1);
-
-    int cnt1 = 0, cnt2 = 0;
-    for (int i = ql; i <= qr; i++)
-        if (q[i].opt == 2)
-        {
-            if (sum >= q[i].c)
-                q2[cnt2++] = q[i];
-            else
-                q[i].c -= sum, q1[cnt1++] = q[i];
-        }
-        else
-        {
-            if (q[i].c <= mid)
-                q1[cnt1++] = q[i];
-            else
-                q2[cnt2++] = q[i];
-        }
-    for (int i = 0; i < cnt1; i++)
-        q[ql + i] = q1[i];
-    for (int i = 0; i < cnt2; i++)
-        q[ql + cnt1 + i] = q2[i];
-    solve(l, mid, ql, ql + cnt1 - 1), solve(mid + 1, r, ql + cnt1, qr);
-}
-int main()
-{
-    cin >> n >> m;
-    int tot = 0;
-    for (int i = 1; i <= m; i++)
-    {
-        cin >> q[i].opt >> q[i].l >> q[i].r >> q[i].c;
-        if (q[i].opt == 2)
-            q[i].id = tot++;
-    }
-    solve(0, n, 1, m);
-    for (int i = 0; i < tot; i++)
-        printf("%lld\n", ans[i]);
+    return cnt[p];
 }

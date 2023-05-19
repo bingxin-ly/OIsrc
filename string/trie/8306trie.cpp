@@ -2,6 +2,12 @@
 using namespace std;
 
 const int N = 3e6;
+/* struct node
+{
+    char data;
+    bool is_end;
+    unordered_map<int, node *> ch;
+}; deprecated */
 int son[N][80], cnt[N], idx;
 // 0号点既是根节点，又是空节点
 // son[][]存储树中每个节点的子节点
@@ -17,7 +23,7 @@ void insert(const char *str)
         if (!son[p][u])
             son[p][u] = ++idx;
         p = son[p][u];
-        cnt[p]++; // 题目中要求的是前缀即可，所以放这里
+        cnt[p]++; // 题目中要求的是为前缀即可，所以放这里
     }
 }
 

@@ -1,5 +1,4 @@
 // C++ 17
-#define __cplusplus 201703L
 #include <bits/stdc++.h>
 using namespace std;
 

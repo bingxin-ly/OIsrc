@@ -19,7 +19,7 @@ void insert(const char *str)
     int p = 0;
     for (int i = 0; str[i]; i++)
     {
-        int u = str[i] - '0'; // 启示位置
+        int u = str[i] - '0'; // 起始位置
         if (!son[p][u])
             son[p][u] = ++idx;
         p = son[p][u];

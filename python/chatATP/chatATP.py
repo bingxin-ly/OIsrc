@@ -144,7 +144,7 @@ def recv():
 
 def access():
     global sock
-    HOST, PORT = '118.31.168.96', 12332
+    HOST, PORT = '192.168.6.205', 12332
     sock = socket(AF_INET, SOCK_STREAM)
     sock.connect((HOST, PORT))
 
@@ -190,7 +190,7 @@ def ask_nick():
 if __name__ == '__main__':
     display()
     access()
-    verify()
+    # verify()
     app = ATPWindow(root, ask_nick())
 
     revctask = Thread(target=recv)

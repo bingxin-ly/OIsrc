@@ -51,8 +51,8 @@ class ATPHandler(BaseRequestHandler):
         self.success = False
         self.nick = None
 
-        if not chk_version(self.request):
-            return
+        # if not chk_version(self.request):
+        #     return
         while self.nick == None:
             res = chk_nick(self.request)
             self.nick = res[0]

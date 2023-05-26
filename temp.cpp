@@ -1,88 +1,101 @@
-#include <bits/stdc++.h>
+#include<iostream>
+#include<cstring>
+#include<vector>
 using namespace std;
 
-const int N = 100010;
-int head[N], idx = 1;
-struct
-{
-    int to, nxt;
-} edge[N << 1];
-inline void add(int u, int v)
-{
-    edge[++idx] = {v, head[u]};
-    head[u] = idx;
+const int N = 1000010;
+int n, m;
+int he[N], e[N], ne[N], idx;
+char s[N];
+
+int siz[N], dep[N], son[N];
+int cnt[N][30];
+bool vis[N], ans[N];
+
+struct question{
+    int h, id;
+};
+vector<question> q[N];
+
+inline void adds(int a, int b){
+    e[++idx] = b;
+    ne[idx] = he[a];
+    he[a] = idx;
 }
 
-int cnt[N], color[N], son[N], size[N], ans[N], heavy, sum;
-void dfs1(int u, int p) // 预处理子树大小
-{
-    size[u] = 1;
-    for (int i = head[u]; i; i = edge[i].nxt)
-    {
-        int v = edge[i].to;
-        if (v == p)
-            continue;
-        dfs1(v, u);
-        size[u] += size[v];
-        if (size[son[u]] < size[v])
-            son[u] = v;
+//---
+
+void calc(int x, int fa, int val){
+    cnt[dep[x]][s[x] - 'a'] += val;
+    for(int i = he[x]; i; i = ne[i]){
+        int j = e[i];
+        if(j == fa || vis[j]) continue;
+        calc(j, x, val);
     }
 }
-void cal(int u, int p, int val) // 计算答案
-{
-    if (!cnt[color[u]])
-        ++sum; // 在当前树中统计这种颜色
-    cnt[color[u]] += val;
-    for (int i = head[u]; i; i = edge[i].nxt)
-    {
-        int v = edge[i].to;
-        if (v == p || v == heavy) // 避开根的重儿子
-            continue;
-        cal(v, u, val);
+
+bool check(int c[]){
+    int num = 0;
+    for(int i = 0; i < 26; ++ i ){
+        if(c[i] & 1) ++num;
+        if(num > 1) return 0;
+    }
+    if(num > 1) return 0;
+    return 1;
+}
+
+//---
+
+void dfs1(int x, int fa){
+    siz[x] = 1, dep[x] = dep[fa] + 1;
+    for(int i = he[x]; i; i = ne[i]){
+        int j = e[i];
+        if(j == fa) continue;
+        dfs1(j, x);
+        siz[x] += siz[j];
+        if(!son[x] || siz[j] > siz[son[x]]) son[x] = j;
     }
 }
-void dsu(int u, int p, bool keep) // 启发式合并的主体。keep 为 false 表示这次操作由轻边遍历得到，需要清空
-{
-    for (int i = head[u]; i; i = edge[i].nxt)
-    {
-        int v = edge[i].to;
-        if (v == p || v == son[u])
-            continue;
-        dsu(v, u, false); // 轻儿子
+
+void dfs2(int x, int fa, bool keep){
+    for(int i = he[x]; i; i = ne[i]){
+        int j = e[i];
+        if(j == fa || j == son[x]) continue;
+        dfs2(j, x, 0);
     }
-    if (son[u])
-        dsu(son[u], u, true), heavy = son[u]; // 重儿子
-    cal(u, p, 1);
-    heavy = 0;    // 重新扫描轻儿子，二次统计
-    ans[u] = sum; // 那么现在的颜色数就是u的信息
-    if (!keep)    // 清空当前的统计数
-    {
-        cal(u, p, -1);
-        sum = 0;
+
+    if(son[x]){
+        dfs2(son[x], x, 1);
+        vis[son[x]] = 1;
+    }
+
+    calc(x, fa, 1), vis[son[x]] = 0;
+    for(int i = 0; i < q[x].size(); ++ i )
+        ans[q[x][i].id] = check(cnt[q[x][i].h]);
+    
+    if(!keep) calc(x, fa, -1);
+}
+
+void init(){
+    scanf("%d%d", &n, &m);
+    for(int i = 2; i <= n; ++ i ){
+        int x; scanf("%d", &x);
+        adds(x, i), adds(i, x);
+    }
+
+    scanf("%s", (s + 1));
+    for(int i = 1; i <= m; ++ i ){
+        int a, b; scanf("%d%d", &a, &b);
+        q[a].push_back((question){b, i});
     }
 }
-int main()
-{
-    cout << (1 << -1) << endl;
-    /* int n;
-    cin >> n;
-    int u, v;
-    for (int i = 1; i < n; ++i)
-    {
-        read(u), read(v);
-        insert(u, v), insert(v, u);
-    }
-    for (int i = 1; i <= n; ++i)
-        read(color[i]);
+
+int main(){
+    init();
     dfs1(1, 0);
-    dsu(1, 0, 1);
-
-    int m;
-    cin >> m;
-    for (int i = 1; i <= m; ++i)
-    {
-        read(v);
-        printf("%d\n", ans[v]);
-    } */
+    dfs2(1, 0, 0);
+    
+    for(int i = 1; i <= m; ++ i )
+        (ans[i]) ? puts("Yes") : puts("No");
     return 0;
 }

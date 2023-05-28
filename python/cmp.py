@@ -1,14 +1,13 @@
 from cyaron import *
-
+from math import gcd
+from random import randint
 for i in range(100):
-    data = IO()
-    # n = randint(1, int(2e5))
-    # m = randint(1, int(2e5))
-    # data.input_writeln(n, m, randint(1, n))
-    for _ in range(randint(50, 100)):
-        data.input_writeln(randint(1, 30))
-
-    Compare.program('output\\temp.exe',
-                    input=data,
-                    std_program='output\\tst.exe')
-    print('The %d times, no problem' % (i + 1))
+    n = randint(1, 1 << 31 - 2)
+    m = randint(n, 1 << 31 - 1)
+    data = IO('test.in', 'test.out')
+    data.input_writeln(n, m)
+    data.output_gen('D:\\src\\output\\temp.exe')
+    with open('./std.out', 'w') as f:
+        f.write(str(gcd(n, m)))
+    Compare.output('./std.out', std='./test.out')
+    print(f'{i + 1} no problem')

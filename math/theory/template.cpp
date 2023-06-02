@@ -80,7 +80,9 @@ int eratosthenes(int n)
     int cnt = 0;
     // for (int i = 0; i <= n; ++i)
     //     is_prime[i] = 1;
-    memset(is_prime, true, n + 1); // 让我们先假定所有数都是质数
+    memset(is_prime, true, (n + 1) /* size通常为 1 */ * sizeof(*is_prime));
+    // 让我们先假定所有数都是质数
+
     is_prime[0] = is_prime[1] = false;
     for (int i = 2, up = sqrt(n); i <= up; ++i)
         /* √n也可（换成up）, 但这样primes会受影响，
@@ -94,7 +96,7 @@ int eratosthenes(int n)
                 for (int j = i * i; j <= n; j += i)
                     // 因为从 2 到 i - 1 的倍数我们之前筛过了, 比如 i * 2已经被 2 * i筛过了
                     // 这里直接从 i 的倍数开始，提高了运行速度
-                    is_prime[j] = 0; // 是i的倍数的均不是素数
+                    is_prime[j] = false; // 是i的倍数的均不是素数
         }
     return cnt;
 }

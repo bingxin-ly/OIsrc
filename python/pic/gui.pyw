@@ -1,6 +1,9 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 from pic import get_image
+from io import BytesIO
+from os import listdir
+from random import random, choice
 
 std_mode = True
 std_size = 200
@@ -37,10 +40,19 @@ def adjust(img, size):
     return img
 
 
+def load_image():
+    path = './pics/'
+    name = choice(listdir(path))
+
+    with open(path + name, 'rb') as img:
+        image = BytesIO(img.read())
+    return [(name, image)]
+
+
 def refresh():
     global img_name, img_open, img_sized, img_transed
 
-    img = get_image(1)
+    img = get_image(1) if random() < 0.5 else load_image()
     img_name = img[0][0]
     img_open = Image.open(img[0][1])
     imgx, imgy = img_open.size
@@ -60,7 +72,7 @@ if __name__ == '__main__':
     tk.Button(window, text='  刷新  ', command=refresh,
               bd=1).grid(row=0, column=0, sticky='w')
     tk.Button(window, text='  保存  ', command=lambda:
-              img_open.save('./pics/%s' % img_name), bd=1).grid(row=1, column=0, sticky='w')
+              img_open.save(f'./pics/{img_name}'), bd=1).grid(row=1, column=0, sticky='w')
     refresh()
 
     window.mainloop()

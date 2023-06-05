@@ -1,2 +1,5 @@
-T = int(input())
-print('-1\n' * T)
+import os
+import random
+res = os.listdir('./pics')
+ret = random.choice(res)
+print(ret)

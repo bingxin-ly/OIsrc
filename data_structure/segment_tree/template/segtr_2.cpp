@@ -1,148 +1,108 @@
-// 区间乘线段树， not completed!!
+// 区间乘线段树，completed!!
 #include <bits/stdc++.h>
-#define ls (node << 1)
-#define rs (node << 1 | 1)
+#define int long long
 using namespace std;
 
-const int MAX = 1e5 + 10;
-int n, m, p, src[MAX];
-size_t segtr[4 * MAX];
-size_t addtg[MAX], multg[MAX];
+const int N = 1e5 + 10;
+signed mod, src[N];
+int tr[N << 2], addt[N << 2], mult[N << 2];
 
-inline void push_up(int node) // 也可以理解成push_to_here,值的简单加和
+#define ls (p << 1)
+#define rs (p << 1 | 1)
+void pushup(int p)
 {
-    segtr[node] = segtr[ls] + segtr[rs];
+    tr[p] = (tr[ls] + tr[rs]) % mod;
 }
-void build(int node, int l, int r)
+void pushdown(int p, int l, int r)
 {
-    addtg[node] = 0, multg[node] = 1;
+    int mid = (l + r) >> 1;
+    (((tr[ls] *= mult[p]) %= mod) += (mid - l + 1) * addt[p] % mod) %= mod;
+    (((tr[rs] *= mult[p]) %= mod) += (r - mid) * addt[p] % mod) %= mod;
+
+    (mult[ls] *= mult[p]) %= mod, (mult[rs] *= mult[p]) %= mod;
+
+    (((addt[ls] *= mult[p]) %= mod) += addt[p]) %= mod;
+    (((addt[rs] *= mult[p]) %= mod) += addt[p]) %= mod;
+    mult[p] = 1, addt[p] = 0;
+}
+
+void build(int p, int l, int r)
+{
+    mult[p] = 1;
     if (l == r)
-        segtr[node] = src[l];
-    else
-    {
-        int mid = (l + r) >> 1;
-        build(ls, l, mid), build(rs, mid + 1, r);
-        push_up(node);
-    }
-    segtr[node] %= p;
-}
-void push_down(int node, int l, int r)
-{
+        return tr[p] = src[l], void();
     int mid = (l + r) >> 1;
-    {
-        // 更新线段树上的值
-        // 儿子的值=此刻儿子的值*爸爸的乘法lazytag+儿子的区间长度*爸爸的加法
-        segtr[ls] = (segtr[ls] * multg[node] + addtg[node] * (mid - l + 1)) % p;
-        segtr[rs] = (segtr[rs] * multg[node] + addtg[node] * (r - mid)) % p;
-    }
-    // 重新维护一遍lazytag
-    {
-        // 乘法
-        multg[ls] = (multg[ls] * multg[node]) % p;
-        multg[rs] = (multg[rs] * multg[node]) % p;
-    }
-    {
-        // 加法
-        addtg[ls] = (addtg[ls] * multg[node] + addtg[node]) % p;
-        addtg[rs] = (addtg[rs] * multg[node] + addtg[node]) % p;
-    }
-    multg[node] = 1, addtg[node] = 0;
+    build(ls, l, mid), build(rs, mid + 1, r);
+    pushup(p);
 }
-size_t query(int ql, int qr, int node = 1, int l = 1, int r = n) // 区间查询
+void add(int p, int l, int r, int ql, int qr, int v)
 {
-    if (l > qr || r < ql)
-        return 0;
-    if (ql <= l && r <= qr)
-        return segtr[node];
-    push_down(node, l, r);
-    int mid = (l + r) >> 1;
-    return query(ql, qr, ls, l, mid) + query(ql, qr, rs, mid + 1, r);
-}
-/*void add(int ql, int qr, int val, int node = 1, int l = 1, int r = n) // 区间加
-{
-    if (l > qr || r < ql)
-        return;
     if (ql <= l && r <= qr)
     {
-        addtg[node] += val, segtr[node] += (r - l + 1) * val;
+        (tr[p] += (r - l + 1) * v % mod) %= mod;
+        (addt[p] += v) %= mod;
         return;
     }
-    push_down(node, l, r);
+
+    pushdown(p, l, r);
     int mid = (l + r) >> 1;
-    add(ql, qr, val, ls, l, mid), add(ql, qr, val, rs, mid + 1, r);
-    push_up(node);
-}*/
-void add(int node, int l, int r, int stdl, int stdr, long long k)
-{
-    if (r < stdl || stdr < l)
-    {
-        return;
-    }
-    if (l <= stdl && stdr <= r)
-    {
-        addtg[node] = (addtg[node] + k) % p;
-        segtr[node] = (segtr[node] + k * (stdr - stdl + 1)) % p;
-        return;
-    }
-    push_down(node, stdl, stdr);
-    int m = (stdl + stdr) / 2;
-    add(node * 2, l, r, stdl, m, k);
-    add(node * 2 + 1, l, r, m + 1, stdr, k);
-    segtr[node] = (segtr[ls] + segtr[rs]) % p;
-    return;
+    if (ql <= mid)
+        add(ls, l, mid, ql, qr, v);
+    if (qr > mid)
+        add(rs, mid + 1, r, ql, qr, v);
+    pushup(p);
 }
-inline void add_single(int qpoint, int val, int node = 1, int gl = 1, int gr = n) // 单点加
+void multiply(int p, int l, int r, int ql, int qr, int v)
 {
-    add(qpoint, qpoint, val, node, gl, gr);
-}
-void multiply(int node, int ql, int qr, int l, int r, int val)
-{
-    if (qr < l || r < ql)
-        return;
     if (ql <= l && r <= qr)
     {
-        segtr[node] = (segtr[node] * val) % p;
-        multg[node] = (multg[node] * val) % p;
-        addtg[node] = (addtg[node] * val) % p;
+        (tr[p] *= v) %= mod;
+        (addt[p] *= v) %= mod;
+        (mult[p] *= v) %= mod;
         return;
     }
-    push_down(node, l, r);
+
+    pushdown(p, l, r);
     int mid = (l + r) >> 1;
-    multiply(ls, ql, qr, l, mid, val), multiply(rs, ql, qr, mid + 1, r, val);
-    // add(ql, qr, val, ls, l, mid), add(ql, qr, val, rs, mid + 1, r);
-    push_up(node);
-    segtr[node] %= p;
+    if (ql <= mid)
+        multiply(ls, l, mid, ql, qr, v);
+    if (qr > mid)
+        multiply(rs, mid + 1, r, ql, qr, v);
+    pushup(p);
+}
+int query(int p, int l, int r, int ql, int qr)
+{
+    if (ql <= l && r <= qr)
+        return tr[p];
+
+    pushdown(p, l, r);
+    int mid = (l + r) >> 1;
+    int res = 0;
+    if (ql <= mid)
+        (res += query(ls, l, mid, ql, qr)) %= mod;
+    if (qr > mid)
+        (res += query(rs, mid + 1, r, ql, qr)) %= mod;
+    pushup(p);
+    return res;
 }
 
-int main()
+signed main()
 {
-    ios::sync_with_stdio(false);
-    cin >> n >> m >> p;
+    int n, m;
+    scanf("%lld%lld%d", &n, &m, &mod);
     for (int i = 1; i <= n; i++)
-        cin >> src[i];
+        scanf("%d", src + i), src[i] %= mod;
     build(1, 1, n);
-    int op, a, b, c;
-    while (m--)
+
+    for (int opt, x, y, k; m--;)
     {
-        int chk;
-        scanf("%d", &chk);
-        int x, y;
-        long long k;
-        if (chk == 1)
-        {
-            scanf("%d%d%lld", &x, &y, &k);
-            multiply(1, 1, n, x, y, k);
-        }
-        else if (chk == 2)
-        {
-            scanf("%d%d%lld", &x, &y, &k);
-            add(1, 1, n, x, y, k);
-        }
+        scanf("%lld%lld%lld", &opt, &x, &y);
+        if (opt == 1)
+            scanf("%lld", &k), multiply(1, 1, n, x, y, k);
+        else if (opt == 2)
+            scanf("%lld", &k), add(1, 1, n, x, y, k);
         else
-        {
-            scanf("%d%d", &x, &y);
             printf("%lld\n", query(1, 1, n, x, y));
-        }
     }
     return 0;
 }

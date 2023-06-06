@@ -91,7 +91,7 @@ signed main()
     int n, m;
     scanf("%lld%lld%d", &n, &m, &mod);
     for (int i = 1; i <= n; i++)
-        scanf("%d", src + i), src[i] %= mod;
+        scanf("%d", src + i);
     build(1, 1, n);
 
     for (int opt, x, y, k; m--;)

@@ -8,9 +8,6 @@ const int N = 1e8;
 // gcd & lcm
 inline int gcd(int a, int b) // Euclidean algorithm
 {
-    /* if (b == 0)
-        return a;
-    return gcd(b, a % b); */
     return !b ? a : gcd(b, a % b);
     // return __gcd(a, b); ——C++ 14
     // return std::gcd(a, b); ——C++ 17 in <numeric>

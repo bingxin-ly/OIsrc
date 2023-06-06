@@ -4,17 +4,18 @@ using namespace std;
 const int N = 5e4 + 10, M = N * 5;
 int arr[N], sum[M], v[M], lv[M], rv[M];
 
-void copy(int p, int f) { sum[p] = sum[f], lv[p] = lv[f], rv[p] = rv[f], v[p] = v[f]; }
+inline void copy(int p, int f) { sum[p] = sum[f], lv[p] = lv[f], rv[p] = rv[f], v[p] = v[f]; }
 void pushup(int p, int ls, int rs)
 {
     if (!ls || !rs)
-        copy(p, ls ? ls : rs);
+        return copy(p, ls ? ls : rs);
     sum[p] = sum[ls] + sum[rs];
 
     lv[p] = max(lv[ls], sum[ls] + lv[rs]);
     rv[p] = max(rv[ls] + sum[rs], rv[rs]);
     v[p] = max({v[ls], rv[ls] + lv[rs], v[rs]});
 }
+
 #define ls p << 1
 #define rs p << 1 | 1
 void build(int p, int l, int r)

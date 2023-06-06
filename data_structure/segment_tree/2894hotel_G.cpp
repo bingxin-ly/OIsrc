@@ -1,66 +1,66 @@
 #include <bits/stdc++.h>
-#define ls rt << 1
-#define rs rt << 1 | 1
 using namespace std;
-int max(int a, int b, int c) { return max(max(a, b), c); }
 
-const int MAX = 5e5 + 10;
-
+// 和最大子段和还不太一样，自己真正做了才体会到
+const int N = 5e5 + 10;
 struct node
 {
-    int lm, rm, max, len;
+    int lm, rm, mx, len;
     int lazy;
-} segtr[4 * MAX];
+} segtr[N << 2];
 
-void build(int rt, int l, int r)
+#define ls p << 1
+#define rs p << 1 | 1
+inline int max(int a, int b) { return a > b ? a : b; }
+inline int max(int a, int b, int c) { return max(max(a, b), c); }
+void build(int p, int l, int r)
 {
-    segtr[rt].lm = segtr[rt].rm = segtr[rt].max = segtr[rt].len = r - l + 1;
-    if (l == r) return;
+    segtr[p].lm = segtr[p].rm = segtr[p].mx = segtr[p].len = r - l + 1;
+    if (l == r)
+        return;
     int mid = (l + r) >> 1;
     build(ls, l, mid), build(rs, mid + 1, r);
 }
-void pushup(int rt)
+void pushup(int p)
 {
-    if (segtr[ls].max == segtr[ls].len)
-        segtr[rt].lm = segtr[ls].len + segtr[rs].lm;
+    if (segtr[ls].mx == segtr[ls].len)
+        segtr[p].lm = segtr[ls].len + segtr[rs].lm;
     else
-        segtr[rt].lm = segtr[ls].lm;
-    if (segtr[rs].max == segtr[rs].len)
-        segtr[rt].rm = segtr[rs].len + segtr[ls].rm;
+        segtr[p].lm = segtr[ls].lm;
+    if (segtr[rs].mx == segtr[rs].len)
+        segtr[p].rm = segtr[rs].len + segtr[ls].rm;
     else
-        segtr[rt].rm = segtr[rs].rm;
-    segtr[rt].max = max(segtr[ls].max, segtr[rs].max, segtr[ls].rm + segtr[rs].lm);
-                            // 两个子树的max比较你个傻x
+        segtr[p].rm = segtr[rs].rm;
+    segtr[p].mx = max(segtr[ls].mx, segtr[rs].mx, segtr[ls].rm + segtr[rs].lm);
 }
-void pushdown(int rt)
+void pushdown(int p)
 {
-    if (segtr[rt].lazy == 0)
+    if (segtr[p].lazy == 0)
         return;
-    if (segtr[rt].lazy == 1)
+    if (segtr[p].lazy == 1)
     {
         segtr[ls].lazy = segtr[rs].lazy = 1;
-        segtr[ls].max = segtr[ls].lm = segtr[ls].rm = segtr[rs].max = segtr[rs].lm = segtr[rs].rm = 0;
+        segtr[ls].mx = segtr[ls].lm = segtr[ls].rm = segtr[rs].mx = segtr[rs].lm = segtr[rs].rm = 0;
     }
-    if (segtr[rt].lazy == 2)
+    if (segtr[p].lazy == 2)
     {
         segtr[ls].lazy = segtr[rs].lazy = 2;
-        segtr[ls].max = segtr[ls].lm = segtr[ls].rm = segtr[ls].len;
-        segtr[rs].max = segtr[rs].lm = segtr[rs].rm = segtr[rs].len;
+        segtr[ls].mx = segtr[ls].lm = segtr[ls].rm = segtr[ls].len;
+        segtr[rs].mx = segtr[rs].lm = segtr[rs].rm = segtr[rs].len;
     }
-    segtr[rt].lazy = 0;
+    segtr[p].lazy = 0;
 }
-// 别抄别人代码函数顺序都抄不对你个傻x
-void modify(int rt, int l, int r, const int op, const int ml, const int mr)
+
+void modify(int p, int l, int r, const int op, const int ml, const int mr)
 {
-    // if (ml > r || mr < l) return;
-    pushdown(rt);
+    pushdown(p);
     if (ml <= l && r <= mr)
     {
         if (op == 1)
-            segtr[rt].max = segtr[rt].lm = segtr[rt].rm = 0;
-        else 
-            segtr[rt].max = segtr[rt].lm = segtr[rt].rm = segtr[rt].len;
-        segtr[rt].lazy = op;
+            segtr[p].mx = segtr[p].lm = segtr[p].rm = 0;
+        else
+            segtr[p].mx = segtr[p].lm = segtr[p].rm = segtr[p].len;
+        segtr[p].lazy = op;
         return;
     }
 
@@ -69,17 +69,18 @@ void modify(int rt, int l, int r, const int op, const int ml, const int mr)
         modify(ls, l, mid, op, ml, mr);
     if (mr > mid)
         modify(rs, mid + 1, r, op, ml, mr);
-    pushup(rt);
+    pushup(p);
 }
-int query(int rt, int l, int r, int n)
+int query(int p, int l, int r, int n)
 {
-    pushdown(rt);
     if (l == r)
         return l;
+
+    pushdown(p);
     int mid = (l + r) >> 1;
-    if (segtr[ls].max >= n)
-        return query(ls, l, mid, n); // 完全在左子树中查找
-    if (segtr[ls].rm + segtr[rs].lm >= n)
+    if (segtr[ls].mx >= n)
+        return query(ls, l, mid, n);
+    else if (segtr[ls].rm + segtr[rs].lm >= n)
         return mid - segtr[ls].rm + 1;
     else
         return query(rs, mid + 1, r, n);
@@ -88,7 +89,6 @@ int query(int rt, int l, int r, int n)
 int main()
 {
     ios::sync_with_stdio(false);
-
     int n, m;
     cin >> n >> m;
     build(1, 1, n);
@@ -99,13 +99,13 @@ int main()
         if (op == 1)
         {
             cin >> x;
-            if (segtr[1].max >= x)
+            if (segtr[1].mx >= x)
             {
                 int left = query(1, 1, n, x);
                 cout << left << endl;
                 modify(1, 1, n, 1, left, left + x - 1);
             }
-            else 
+            else
                 cout << 0 << endl;
         }
         else

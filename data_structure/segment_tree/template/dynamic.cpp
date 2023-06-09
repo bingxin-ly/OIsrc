@@ -13,13 +13,13 @@ class segment_tree
             val = lazy = 0;
             ls = rs = nullptr;
         }
-    } *root;
+    } *root = nullptr;
 
-    static void pushup(node *p)
+    static inline void pushup(node *p)
     {
         p->val = (p->ls ? p->ls->val : 0) + (p->rs ? p->rs->val : 0);
     }
-    static void pushdown(node *p)
+    static inline void pushdown(node *p)
     {
         if (p->lazy)
         {
@@ -32,6 +32,8 @@ class segment_tree
         }
     }
 
+    // 正经的动态开点线段树是不用 build 的，
+    // 但是这样写节点个数也总比 4N 少，所以就放这了
     void build(node *&p, int l, int r, const int *arr)
     {
         p = new node(l, r);

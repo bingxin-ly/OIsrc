@@ -10,7 +10,7 @@ class FHQ
         int val;
         int size, pri;
 
-        node(int x) : val(x), size(1)
+        explicit node(int x) : val(x), size(1)
         {
             ls = rs = nullptr;
             pri = rand();

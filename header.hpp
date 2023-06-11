@@ -41,6 +41,46 @@ inline int read()
         c = getchar();
     return o * p;
 }
+inline int input(int *p = nullptr)
+{
+    static int *o = new int, q;
+    !p && (p = o), *p = 0, q = 1;
+    char c = getchar();
+    while (c < '0' || c > '9')
+    {
+        if (c == '-')
+            q = -1;
+        c = getchar();
+    }
+    while (c >= '0' && c <= '9')
+        *p = *p * 10 + c - '0', c = getchar();
+    return *p *= q;
+}
+
+#include <cstdio>
+namespace IO
+{
+    const int S = (1 << 20) + 5;
+    char B[S], *H, *T;
+    inline int gc()
+    {
+        if (H == T)
+            T = (H = B) + fread(B, 1, S, stdin);
+        return (H == T) ? EOF : *H++;
+    }
+    inline unsigned int inn()
+    {
+        unsigned int x, ch;
+        while ((ch = gc()) < '0' || ch > '9')
+            ;
+        x = ch ^ '0';
+        while ((ch = gc()) >= '0' && ch <= '9')
+            x = x * 10 + (ch ^ '0');
+        return x;
+    }
+}
+using IO::inn;
+
 inline void write(int x)
 {
     if (x < 0)

@@ -16,7 +16,7 @@ inline void pushup(int p)
     else
         tr[p].val = tr[tr[p].rs].val, tr[p].type = tr[tr[p].rs].type;
 }
-int insert(int p, int l, int r, int pos, int v)
+int update(int p, int l, int r, int pos, int v)
 {
     if (!p)
         p = ++tot;
@@ -25,9 +25,9 @@ int insert(int p, int l, int r, int pos, int v)
 
     int mid = (l + r) >> 1;
     if (pos <= mid)
-        tr[p].ls = insert(tr[p].ls, l, mid, pos, v);
+        tr[p].ls = update(tr[p].ls, l, mid, pos, v);
     else
-        tr[p].rs = insert(tr[p].rs, mid + 1, r, pos, v);
+        tr[p].rs = update(tr[p].rs, mid + 1, r, pos, v);
     pushup(p);
     return p;
 }
@@ -54,32 +54,32 @@ inline void contact(int u, int v)
 
 int fa[N], dep[N], siz[N];
 int son[N], top[N];
-void dfs1(int o)
+void dfs1(int u)
 {
-    son[o] = -1, siz[o] = 1;
-    for (int i = head[o]; i; i = nxt[i])
+    son[u] = -1, siz[u] = 1;
+    for (int i = head[u]; i; i = nxt[i])
     {
         int v = edge[i];
         if (!dep[v])
         {
-            dep[v] = dep[o] + 1, fa[v] = o;
+            dep[v] = dep[u] + 1, fa[v] = u;
             dfs1(v);
-            siz[o] += siz[v];
-            if (son[o] == -1 || siz[v] > siz[son[o]])
-                son[o] = v;
+            siz[u] += siz[v];
+            if (son[u] == -1 || siz[v] > siz[son[u]])
+                son[u] = v;
         }
     }
 }
-void dfs2(int o, int t)
+void dfs2(int u, int t)
 {
-    top[o] = t;
-    if (son[o] == -1)
+    top[u] = t;
+    if (son[u] == -1)
         return;
-    dfs2(son[o], t);
-    for (int i = head[o]; i; i = nxt[i])
+    dfs2(son[u], t);
+    for (int i = head[u]; i; i = nxt[i])
     {
         int v = edge[i];
-        if (v != son[o] && v != fa[o])
+        if (v != son[u] && v != fa[u])
             dfs2(v, v);
     }
 }
@@ -122,10 +122,10 @@ int main()
     for (int i = 1; i <= m; i++)
     {
         int t = lca(x[i], y[i]);
-        rt[x[i]] = insert(rt[x[i]], 1, r, z[i], 1), rt[y[i]] = insert(rt[y[i]], 1, r, z[i], 1);
-        rt[t] = insert(rt[t], 1, r, z[i], -1);
+        rt[x[i]] = update(rt[x[i]], 1, r, z[i], 1), rt[y[i]] = update(rt[y[i]], 1, r, z[i], 1);
+        rt[t] = update(rt[t], 1, r, z[i], -1);
         if (fa[t])
-            rt[fa[t]] = insert(rt[fa[t]], 1, r, z[i], -1);
+            rt[fa[t]] = update(rt[fa[t]], 1, r, z[i], -1);
     }
     dfs3(1);
     for (int i = 1; i <= n; i++)

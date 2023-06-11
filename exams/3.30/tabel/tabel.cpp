@@ -77,7 +77,7 @@ void dfs(int now)
             b = ress.top();
             ress.pop();
 
-            ress.push(calc(b, a, ops.top())); // TODO
+            ress.push(calc(b, a, ops.top()));
         } */
         cout << ress.back();
         ress.pop();

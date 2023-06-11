@@ -2,7 +2,7 @@
 using namespace std;
 
 typedef pair<int, int> int_pair;
-const int MAX = 6e3 + 10; // TODO
+const int MAX = 6e3 + 10;
 
 bool has_fa[MAX];
 int n, happy[MAX], f[MAX][2];

@@ -1,15 +1,15 @@
 #include <bits/stdc++.h>
 using namespace std;
-struct huge : vector<int> // 用标准库vector做基类，完美解决位数问题，同时更易于实现
+struct Int : vector<int> // 用标准库vector做基类，完美解决位数问题，同时更易于实现
 {
     // 将低精度转高精度的初始化，可以自动被编译器调用
     // 因此无需单独写高精度数和低精度数的运算函数，十分方便
-    huge(int n = 0) // 默认初始化为0，但0的保存形式为空
+    Int(int n = 0) // 默认初始化为0，但0的保存形式为空
     {
         push_back(n);
         check();
     }
-    huge &check() // 在各类运算中经常用到的进位小函数，不妨内置
+    Int &check() // 在各类运算中经常用到的进位小函数，不妨内置
     {
         while (!empty() && !back())
             pop_back(); // 去除最高位可能存在的0
@@ -29,7 +29,7 @@ struct huge : vector<int> // 用标准库vector做基类，完美解决位数问
     }
 };
 // 输入输出
-istream &operator>>(istream &is, huge &n)
+istream &operator>>(istream &is, Int &n)
 {
     string s;
     is >> s;
@@ -38,7 +38,7 @@ istream &operator>>(istream &is, huge &n)
         n.push_back(s[i] - '0');
     return is;
 }
-ostream &operator<<(ostream &os, const huge &n)
+ostream &operator<<(ostream &os, const Int &n)
 {
     if (n.empty())
         os << 0;
@@ -48,7 +48,7 @@ ostream &operator<<(ostream &os, const huge &n)
 }
 // 比较，只需要写两个，其他的直接代入即可
 // 常量引用当参数，避免拷贝更高效
-bool operator!=(const huge &a, const huge &b)
+bool operator!=(const Int &a, const Int &b)
 {
     if (a.size() != b.size())
         return 1;
@@ -57,11 +57,11 @@ bool operator!=(const huge &a, const huge &b)
             return 1;
     return 0;
 }
-bool operator==(const huge &a, const huge &b)
+bool operator==(const Int &a, const Int &b)
 {
     return !(a != b);
 }
-bool operator<(const huge &a, const huge &b)
+bool operator<(const Int &a, const Int &b)
 {
     if (a.size() != b.size())
         return a.size() < b.size();
@@ -70,20 +70,20 @@ bool operator<(const huge &a, const huge &b)
             return a[i] < b[i];
     return 0;
 }
-bool operator>(const huge &a, const huge &b)
+bool operator>(const Int &a, const Int &b)
 {
     return b < a;
 }
-bool operator<=(const huge &a, const huge &b)
+bool operator<=(const Int &a, const Int &b)
 {
     return !(a > b);
 }
-bool operator>=(const huge &a, const huge &b)
+bool operator>=(const Int &a, const Int &b)
 {
     return !(a < b);
 }
 // 加法，先实现+=，这样更简洁高效
-huge &operator+=(huge &a, const huge &b)
+Int &operator+=(Int &a, const Int &b)
 {
     if (a.size() < b.size())
         a.resize(b.size());
@@ -91,12 +91,12 @@ huge &operator+=(huge &a, const huge &b)
         a[i] += b[i];
     return a.check();
 }
-huge operator+(huge a, const huge &b)
+Int operator+(Int a, const Int &b)
 {
     return a += b;
 }
 // 减法，返回差的绝对值，由于后面有交换，故参数不用引用
-huge &operator-=(huge &a, huge b)
+Int &operator-=(Int &a, Int b)
 {
     if (a < b)
         swap(a, b);
@@ -114,34 +114,34 @@ huge &operator-=(huge &a, huge b)
         }
     return a.check();
 }
-huge operator-(huge a, const huge &b)
+Int operator-(Int a, const Int &b)
 {
     return a -= b;
 }
 // 乘法不能先实现*=，原因自己想
-huge operator*(const huge &a, const huge &b)
+Int operator*(const Int &a, const Int &b)
 {
-    huge n;
+    Int n;
     n.assign(a.size() + b.size() - 1, 0);
     for (int i = 0; i != a.size(); ++i)
         for (int j = 0; j != b.size(); ++j)
             n[i + j] += a[i] * b[j];
     return n.check();
 }
-huge &operator*=(huge &a, const huge &b)
+Int &operator*=(Int &a, const Int &b)
 {
     return a = a * b;
 }
 // 除法和取模先实现一个带余除法函数
-huge divmod(huge &a, const huge &b)
+Int divmod(Int &a, const Int &b)
 {
-    huge ans;
+    Int ans;
     for (int t = a.size() - b.size(); a >= b; --t)
     {
-        huge d;
+        Int d;
         d.assign(t + 1, 0);
         d.back() = 1;
-        huge c = b * d;
+        Int c = b * d;
         while (a >= c)
         {
             a -= c;
@@ -150,25 +150,25 @@ huge divmod(huge &a, const huge &b)
     }
     return ans;
 }
-huge operator/(huge a, const huge &b)
+Int operator/(Int a, const Int &b)
 {
     return divmod(a, b);
 }
-huge &operator/=(huge &a, const huge &b)
+Int &operator/=(Int &a, const Int &b)
 {
     return a = a / b;
 }
-huge &operator%=(huge &a, const huge &b)
+Int &operator%=(Int &a, const Int &b)
 {
     divmod(a, b);
     return a;
 }
-huge operator%(huge a, const huge &b)
+Int operator%(Int a, const Int &b)
 {
     return a %= b;
 }
 // 顺手实现一个快速幂，可以看到和普通快速幂几乎无异
-huge pow(const huge &n, const huge &k)
+Int pow(const Int &n, const Int &k)
 {
     if (k.empty())
         return 1;
@@ -181,7 +181,7 @@ huge pow(const huge &n, const huge &k)
 
 int main()
 {
-    huge a, b;
+    Int a, b;
     cin >> a >> b;
     cout << a + b << endl
          << (a >= b ? "" : "-") << a - b << endl

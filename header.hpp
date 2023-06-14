@@ -1,20 +1,17 @@
 // 最值
-#define max(_a, _b) ((_a > _b) ? _a : _b)
-#define chkmax(_a, _b) _a = ((_b > _a) ? _b : _a)
-#undef chkmax
 template <typename T>
-inline void chkmax(T &a, T b) { a = max(a, b); }
-#define min(_a, _b) ((_a < _b) ? _a : _b)
-#define chkmin(_a, _b) _a = ((_b < _a) ? _b : _a)
-#undef chkmin
+inline T max(const T &a, const T &b) { return a > b ? a : b; }
 template <typename T>
-inline void chkmin(T &a, T b)
-{
-    a = min(a, b);
-}
+inline void chkmax(T &a, const T &b) { a = a > b ? a : b; }
+template <typename T>
+inline T min(const T &a, const T &b) { return a < b ? a : b; }
+template <typename T>
+inline void chkmin(T &a, const T &b) { a = a < b ? a : b; }
 
-// 快读 & 快输
-#define get(_) _ = read()
+// 快速 IO
+#include <iostream>
+#include <cstdio>
+
 // 非负整数简化版
 inline int read()
 {
@@ -41,11 +38,12 @@ inline int read()
         c = getchar();
     return o * p;
 }
-inline int input(int *p = nullptr)
+template <typename T>
+inline T read(T *p = nullptr)
 {
-    static int *o = new int, q;
-    !p && (p = o), *p = 0, q = 1;
-    char c = getchar();
+    static T *o = new T;
+    !p && (p = o), *p = 0;
+    int q = 1, c = getchar();
     while (c < '0' || c > '9')
     {
         if (c == '-')
@@ -57,7 +55,6 @@ inline int input(int *p = nullptr)
     return *p *= q;
 }
 
-#include <cstdio>
 namespace IO
 {
     const int S = (1 << 20) + 5;
@@ -67,8 +64,9 @@ namespace IO
         if (H == T)
             T = (H = B) + fread(B, 1, S, stdin);
         return (H == T) ? EOF : *H++;
+        // return (H == T) && (T = (H = B) + fread(B, 1, S, stdin), H == T) ? EOF : *H++;
     }
-    inline unsigned int inn()
+    inline unsigned int input()
     {
         unsigned int x, ch;
         while ((ch = gc()) < '0' || ch > '9')
@@ -79,29 +77,20 @@ namespace IO
         return x;
     }
 }
-using IO::inn;
+using IO::input;
 
 inline void write(int x)
 {
     if (x < 0)
-        putchar('-'),
-            x = -x;
+        putchar('-'), x = -x;
     if (x > 9)
         write(x / 10);
     putchar(x % 10 + '0');
 }
 
 // 调试优化
-#include <iostream>
 using std::clog;
-
-template <class T>
-inline void log(const T &x, const char c = '\n')
-{
-    clog << x << c;
-}
-template <class T, class... Args>
-inline void log(const T &x, const Args &...args)
-{
-    log(x, ' '), log(args...);
-}
+template <typename T>
+inline void log(const T &x, const char c = '\n') { clog << x << c; }
+template <typename T, typename... Args>
+inline void log(const T &x, const Args &...args) { log(x, ' '), log(args...); }

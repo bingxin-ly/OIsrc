@@ -9,14 +9,16 @@ void change(int l, int r, int v)
 {
     int sid = pos[l], eid = pos[r];
     for (int i = l, up = min(ed[sid], r); i <= up; i++)
-        arr[i] += v, sum[sid] += v;
-    // sum[sid] += (min(ed[sid], r) - l + 1) * v;
+        arr[i] += v;
+    sum[sid] += (min(ed[sid], r) - l + 1) * v;
+
     if (sid != eid)
     {
         for (int i = st[eid]; i <= r; i++)
-            arr[i] += v, sum[eid] += v;
-        // sum[eid] += (r - st[eid] + 1) * v;
+            arr[i] += v;
+        sum[eid] += (r - st[eid] + 1) * v;
     }
+
     for (int i = sid + 1; i <= eid - 1; i++)
         tag[i] += v, sum[i] += len * v;
 }
@@ -24,19 +26,14 @@ long long query(int l, int r, int p)
 {
     int sid = pos[l], eid = pos[r];
     long long res = 0;
+
     for (int i = l, up = min(ed[sid], r); i <= up; i++)
-        (res += arr[i]) %= p;
-    cerr << res << endl;
-    for (int i = l, up = min(ed[sid], r); i <= up; i++)
-        (res += tag[sid]) %= p;
-    cerr << res << endl;
+        (res += arr[i] + tag[sid]) %= p;
 
     if (sid != eid)
-    {
         for (int i = st[eid]; i <= r; i++)
             (res += arr[i] + tag[eid]) %= p;
-        // (res += (r - st[eid] + 1) * tag[eid]) %= p;
-    }
+
     for (int i = sid + 1; i <= eid - 1; i++)
         (res += sum[i]) %= p;
     return res;

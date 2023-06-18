@@ -1,23 +1,39 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+const int N = 1e4 + 5;
+string formal[N], given[N];
+long long n, m, cnt;
 int main()
 {
-    vector<string> formal, given;
     string s;
-    while (cin >> s, s != "EOF")
-        formal.emplace_back(s);
-    while (cin >> s, s != "EOF")
-        given.emplace_back(s);
-
-    int ans = 0;
-    for (int l = 0; l < formal.size(); l++)
-        for (int p = 0; p < formal[l].size(); p++)
-            if (given[l][p] == formal[l][p])
-                ans++;
-
-    int time;
-    cin >> time;
-    printf("%.0f", 1.0 * ans / time * 60);
-    return 0;
+    while (getline(cin, s), s != "EOF")
+    {
+        n++;
+        for (char i : s)
+            if (i == '<')
+            {
+                if (!formal[n].empty())
+                    formal[n].pop_back();
+            }
+            else
+                formal[n].push_back(i);
+    }
+    while (getline(cin, s), s != "EOF")
+    {
+        if (++m > n)
+            continue;
+        for (char i : s)
+            if (i == '<')
+            {
+                if (!given[m].empty())
+                    given[m].pop_back();
+            }
+            else
+                given[m].push_back(i);
+        for (int i = 0; i < min(given[m].size(), formal[m].size()); i++)
+            cnt += formal[m][i] == given[m][i];
+    }
+    cin >> m;
+    cout << (long long)(cnt * 60.0 / m + 0.5);
 }

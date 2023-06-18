@@ -55,7 +55,7 @@ int query(int l, int r)
     {
         tmp = count(f[sid + 1][eid - 1], l, r);
         if (tmp > tims)
-            mode = f[sid + 1][eid - 1];
+            mode = f[sid + 1][eid - 1], tims = tmp;
         else if (tmp == tims)
             mode = min(mode, f[sid + 1][eid - 1]);
     }
@@ -72,10 +72,9 @@ signed main()
         st[i] = (i - 1) * len + 1, ed[i] = i * len;
     ed[num] = n;
 
-    vector<int> val(n);
     for (int i = 1; i <= n; i++)
-        blo[i] = (i - 1) / len + 1,
-        cin >> arr[i], val[i - 1] = arr[i];
+        blo[i] = (i - 1) / len + 1, cin >> arr[i];
+    vector<int> val(arr + 1, arr + n + 1);
     sort(val.begin(), val.end());
     val.erase(unique(val.begin(), val.end()), val.end());
     for (int i = 1; i <= n; i++)

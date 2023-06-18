@@ -1,12 +1,11 @@
 #include <bits/stdc++.h>
 using namespace std;
-using pii = pair<int, int>;
 
-const int N = 5e4 + 10; // sqrt(5e4) ~ 223.6
-int len, num, pos[N], st[225], ed[225], tag[225];
-pii arr[N];
+const int N = 5e4 + 10, K = 230; // sqrt(5e4) ~ 223.6
+int len, num, pos[N], st[K], ed[K], tag[K];
+pair<int, int> arr[N];
 
-int force(int l, int r, int d, bool type)
+int force(int l, int r, int v, bool type)
 {
     int id = pos[l], res = 0;
     // std::copy, std::move is the C++ way.
@@ -17,24 +16,24 @@ int force(int l, int r, int d, bool type)
     {
         for (int i = st[id]; i <= ed[id]; i++)
             if (l <= arr[i].second && arr[i].second <= r)
-                arr[i].first += d;
+                arr[i].first += v;
         sort(arr + st[id], arr + ed[id] + 1);
     }
     else
         for (int i = st[id]; i <= ed[id]; i++)
             if (l <= arr[i].second && arr[i].second <= r)
-                res += arr[i].first < d;
+                res += arr[i].first < v;
     return res;
 }
-void change(int l, int r, int d)
+void change(int l, int r, int v)
 {
     int sid = pos[l], eid = pos[r];
     if (sid == eid)
-        return force(l, r, d, true), void();
-    force(l, ed[sid], d, true);
+        return force(l, r, v, true), void();
+    force(l, ed[sid], v, true);
     for (int i = sid + 1; i <= eid - 1; i++)
-        tag[i] += d;
-    force(st[eid], r, d, true);
+        tag[i] += v;
+    force(st[eid], r, v, true);
 }
 
 int query(int l, int r, int c)

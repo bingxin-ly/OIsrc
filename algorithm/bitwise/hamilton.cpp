@@ -1,0 +1,25 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int n, w[20][20], f[1 << 20][20];
+int hamilton()
+{
+    memset(f, 0x3f, sizeof f), f[1][0] = 0;
+    for (int i = 1; i < 1 << n; i++) // 枚举每个状态
+        for (int j = 0; j < n; j++)
+            if (i >> j & 1) // 当前能到达这个状态
+                for (int k = 0; k < n; k++)
+                    if ((i ^ 1 << j) >> k & 1)
+                        f[i][j] = min(f[i][j], f[i ^ 1 << j][k] + w[k][j]);
+    return f[(1 << n) - 1][n - 1];
+}
+
+signed main()
+{
+    cin >> n;
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            cin >> w[i][j];
+    cout << hamilton();
+    return 0;
+}

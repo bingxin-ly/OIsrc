@@ -11,15 +11,17 @@ signed main()
     int n, m;
     cin >> n >> m;
     int mx = 0, my = 0;
-    for (int x, y, v; n--;)
-        cin >> x >> y >> v,
-            a[++x][++y] = v, mx = max(mx, x), my = max(my, y);
+    for (int i = 1, x, y, v; i <= n; i++)
+        // 不同目标可能在同一位置
+        cin >> x >> y >> v, a[++x][++y] += v,
+            mx = max(mx, x), my = max(my, y);
 
     // 有可能 m 过大
-    mx = max(mx, m), my = max(my, m);
+    // m 大过 5k 就没意义了，直接拉 mx 和 my 又会 RE，所以先压一波 m
+    m = min(m, 5001), mx = max(mx, m), my = max(my, m);
     for (int i = 1; i <= mx; i++)
         for (int j = 1; j <= my; j++)
-            a[i][j] += a[i - 1][j] + a[i][j - 1] -a[i - 1][j - 1];
+            a[i][j] += a[i - 1][j] + a[i][j - 1] - a[i - 1][j - 1];
 
     int ans = 0;
     for (int i = 1; i <= mx - m + 1; i++)

@@ -1,3 +1,7 @@
+vector::date() returns a typical(C-like) pointer.
+std::copy, std::move is the C++ way, memcpy is the C way.
+for is the fools' way. DO NOT DO THIS.
+
 这 9 个经典题目，涉及了数列分块的大部分重要思想：
 
 - 区间加，单点查询：基础模板。
@@ -82,23 +86,23 @@ Loj6280. 数列分块入门 4
 划分过程的常用模板：
 
 void PrepareBlock() {
-  block_size = T; //根据实际要求选择一个合适的大小。
-  block_num = n / block_size; 
-  for (int i = 1; i <= block_num; ++ i) { //分配块左右边界。
-    L[i] = (i - 1) * block_size + 1;
-    R[i] = i * block_size;
-  }
-  if (R[block_num] < n) { //最后的一个较小的块。
-    ++ block_num;
-    L[block_num] = R[block_num - 1] + 1;
-    R[block_num] = n;
-  }
-  //分配元素所属的块编号。
-  for (int i = 1; i <= block_num; ++ i) {
-    for (int j = L[i]; j <= R[i]; ++ j) {
-      bel[j] = i;
-    }
-  }
+block_size = T; //根据实际要求选择一个合适的大小。
+block_num = n / block_size;
+for (int i = 1; i <= block_num; ++ i) { //分配块左右边界。
+L[i] = (i - 1) _ block_size + 1;
+R[i] = i _ block_size;
+}
+if (R[block_num] < n) { //最后的一个较小的块。
+++ block_num;
+L[block_num] = R[block_num - 1] + 1;
+R[block_num] = n;
+}
+//分配元素所属的块编号。
+for (int i = 1; i <= block_num; ++ i) {
+for (int j = L[i]; j <= R[i]; ++ j) {
+bel[j] = i;
+}
+}
 }
 查询
 设查询区间 \([l,r]\) 的区间和。
@@ -136,9 +140,9 @@ void PrepareBlock() {
 上古时期出土代码，经现代手段修复后勉强能看。
 
 //知识点：分块
-/*
+/_
 By:Luckyblock
-*/
+_/
 #include <algorithm>
 #include <cctype>
 #include <cstdio>
@@ -148,86 +152,86 @@ By:Luckyblock
 const int kN = 5e4 + 10;
 //=============================================================
 int n, m;
-int block_size, block_num, L[kN], R[kN], bel[kN];
+int block*size, block_num, L[kN], R[kN], bel[kN];
 LL a[kN], sum[kN], tag[kN];
 //=============================================================
 inline int read() {
-  int f = 1, w = 0;
-  char ch = getchar();
-  for (; !isdigit(ch); ch = getchar())
-    if (ch == '-') f = -1;
-  for (; isdigit(ch); ch = getchar()) w = (w << 3) + (w << 1) + (ch ^ '0');
-  return f * w;
+int f = 1, w = 0;
+char ch = getchar();
+for (; !isdigit(ch); ch = getchar())
+if (ch == '-') f = -1;
+for (; isdigit(ch); ch = getchar()) w = (w << 3) + (w << 1) + (ch ^ '0');
+return f * w;
 }
 void Chkmin(LL &fir, LL sec) {
-  if (sec < fir) fir = sec;
+if (sec < fir) fir = sec;
 }
 void PrepareBlock() {
-  block_size = sqrt(n); //根据实际要求选择一个合适的大小。
-  block_num = n / block_size; 
-  for (int i = 1; i <= block_num; ++ i) { //分配块左右边界。
-    L[i] = (i - 1) * block_size + 1;
-    R[i] = i * block_size;
-  }
-  if (R[block_num] < n) { //最后的一个较小的块。
-    ++ block_num;
-    L[block_num] = R[block_num - 1] + 1;
-    R[block_num] = n;
-  }
-  //分配元素所属的块编号。
-  for (int i = 1; i <= block_num; ++ i) {
-    for (int j = L[i]; j <= R[i]; ++ j) {
-      bel[j] = i;
-      sum[i] += a[j]; //预处理区间和
-    }
-  }
+block_size = sqrt(n); //根据实际要求选择一个合适的大小。
+block_num = n / block_size;
+for (int i = 1; i <= block_num; ++ i) { //分配块左右边界。
+L[i] = (i - 1) * block_size + 1;
+R[i] = i \* block_size;
 }
-void Modify(int L_, int R_, int val_) {
-  int bell = bel[L_], belr = bel[R_];
-  if (bell == belr) {
-    for (int i = L_; i <= R_; ++ i) {
-      a[i] += val_;
-      sum[bell] += val_;
-    }
-    return ;
-  }
-  for (int i = bell + 1; i <= belr - 1; ++ i) tag[i] += val_;
-  for (int i = L_; i <= R[bell]; ++ i) {
-    a[i] += val_;
-    sum[bell] += val_;
-  }
-  for (int i = L[belr]; i <= R_; ++ i) {
-    a[i] += val_;
-    sum[belr] += val_;
-  }
+if (R[block_num] < n) { //最后的一个较小的块。
+++ block_num;
+L[block_num] = R[block_num - 1] + 1;
+R[block_num] = n;
 }
-LL Query(int L_, int R_, int mod_) {
-  int bell = bel[L_], belr = bel[R_], ret = 0;
-  if (bell == belr) {
-    for (int i = L_; i <= R_; ++ i) ret = (ret + a[i] + tag[bell]) % mod_;
-    return ret;
-  }
-  for (int i = bell + 1; i <= belr - 1; ++ i) {
-    ret = (ret + sum[i] + (R[i] - L[i] + 1) * tag[i] % mod_) % mod_;
-  }
-  for (int i = L_; i <= R[bell]; ++ i) ret = (ret + a[i] + tag[bell]) % mod_;
-  for (int i = L[belr]; i <= R_; ++ i) ret = (ret + a[i] + tag[belr]) % mod_;
-  return ret;
+//分配元素所属的块编号。
+for (int i = 1; i <= block_num; ++ i) {
+for (int j = L[i]; j <= R[i]; ++ j) {
+bel[j] = i;
+sum[i] += a[j]; //预处理区间和
+}
+}
+}
+void Modify(int L*, int R*, int val*) {
+int bell = bel[L_], belr = bel[R_];
+if (bell == belr) {
+for (int i = L*; i <= R*; ++ i) {
+a[i] += val*;
+sum[bell] += val*;
+}
+return ;
+}
+for (int i = bell + 1; i <= belr - 1; ++ i) tag[i] += val*;
+for (int i = L*; i <= R[bell]; ++ i) {
+a[i] += val*;
+sum[bell] += val*;
+}
+for (int i = L[belr]; i <= R*; ++ i) {
+a[i] += val*;
+sum[belr] += val*;
+}
+}
+LL Query(int L*, int R*, int mod*) {
+int bell = bel[L_], belr = bel[R_], ret = 0;
+if (bell == belr) {
+for (int i = L*; i <= R*; ++ i) ret = (ret + a[i] + tag[bell]) % mod*;
+return ret;
+}
+for (int i = bell + 1; i <= belr - 1; ++ i) {
+ret = (ret + sum[i] + (R[i] - L[i] + 1) \* tag[i] % mod*) % mod*;
+}
+for (int i = L*; i <= R[bell]; ++ i) ret = (ret + a[i] + tag[bell]) % mod*;
+for (int i = L[belr]; i <= R*; ++ i) ret = (ret + a[i] + tag[belr]) % mod\_;
+return ret;
 }
 //=============================================================
-int main() { 
-  n = read();
-  for (int i = 1; i <= n; ++ i) a[i] = read();
-  PrepareBlock();
-  for (int i = 1; i <= n; ++ i) {
-    int opt = read(), l = read(), r = read(), c = read();
-    if (opt == 0) {
-      Modify(l, r, c);
-    } else {
-      printf("%lld\n", Query(l, r, c + 1));
-    }
-  }
-  return 0; 
+int main() {
+n = read();
+for (int i = 1; i <= n; ++ i) a[i] = read();
+PrepareBlock();
+for (int i = 1; i <= n; ++ i) {
+int opt = read(), l = read(), r = read(), c = read();
+if (opt == 0) {
+Modify(l, r, c);
+} else {
+printf("%lld\n", Query(l, r, c + 1));
+}
+}
+return 0;
 }
 练习
 建议阅读：LibreOJ 数列分块入门 1 ~ ⑨。
@@ -328,7 +332,7 @@ P5356 [Ynoi2017] 由乃打扑克
 根据修改与查询次数的关系，通过调整维护的手段，使总的复杂度达到更低级别。
 
 例一
-bzoj3809. Gty的二逼妹子序列
+bzoj3809. Gty 的二逼妹子序列
 
 给定一长度为 \(n\) 的数列 \(a\)，\(m\) 次询问。
 每次询问给定参数 \(l,r,a,b\)，求区间 \([l,r]\) 内权值 \(\in [a,b]\) 的数的种类数。
@@ -341,7 +345,7 @@ bzoj3809. Gty的二逼妹子序列
 
 发现修改和查询的次数并不平均，而线段树查询修改的复杂度是平均的。
 考虑能否替换成另一种 修改复杂度较小，查询复杂度较大的数据结构。
-想到直接使用数组进行O1修改On查询
+想到直接使用数组进行 O1 修改 On 查询
 
 只有单点修改，考虑对值域分块，维护块内不同的数的个数，可在莫队左右端点移动顺便维护。
 查询时，在查询值域内的完整块直接统计答案，不完整块暴力查询。
@@ -349,10 +353,10 @@ bzoj3809. Gty的二逼妹子序列
 
 代码
 
-//知识点：莫队，分块 
-/*
+//知识点：莫队，分块
+/_
 By:Luckyblock
-*/
+_/
 #include <algorithm>
 #include <cctype>
 #include <cmath>
@@ -364,88 +368,88 @@ const int kMaxm = 1e6 + 10;
 const int kMaxSqrtn = 320 + 10;
 //=============================================================
 struct Que {
-  int l, r, a, b, id;
+int l, r, a, b, id;
 } q[kMaxm];
 int n, m, a[kMaxn];
-int block_size, block_num, L[kMaxn], R[kMaxn], bel[kMaxn];
+int block*size, block_num, L[kMaxn], R[kMaxn], bel[kMaxn];
 int nowl = 1, nowr, cnt[kMaxn], sum[kMaxSqrtn];
 int ans[kMaxm];
 //=============================================================
 inline int read() {
-  int f = 1, w = 0;
-  char ch = getchar();
-  for (; !isdigit(ch); ch = getchar())
-    if (ch == '-') f = -1;
-  for (; isdigit(ch); ch = getchar()) w = (w << 3) + (w << 1) + (ch ^ '0');
-  return f * w;
+int f = 1, w = 0;
+char ch = getchar();
+for (; !isdigit(ch); ch = getchar())
+if (ch == '-') f = -1;
+for (; isdigit(ch); ch = getchar()) w = (w << 3) + (w << 1) + (ch ^ '0');
+return f \* w;
 }
-void GetMax(int &fir_, int sec_) {
-  if (sec_ > fir_) fir_ = sec_;
+void GetMax(int &fir*, int sec*) {
+if (sec* > fir*) fir* = sec*;
 }
-void GetMin(int &fir_, int sec_) {
-  if (sec_ < fir_) fir_ = sec_;
+void GetMin(int &fir*, int sec*) {
+if (sec* < fir*) fir* = sec\_;
 }
 bool CompareQuery(Que fir, Que sec) {
-  if (bel[fir.l] != bel[sec.l]) return bel[fir.l] < bel[sec.l];
-  return fir.r < sec.r;
+if (bel[fir.l] != bel[sec.l]) return bel[fir.l] < bel[sec.l];
+return fir.r < sec.r;
 }
 void Prepare() {
-  n = read(), m = read();
-  for (int i = 1; i <= n; ++ i) a[i] = read();
-  for (int i = 1; i <= m; ++ i) {
-    q[i] = (Que) {read(), read(), read(), read(), i};
-  }
-  block_size = (int) sqrt(n), block_num = n / block_size;
-  for (int i = 1; i <= block_num; ++ i) {
-    L[i] = (i - 1) * block_size + 1;
-    R[i] = i * block_size;
-  }
-  if (R[block_num] < n) {
-    L[++ block_num] = R[block_num - 1] + 1;
-    R[block_num] = n;
-  } 
-  
-  for (int j = 1; j <= block_num; ++ j) {
-    for (int i = L[j]; i <= R[j]; ++ i) {
-      bel[i] = j;
-    }
-  }
-  std :: sort(q + 1, q + m + 1, CompareQuery);
+n = read(), m = read();
+for (int i = 1; i <= n; ++ i) a[i] = read();
+for (int i = 1; i <= m; ++ i) {
+q[i] = (Que) {read(), read(), read(), read(), i};
 }
-int Query(int l_, int r_) {
-  int ret = 0;
-  if (bel[l_] == bel[r_]) {
-    for (int i = l_; i <= r_; ++ i) ret += (cnt[i] > 0);
-    return ret;
-  }
-  for (int i = bel[l_] + 1; i <= bel[r_] - 1; ++ i) {
-    ret += sum[i];
-  }
-  for (int i = l_; i <= R[bel[l_]]; ++ i) ret += (cnt[i] > 0);
-  for (int i = L[bel[r_]]; i <= r_; ++ i) ret += (cnt[i] > 0);
-  return ret;
+block_size = (int) sqrt(n), block_num = n / block_size;
+for (int i = 1; i <= block_num; ++ i) {
+L[i] = (i - 1) _ block_size + 1;
+R[i] = i _ block_size;
 }
-void Delete(int now_) {
-  cnt[a[now_]] --;
-  if (! cnt[a[now_]]) sum[bel[a[now_]]] --;
+if (R[block_num] < n) {
+L[++ block_num] = R[block_num - 1] + 1;
+R[block_num] = n;
 }
-void Add(int now_) {
-  if (! cnt[a[now_]]) sum[bel[a[now_]]] ++;
-  cnt[a[now_]] ++;
+
+for (int j = 1; j <= block*num; ++ j) {
+for (int i = L[j]; i <= R[j]; ++ i) {
+bel[i] = j;
+}
+}
+std :: sort(q + 1, q + m + 1, CompareQuery);
+}
+int Query(int l*, int r*) {
+int ret = 0;
+if (bel[l*] == bel[r_]) {
+for (int i = l*; i <= r*; ++ i) ret += (cnt[i] > 0);
+return ret;
+}
+for (int i = bel[l_] + 1; i <= bel[r_] - 1; ++ i) {
+ret += sum[i];
+}
+for (int i = l*; i <= R[bel[l*]]; ++ i) ret += (cnt[i] > 0);
+for (int i = L[bel[r_]]; i <= r*; ++ i) ret += (cnt[i] > 0);
+return ret;
+}
+void Delete(int now*) {
+cnt[a[now_]] --;
+if (! cnt[a[now_]]) sum[bel[a[now_]]] --;
+}
+void Add(int now*) {
+if (! cnt[a[now*]]) sum[bel[a[now_]]] ++;
+cnt[a[now_]] ++;
 }
 //=============================================================
 int main() {
-  Prepare();
-  for (int i = 1; i <= m; ++ i) {
-    int l = q[i].l, r = q[i].r, a = q[i].a, b = q[i].b, id = q[i].id;
-    while (nowl < l) Delete(nowl), nowl ++;
-    while (nowl > l) nowl --, Add(nowl);
-    while (nowr > r) Delete(nowr), nowr --;
-    while (nowr < r) nowr ++, Add(nowr);
-    ans[q[i].id] = Query(a, b);
-  }
-  for (int i = 1; i <= m; ++ i) printf("%d\n", ans[i]);
-  return 0;
+Prepare();
+for (int i = 1; i <= m; ++ i) {
+int l = q[i].l, r = q[i].r, a = q[i].a, b = q[i].b, id = q[i].id;
+while (nowl < l) Delete(nowl), nowl ++;
+while (nowl > l) nowl --, Add(nowl);
+while (nowr > r) Delete(nowr), nowr --;
+while (nowr < r) nowr ++, Add(nowr);
+ans[q[i].id] = Query(a, b);
+}
+for (int i = 1; i <= m; ++ i) printf("%d\n", ans[i]);
+return 0;
 }
 例二
 可能是集训题的无出处题
@@ -482,16 +486,16 @@ int main() {
 给定一长度为 \(n\) 的数列 \(a\)，\(q\) 次询问。
 每次询问给定参数 \(l,r,x,y\)，求：
 
-\[\sum_{i=l}^{r} [a_i \bmod x = y]
+\[\sum\_{i=l}^{r} [a_i \bmod x = y]
 \]
 
 \(1\le n,q,a_i\le 5\times 10^4\)。
 
-数据范围比较喜人，\(n,q,a_i\) 同级，先考虑暴力。
+数据范围比较喜人，\(n,q,a*i\) 同级，先考虑暴力。
 考虑莫队搞掉区间限制，维护当前区间内各权值出现的次数。
-设 \(cnt_{i}\) 表示当前区间内权值 \(i\) 出现的次数，显然答案为：
+设 \(cnt*{i}\) 表示当前区间内权值 \(i\) 出现的次数，显然答案为：
 
-\[\sum_{k = 1}cnt_{y+kx}
+\[\sum*{k = 1}cnt*{y+kx}
 \]
 
 复杂度 \(O(\text{Unknowen})\)，过不了。
@@ -501,7 +505,7 @@ int main() {
 考虑根号分治，对模数 \(x\le 200\) 和 \(x > 200\) 的询问分开考虑。
 
 对于 \(x\le 200\) 的询问，考虑分块。
-设块大小为 \(\sqrt{n}\)，预处理 \(f_{i,j,k}\) 表示前 i 个块中，% j = k 的数的个数。
+设块大小为 \(\sqrt{n}\)，预处理 \(f\_{i,j,k}\) 表示前 i 个块中，% j = k 的数的个数。
 预处理复杂度上界 \(O(200^3) \approx O(n\sqrt{n})\)。
 询问时整块直接 \(O(1)\) 查询预处理的前缀和，散块暴力。
 单次查询复杂度 \(O(\sqrt{n})\)。
@@ -515,10 +519,10 @@ int main() {
 
 代码
 
-//知识点：分块，莫队 
-/*
+//知识点：分块，莫队
+/_
 By:Luckyblock
-*/
+_/
 #include <algorithm>
 #include <cctype>
 #include <cmath>
@@ -529,133 +533,133 @@ const int kMaxn = 4e4 + 10;
 const int kMaxSqrtn = 210;
 //=============================================================
 struct Query {
-  int l, r, mod, val, id;
+int l, r, mod, val, id;
 } q[kMaxn];
 int n, m, qnum, maxa, a[kMaxn], ans[kMaxn];
-int block_size, block_num, sqrt_maxa, L[kMaxSqrtn], R[kMaxSqrtn], bel[kMaxn];
-int f[kMaxSqrtn][kMaxSqrtn][kMaxSqrtn]; //f[i][j][k]：前 i 个块，% j = k 的数的个数。 
-int nowl = 1, nowr, cnt[kMaxn]; //注意端点的初值 
+int block*size, block_num, sqrt_maxa, L[kMaxSqrtn], R[kMaxSqrtn], bel[kMaxn];
+int f[kMaxSqrtn][kMaxSqrtn][kMaxSqrtn]; //f[i][j][k]：前 i 个块，% j = k 的数的个数。
+int nowl = 1, nowr, cnt[kMaxn]; //注意端点的初值
 //=============================================================
 inline int read() {
-  int f = 1, w = 0;
-  char ch = getchar();
-  for (; !isdigit(ch); ch = getchar())
-    if (ch == '-') f = -1;
-  for (; isdigit(ch); ch = getchar()) w = (w << 3) + (w << 1) + (ch ^ '0');
-  return f * w;
+int f = 1, w = 0;
+char ch = getchar();
+for (; !isdigit(ch); ch = getchar())
+if (ch == '-') f = -1;
+for (; isdigit(ch); ch = getchar()) w = (w << 3) + (w << 1) + (ch ^ '0');
+return f \* w;
 }
-void Getmax(int &fir_, int sec_) {
-  if (sec_ > fir_) fir_ = sec_;
+void Getmax(int &fir*, int sec*) {
+if (sec* > fir*) fir* = sec*;
 }
-void Getmin(int &fir_, int sec_) {
-  if (sec_ < fir_) fir_ = sec_;
+void Getmin(int &fir*, int sec*) {
+if (sec* < fir*) fir* = sec\_;
 }
 void Debug() {
-  printf("%d %d\n***********\n", block_size, block_num);
-  for (int i = 1; i <= block_num; ++ i) {
-    for (int j = 1; j <= block_size; ++ j) {
-      for (int k = 0; k < j; ++ k) {
-        printf("1~%d mod %d = %d appear %d times\n", i, j, k, f[i][j][k]);
-      }
-    }
-  }
+printf("%d %d\n****\*\*\*****\n", block_size, block_num);
+for (int i = 1; i <= block_num; ++ i) {
+for (int j = 1; j <= block_size; ++ j) {
+for (int k = 0; k < j; ++ k) {
+printf("1~%d mod %d = %d appear %d times\n", i, j, k, f[i][j][k]);
+}
+}
+}
 }
 void PrepareBlock() {
-  block_size = (int) sqrt(n);
-  block_num = n / block_size;
-  for (int i = 1; i <= block_num; ++ i) {
-    L[i] = (i - 1) * block_size + 1;
-    R[i] = i * block_size;
-  }
-  if (R[block_num] < n) {
-    ++ block_num;
-    L[block_num] = R[block_num - 1] + 1;
-    R[block_num] = n;
-  }
-  for (int i = 1; i <= block_num; ++ i) {
-    for (int j = L[i]; j <= R[i]; ++ j) {
-      bel[j] = i;
-    }
-  }
-  
-  sqrt_maxa = (int) sqrt(maxa);
-  for (int i = 1; i <= block_num; ++ i) {
-    for (int j = 1; j <= sqrt_maxa; ++ j) {
-      for (int k = L[i]; k <= R[i]; ++ k) {
-        f[i][j][a[k] % j] ++;
-      }
-    }  
-  }
-  for (int i = 1; i <= block_num; ++ i) {
-    for (int j = 1; j <= sqrt_maxa; ++ j) {
-      for (int k = 0; k < j; ++ k) {
-        f[i][j][k] += f[i - 1][j][k];
-      }
-    }
-  }
-//  Debug();
+block_size = (int) sqrt(n);
+block_num = n / block_size;
+for (int i = 1; i <= block_num; ++ i) {
+L[i] = (i - 1) _ block_size + 1;
+R[i] = i _ block_size;
 }
-bool CompareQuery(Query fir_, Query sec_) {
-  if (bel[fir_.l] != bel[sec_.l]) return bel[fir_.l] < bel[sec_.l];
-  return fir_.r < sec_.r;
+if (R[block_num] < n) {
+++ block_num;
+L[block_num] = R[block_num - 1] + 1;
+R[block_num] = n;
 }
-void Solve(int l_, int r_, int mod_, int val_, int id_) {
-  if (bel[l_] == bel[r_]) {
-    for (int i = l_; i <= r_; ++ i) {
-      ans[id_] += (a[i] % mod_ == val_);
-    }
-    return ;
-  }
-  int bell = bel[l_], belr = bel[r_];
-  ans[id_] += f[belr - 1][mod_][val_] - f[bell][mod_][val_];
-  for (int i = l_; i <= R[bell]; ++ i) {
-    ans[id_] += (a[i] % mod_ == val_);
-  }
-  for (int i = L[belr]; i <= r_; ++ i) {
-    ans[id_] += (a[i] % mod_ == val_);
-  }
+for (int i = 1; i <= block_num; ++ i) {
+for (int j = L[i]; j <= R[i]; ++ j) {
+bel[j] = i;
 }
-void Add(int pos_) {
-  cnt[a[pos_]] ++;
 }
-void Del(int pos_) {
-  cnt[a[pos_]] --;
+
+sqrt*maxa = (int) sqrt(maxa);
+for (int i = 1; i <= block_num; ++ i) {
+for (int j = 1; j <= sqrt_maxa; ++ j) {
+for (int k = L[i]; k <= R[i]; ++ k) {
+f[i][j][a[k] % j] ++;
+}
+}  
+ }
+for (int i = 1; i <= block_num; ++ i) {
+for (int j = 1; j <= sqrt_maxa; ++ j) {
+for (int k = 0; k < j; ++ k) {
+f[i][j][k] += f[i - 1][j][k];
+}
+}
+}
+// Debug();
+}
+bool CompareQuery(Query fir*, Query sec*) {
+if (bel[fir*.l] != bel[sec_.l]) return bel[fir_.l] < bel[sec_.l];
+return fir*.r < sec*.r;
+}
+void Solve(int l*, int r*, int mod*, int val*, int id*) {
+if (bel[l*] == bel[r_]) {
+for (int i = l*; i <= r*; ++ i) {
+ans[id_] += (a[i] % mod* == val*);
+}
+return ;
+}
+int bell = bel[l_], belr = bel[r_];
+ans[id_] += f[belr - 1][mod_][val_] - f[bell][mod_][val_];
+for (int i = l*; i <= R[bell]; ++ i) {
+ans[id*] += (a[i] % mod* == val*);
+}
+for (int i = L[belr]; i <= r*; ++ i) {
+ans[id*] += (a[i] % mod* == val*);
+}
+}
+void Add(int pos*) {
+cnt[a[pos*]] ++;
+}
+void Del(int pos*) {
+cnt[a[pos*]] --;
 }
 //=============================================================
 int main() {
-  n = read(), m = read();
-  for (int i = 1; i <= n; ++ i) {
-    a[i] = read();
-    Getmax(maxa, a[i]); 
-  }
-  PrepareBlock();
-  
-  for (int i = 1; i <= m; ++ i) {
-    int l = read() + 1, r = read() + 1;
-    int mod = read(), val = read();
-    if (mod <= sqrt_maxa) {
-      Solve(l, r, mod, val, i);
-    } else {
-      q[++ qnum] = (Query) {l, r, mod, val, i};  
-    }
-  }
-  
-  std :: sort(q + 1, q + qnum + 1, CompareQuery);
-  for (int i = 1; i <= qnum; ++ i) {
-    int l = q[i].l, r = q[i].r, mod = q[i].mod, val = q[i].val;
-    while (nowl > l) -- nowl, Add(nowl);
-    while (nowr < r) ++ nowr, Add(nowr);
-    while (nowl < l) Del(nowl), ++ nowl;
-    while (nowr > r) Del(nowr), -- nowr;
-    for (int j = val; j <= maxa; j += mod) {
-      ans[q[i].id] += cnt[j];
-    }
-  }
-  for (int i = 1; i <= m; ++ i) printf("%d\n", ans[i]);
-  return 0;
+n = read(), m = read();
+for (int i = 1; i <= n; ++ i) {
+a[i] = read();
+Getmax(maxa, a[i]);
+}
+PrepareBlock();
+
+for (int i = 1; i <= m; ++ i) {
+int l = read() + 1, r = read() + 1;
+int mod = read(), val = read();
+if (mod <= sqrt_maxa) {
+Solve(l, r, mod, val, i);
+} else {
+q[++ qnum] = (Query) {l, r, mod, val, i};  
+ }
+}
+
+std :: sort(q + 1, q + qnum + 1, CompareQuery);
+for (int i = 1; i <= qnum; ++ i) {
+int l = q[i].l, r = q[i].r, mod = q[i].mod, val = q[i].val;
+while (nowl > l) -- nowl, Add(nowl);
+while (nowr < r) ++ nowr, Add(nowr);
+while (nowl < l) Del(nowl), ++ nowl;
+while (nowr > r) Del(nowr), -- nowr;
+for (int j = val; j <= maxa; j += mod) {
+ans[q[i].id] += cnt[j];
+}
+}
+for (int i = 1; i <= m; ++ i) printf("%d\n", ans[i]);
+return 0;
 }
 例二
-bzoj3744. Gty的妹子序列
+bzoj3744. Gty 的妹子序列
 
 给定一长度为 \(n\) 的数列 \(a\)，\(m\) 次查询操作。
 每次查询给定参数 \(l,r\)，求区间 \([l,r]\) 内的逆序对数。
@@ -677,12 +681,12 @@ bzoj3744. Gty的妹子序列
 
 发现预处理整块之间的逆序对数时，需要遍历整个序列。
 太浪费了！考虑顺便预处理第 3 项。
-设 \(f_{l,r}\) 表示整块 \(l\sim r\) 的逆序对数。
+设 \(f*{l,r}\) 表示整块 \(l\sim r\) 的逆序对数。
 对每个块都维护一个权值树状数组，在枚举到块 \(j\) 的某元素时，枚举之前块的树状数组。
-设枚举到块 \(i\)，查询比该元素大的数的个数，即为当前元素 与 块 \(i\) 的逆序对数，累加到 \(f_{j,i}\) 中。
-这样做完后，\(f_{i,j}\) 存的只是块 \(i\) 和块 \(j\) 的逆序对数，DP 处理 \(f\)，有转移：
+设枚举到块 \(i\)，查询比该元素大的数的个数，即为当前元素 与 块 \(i\) 的逆序对数，累加到 \(f*{j,i}\) 中。
+这样做完后，\(f\_{i,j}\) 存的只是块 \(i\) 和块 \(j\) 的逆序对数，DP 处理 \(f\)，有转移：
 
-\[f_{i,j} = f_{i,j} + f_{i,j-1} + \sum_{k=i+1}^{j}{f_{k,j}}
+\[f*{i,j} = f*{i,j} + f*{i,j-1} + \sum*{k=i+1}^{j}{f\_{k,j}}
 \]
 
 需要枚举每块的每一个数再枚举所有之前的块再在树状数组中查询。
@@ -704,7 +708,7 @@ bzoj3744. Gty的妹子序列
 O(n)\) 级别。
 而预处理过程中枚举到了所有元素，且求出了它与之前所有块的逆序对数，却把信息压缩成这样，这显然不大合适。
 
-考虑修改预处理对象，设 \(f_{l,r}\) 表示，从块 \(l\) 的开头，到 位置 \(r\) 的逆序对数。
+考虑修改预处理对象，设 \(f\_{l,r}\) 表示，从块 \(l\) 的开头，到 位置 \(r\) 的逆序对数。
 预处理时枚举所有块，从它的开头，一直扫到整个数列的尾部，暴力用树状数组求逆序对。
 复杂度 \(O(n\sqrt{n}\log n)\)。
 
@@ -730,10 +734,10 @@ O(n)\) 级别。
 
 代码
 
-//知识点：分块 
-/*
+//知识点：分块
+/_
 By:Luckyblock
-*/
+_/
 #include <algorithm>
 #include <cctype>
 #include <cmath>
@@ -745,148 +749,148 @@ const int kMaxm = 5e5;
 const int kMaxn = 5e5 + 10;
 const int kMaxSqrtn = 230 + 10;
 //=============================================================
-int n, m, block_size, block_num;
+int n, m, block*size, block_num;
 int root[kMaxn];
 int maxa, map[kMaxn], a[kMaxn], data[kMaxn];
 int bel[kMaxn], L[kMaxSqrtn], R[kMaxSqrtn], f[kMaxSqrtn][kMaxn];
 //=============================================================
 inline int read() {
-  int f = 1, w = 0;
-  char ch = getchar();
-  for (; !isdigit(ch); ch = getchar())
-    if (ch == '-') f = -1;
-  for (; isdigit(ch); ch = getchar()) w = (w << 3) + (w << 1) + (ch ^ '0');
-  return f * w;
+int f = 1, w = 0;
+char ch = getchar();
+for (; !isdigit(ch); ch = getchar())
+if (ch == '-') f = -1;
+for (; isdigit(ch); ch = getchar()) w = (w << 3) + (w << 1) + (ch ^ '0');
+return f \* w;
 }
-void GetMax(int &fir_, int sec_) {
-  if (sec_ > fir_) fir_ = sec_;
+void GetMax(int &fir*, int sec*) {
+if (sec* > fir*) fir* = sec*;
 }
-void GetMin(int &fir_, int sec_) {
-  if (sec_ < fir_) fir_ = sec_;
+void GetMin(int &fir*, int sec*) {
+if (sec* < fir*) fir* = sec*;
 }
 //ScientificConceptOfDevelopmentTree
 namespace HjtTree{
-  #define ls (lson[now_])
-  #define rs (rson[now_])
-  #define mid (L_+R_>>1)
-  int node_num, lson[kMaxn << 4], rson[kMaxn << 4], size[kMaxn << 4];
-  void Insert(int &now_, int pre_, int L_, int R_, int val_) {
-	  now_ = ++ node_num;
-	  size[now_] = size[pre_] + 1;
-	  ls = lson[pre_], rs = rson[pre_];
-	  if (L_ == R_) return ;
-	  if (val_ <= mid) Insert(ls, lson[pre_], L_, mid, val_);
-	  else Insert(rs, rson[pre_], mid + 1, R_, val_);
-  }
-  int Query(int r_, int l_, int L_, int R_, int ql_, int qr_) {
-	  if (ql_ > qr_) return 0;
-    if (ql_ <= L_ && R_ <= qr_) return size[r_] - size[l_];
-	  int ret = 0;
-    if (ql_ <= mid) ret += Query(lson[r_], lson[l_], L_, mid, ql_, qr_);
-	  if (qr_ > mid) ret += Query(rson[r_], rson[l_], mid + 1, R_, ql_, qr_);
-    return ret;
-  }
+#define ls (lson[now*])
+#define rs (rson[now_])
+#define mid (L*+R*>>1)
+int node*num, lson[kMaxn << 4], rson[kMaxn << 4], size[kMaxn << 4];
+void Insert(int &now*, int pre*, int L*, int R*, int val*) {
+now* = ++ node_num;
+size[now*] = size[pre_] + 1;
+ls = lson[pre_], rs = rson[pre_];
+if (L* == R*) return ;
+if (val* <= mid) Insert(ls, lson[pre*], L*, mid, val*);
+else Insert(rs, rson[pre_], mid + 1, R*, val*);
+}
+int Query(int r*, int l*, int L*, int R*, int ql*, int qr*) {
+if (ql* > qr*) return 0;
+if (ql* <= L* && R* <= qr*) return size[r_] - size[l_];
+int ret = 0;
+if (ql* <= mid) ret += Query(lson[r*], lson[l_], L*, mid, ql*, qr*);
+if (qr* > mid) ret += Query(rson[r_], rson[l_], mid + 1, R*, ql*, qr*);
+return ret;
+}
 }
 struct TreeArray {
-  #define lowbit(x) (x&-x)
-  int time, ti[kMaxm + 10], t[kMaxm + 10];
-  void Clear () {
-    time ++;
-  }
-  void Add(int pos_, int val_) {
-    for (; pos_ <= maxa; pos_ += lowbit(pos_)) {
-      if (ti[pos_] != time) {
-        t[pos_] = 0;
-        ti[pos_] = time;
-      }
-      t[pos_] += val_;
-    }
-  }
-  int Sum(int pos_) {
-    int ret = 0;
-    for (; pos_; pos_ -= lowbit(pos_)) {
-      if (ti[pos_] != time) {
-        t[pos_] = 0;
-        ti[pos_] = time;
-      }
-      ret += t[pos_];
-    }
-    return ret;
-  }
+#define lowbit(x) (x&-x)
+int time, ti[kMaxm + 10], t[kMaxm + 10];
+void Clear () {
+time ++;
+}
+void Add(int pos*, int val*) {
+for (; pos* <= maxa; pos* += lowbit(pos*)) {
+if (ti[pos_] != time) {
+t[pos_] = 0;
+ti[pos_] = time;
+}
+t[pos_] += val*;
+}
+}
+int Sum(int pos*) {
+int ret = 0;
+for (; pos*; pos* -= lowbit(pos*)) {
+if (ti[pos*] != time) {
+t[pos_] = 0;
+ti[pos_] = time;
+}
+ret += t[pos_];
+}
+return ret;
+}
 } tmp;
 void Prepare() {
-  n = read();
-  for (int i = 1; i <= n; ++ i) {
-    a[i] = data[i] = read();
-  }
-  data[0] = - 0x3f3f3f3f;
-  std :: sort(data + 1, data + n + 1);
-  for (int i = 1; i <= n; ++ i) {
-    if (data[i] != data[i - 1]) maxa ++;
-    data[maxa] = data[i];
-  }
-  for (int i = 1; i <= n; ++ i) {
-    int ori = a[i];
-    a[i] = std :: lower_bound(data + 1, data + maxa + 1, ori) - data;
-    map[a[i]] = ori;
-  }
+n = read();
+for (int i = 1; i <= n; ++ i) {
+a[i] = data[i] = read();
+}
+data[0] = - 0x3f3f3f3f;
+std :: sort(data + 1, data + n + 1);
+for (int i = 1; i <= n; ++ i) {
+if (data[i] != data[i - 1]) maxa ++;
+data[maxa] = data[i];
+}
+for (int i = 1; i <= n; ++ i) {
+int ori = a[i];
+a[i] = std :: lower_bound(data + 1, data + maxa + 1, ori) - data;
+map[a[i]] = ori;
+}
 }
 void PrepareBlock() {
-  int i = 1;
-  block_size = (int) sqrt(n);
-  block_num = n / block_size;
-  for (i = 1; i <= block_num; ++ i) {
-    L[i] = (i - 1) * block_size + 1;
-    R[i] = i * block_size;
-  }
-  if (R[block_num] < n) {
-    L[++ block_num] = R[block_num - 1] + 1;
-    R[block_num] = n;
-  } 
-  
-  for (int j = 1; j <= block_num; ++ j) {
-    for (int i = L[j]; i <= R[j]; ++ i) {
-      bel[i] = j;
-    }
-  }
-  for (int l = 1; l <= block_num; ++ l) {
-    tmp.Clear();
-    for (int r = L[l]; r <= n; ++ r) {
-      f[l][r] = f[l][r - 1] + tmp.Sum(maxa) - tmp.Sum(a[r]);
-      tmp.Add(a[r], 1);
-    }
-  }
+int i = 1;
+block_size = (int) sqrt(n);
+block_num = n / block_size;
+for (i = 1; i <= block_num; ++ i) {
+L[i] = (i - 1) _ block_size + 1;
+R[i] = i _ block_size;
+}
+if (R[block_num] < n) {
+L[++ block_num] = R[block_num - 1] + 1;
+R[block_num] = n;
+}
+
+for (int j = 1; j <= block_num; ++ j) {
+for (int i = L[j]; i <= R[j]; ++ i) {
+bel[i] = j;
+}
+}
+for (int l = 1; l <= block_num; ++ l) {
+tmp.Clear();
+for (int r = L[l]; r <= n; ++ r) {
+f[l][r] = f[l][r - 1] + tmp.Sum(maxa) - tmp.Sum(a[r]);
+tmp.Add(a[r], 1);
+}
+}
 }
 //=============================================================
 int main() {
-  Prepare();
-  PrepareBlock();
-  for (int i = 1; i <= n; ++ i) {
-    HjtTree :: Insert(root[i], root[i - 1], 1, maxa, a[i]);
-  }
-  m = read();
-  int lastans = 0;
-  while (m --) {
-    int l = read() ^ lastans, r = read() ^ lastans;
-    lastans = 0;
-    if (l > r) {
-      printf("0\n");
-      continue ;
-    }
-    if (bel[l] == bel[r]) {
-      tmp.Clear();
-      for (int i = l; i <= r; ++ i) {
-        lastans += tmp.Sum(maxa) - tmp.Sum(a[i]);
-        tmp.Add(a[i], 1);
-      }
-      printf("%d\n", lastans);
-      continue ;
-    }
-    lastans = f[bel[l] + 1][r]; 
-    for (int i = l; i <= R[bel[l]]; ++ i) {
-      lastans += HjtTree :: Query(root[r], root[i], 1, maxa, 1, a[i] - 1);
-    }
-    printf("%d\n", lastans);
-  }
-  return 0;
+Prepare();
+PrepareBlock();
+for (int i = 1; i <= n; ++ i) {
+HjtTree :: Insert(root[i], root[i - 1], 1, maxa, a[i]);
+}
+m = read();
+int lastans = 0;
+while (m --) {
+int l = read() ^ lastans, r = read() ^ lastans;
+lastans = 0;
+if (l > r) {
+printf("0\n");
+continue ;
+}
+if (bel[l] == bel[r]) {
+tmp.Clear();
+for (int i = l; i <= r; ++ i) {
+lastans += tmp.Sum(maxa) - tmp.Sum(a[i]);
+tmp.Add(a[i], 1);
+}
+printf("%d\n", lastans);
+continue ;
+}
+lastans = f[bel[l] + 1][r];
+for (int i = l; i <= R[bel[l]]; ++ i) {
+lastans += HjtTree :: Query(root[r], root[i], 1, maxa, 1, a[i] - 1);
+}
+printf("%d\n", lastans);
+}
+return 0;
 }

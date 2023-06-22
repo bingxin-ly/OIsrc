@@ -8,10 +8,6 @@ pair<int, int> arr[N];
 int force(int l, int r, int v, bool type)
 {
     int id = pos[l], res = 0;
-    // std::copy, std::move is the C++ way.
-    // vector::date() returns a typical(C-like) pointer.
-    // memcpy is the C (and the old, obsolete and stinky "traditional C++") way.
-    // for is the fools' way. DO NOT DO THIS.
     if (type)
     {
         for (int i = st[id]; i <= ed[id]; i++)

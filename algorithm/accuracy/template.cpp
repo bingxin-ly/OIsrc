@@ -167,9 +167,9 @@ Int operator%(Int a, const Int &b)
 {
     return a %= b;
 }
-// 顺手实现一个快速幂，可以看到和普通快速幂几乎无异
 Int pow(const Int &n, const Int &k)
 {
+    // 顺手实现一个快速幂，可以看到和普通快速幂几乎无异
     if (k.empty())
         return 1;
     if (k == 2)

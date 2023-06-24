@@ -23,7 +23,7 @@ void bfs()
             while ((it = str.find(pa, it)) != string::npos)
             {
                 string cpy = str;
-                cpy.replace(it, pa.size(), rp); // 第二个参数填 number，STL真乱
+                cpy.replace(it, pa.size(), rp); // 第二个参数填 number
 
                 if (!vis.count(cpy)) // 用来去重
                     q.emplace(cpy, step + 1), vis.insert(cpy);

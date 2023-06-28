@@ -19,7 +19,7 @@ inline bool merge(int x, int y)
 }
 
 auto cmp = [](const auto &x, const auto &y)
-{ return x.w < y.w; };
+{ return x.w < y.w || (!(y.w < x.w) && x.c > y.c); };
 void merge_sort(int x)
 {
     for (int i = 1; i <= szb; i++)

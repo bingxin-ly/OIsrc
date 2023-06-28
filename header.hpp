@@ -79,6 +79,46 @@ namespace IO
 }
 using IO::input;
 
+namespace IO
+{
+    const int S = 1 << 20;
+    char B[S], *H = B, *T = B;
+    inline int gc() { return (H == T) && (T = (H = B) + fread(B, 1, S, stdin), H == T) ? EOF : *H++; }
+    template <typename T = int>
+    inline T input(T *p = nullptr)
+    {
+        static T *o = new T;
+        !p && (p = o), *p = 0;
+        int q = 1, c;
+        while ((c = gc()) < '0' || c > '9')
+            (c == '-') && (q = -1);
+        *p = c ^ '0';
+        while ((c = gc()) >= '0' && c <= '9')
+            *p = *p * 10 + (c ^ '0');
+        return *p *= q;
+    }
+    template <typename T, typename... Args>
+    inline void input(const T *const &p, const Args &...args) { input(p), input(args...); }
+
+    template <typename T>
+    inline void write(T x)
+    {
+        (x < 0) && (putchar('-'), x = -x);
+        (x > 9) && (write(x / 10), true);
+        putchar(x % 10 + '0');
+    }
+}
+using IO::input;
+using IO::write;
+
+/* signed main()
+{
+    int a = input(), b;
+    input(&b);
+    write(a + b);
+    return 0;
+} */
+
 inline void write(int x)
 {
     if (x < 0)

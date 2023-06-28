@@ -37,14 +37,9 @@ int merge(int left, int right)
 
     for (int i = 0; i < poi; i++)
         for (int j = i + 1;
-             j < poi &&
-             points[middle[j]].y - points[middle[i]].y < sqrt(dis);
+             j < poi && points[middle[j]].y - points[middle[i]].y < sqrt(dis);
              j++)
-        {
-            int tmp = calc_dist(middle[i], middle[j]);
-            if (tmp < dis)
-                dis = tmp;
-        }
+            dis = min(dis, calc_dist(middle[i], middle[j]));
     return dis;
 }
 
@@ -58,6 +53,6 @@ signed main()
     sort(points, points + n, [](const auto &a, const auto &b)
          { return a.x == b.x ? a.y < b.y : a.x < b.x; });
 
-    cout << fixed << setprecision(0) << /* sqrt */(merge(0, n - 1));
+    cout << fixed << setprecision(0) << /* sqrt */ (merge(0, n - 1));
     return 0;
 }

@@ -12,9 +12,8 @@ void dfs(int x)
         cout << endl;
         return;
     }
+    v.emplace_back(x), dfs(x + 1), v.pop_back();
     dfs(x + 1);
-    v.emplace_back(x), dfs(x + 1);
-    v.pop_back();
 }
 
 signed main()

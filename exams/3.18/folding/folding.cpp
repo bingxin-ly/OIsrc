@@ -6,8 +6,13 @@ const int N = 110;
 int n, ans, f[N][N];
 char str[N];
 
-auto cal = [](int n)
-{int cnt = 0; for (; n; n /= 10) cnt++; return cnt + 2; };
+int cal(int n)
+{
+    int cnt = 0;
+    for (; n; n /= 10)
+        cnt++;
+    return cnt + 2;
+}
 
 bool check(int l, int r, int rr)
 {

@@ -144,7 +144,7 @@ def recv():
 
 def access():
     global sock
-    HOST, PORT = '192.168.6.205', 12332
+    HOST, PORT = '192.168.13.119', 12332
     sock = socket(AF_INET, SOCK_STREAM)
     sock.connect((HOST, PORT))
 

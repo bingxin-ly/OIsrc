@@ -102,7 +102,7 @@ class ATPHandler(BaseRequestHandler):
 
 
 if __name__ == '__main__':
-    s = ThreadingTCPServer(('192.168.6.205', 12332), ATPHandler)
+    s = ThreadingTCPServer(('192.168.13.119', 12332), ATPHandler)
     logger = setup_logger()
     logger.info('Server running...')
     s.serve_forever()

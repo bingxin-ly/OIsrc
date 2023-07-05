@@ -1,4 +1,5 @@
-doc.md
+.in
+.out
 *.exe
 
 .cph

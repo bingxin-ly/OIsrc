@@ -1,173 +1,77 @@
-#include <bits/stdc++.h>
-#define int long long
-using namespace std;
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+#include<iostream>
+#define maxn 100
 
-const int N = 1e6 + 10;
-int n, m, Q, x, y;
-struct FHQ
-{
-    int tot;
-    int stk[N], top = 0, last;
-    int root[N], Root;
-
-    struct Tree
-    {
-        int L, R, key;  // 左右断电
-        int l, r, size; // 值域
-    } tr[N << 1];
-
-    inline void update(int x)
-    {
-        tr[x].size = tr[tr[x].L].size + tr[tr[x].R].size + tr[x].r - tr[x].l + 1;
+inline void qr(int &x) {
+    char ch=getchar();int f=1;
+    while(ch>'9'||ch<'0')    {
+        if(ch=='-')    f=-1;
+        ch=getchar();
     }
+    while(ch>='0'&&ch<='9')    x=(x<<1)+(x<<3)+(ch^48),ch=getchar();
+    x*=f;
+    return;
+}
 
-    inline void get_size(int pos)
-    {
-        if (tr[pos].L)
-            get_size(tr[pos].L);
-        if (tr[pos].R)
-            get_size(tr[pos].R);
-        update(pos);
+inline int max(const int &a,const int &b) {if(a>b) return a;else return b;}
+inline int min(const int &a,const int &b) {if(a<b) return a;else return b;}
+inline int abs(const int &x) {if(x>0) return x;else return -x;}
+
+inline void swap(int &a,int &b) {
+    int c=a;a=b;b=c;return;
+}
+
+int n,a,b,c,frog[maxn];
+
+struct Block {
+    int h,l1,l2;
+};
+Block block[maxn];int top,cnt,ans;
+
+inline void add(int x,int y,int z) {
+    block[++top].h=x;block[top].l1=y;block[top].l2=z;
+    if(block[top].l1<block[top].l2)    swap(block[top].l2,block[top].l1);
+    block[++top].h=y;block[top].l1=x;block[top].l2=z;
+    if(block[top].l1<block[top].l2)    swap(block[top].l2,block[top].l1);
+    block[++top].h=z;block[top].l1=x;block[top].l2=y;
+    if(block[top].l1<block[top].l2)    swap(block[top].l2,block[top].l1);
+}
+
+void clear() {
+    std::memset(block,0,sizeof block);top=0;
+    std::memset(frog,0,sizeof frog);ans=0;
+}
+
+inline bool cmp(const Block &a,const Block &b) {
+    int sa=a.l1+a.l2,sb=b.l1+b.l2;
+    return sa<sb;
+}
+
+inline bool judge(const Block &a,const Block &b) {
+    return (a.l1<b.l1&&a.l2<b.l2)||(a.l2<b.l1&&a.l1<b.l2);
+}
+
+int main() {
+    qr(n);
+    while(n) {
+        clear();
+        for(int i=1;i<=n;++i) {
+            a=b=c=0;qr(a);qr(b);qr(c);
+            add(a,b,c);
+        }
+        std::sort(block+1,block+1+top,cmp);
+        for(int i=1;i<=top;++i) {
+            int &emm=block[i].h;
+            frog[i]=emm;
+            for(int j=1;j<i;++j) {
+                if(judge(block[j],block[i])) frog[i]=max(frog[i],frog[j]+emm);
+            }
+            ans=max(ans,frog[i]);
+        }
+        printf("Case %d: maximum height = %d\n",++cnt,ans);
+        n=0;qr(n);
     }
-
-    inline void build()
-    {
-        for (int i = 1; i <= n; i++)
-        {
-            root[i] = i;
-            tr[++tot] = (Tree){0, 0, rand(), (i - 1) * m + 1, i * m - 1, m - 1};
-        }
-
-        for (int i = 1; i <= n; i++)
-        {
-            tr[++tot] = (Tree){0, 0, rand(), i * m, i * m, 1};
-            last = 0;
-            while (top && tr[tot].key > tr[stk[top]].key)
-                last = stk[top--];
-            tr[tot].L = last;
-            tr[stk[top]].R = tot;
-            stk[++top] = tot;
-        }
-        Root = stk[1];
-        get_size(Root);
-    }
-
-    inline void splitl(int pos, int k, int &x, int &y)
-    {
-        if (!pos)
-        {
-            x = y = 0;
-            return;
-        }
-        if (k <= tr[tr[pos].L].size + tr[pos].r - tr[pos].l + 1)
-        {
-            y = pos;
-            splitl(tr[pos].L, k, x, tr[pos].L);
-        }
-        else
-        {
-            x = pos;
-            splitl(tr[pos].R, k - (tr[tr[pos].L].size + tr[pos].r - tr[pos].l + 1), tr[pos].R, y);
-        }
-        update(pos);
-    }
-
-    inline void splitr(int pos, int k, int &x, int &y)
-    {
-        if (!pos)
-        {
-            x = y = 0;
-            return;
-        }
-        if (k <= tr[tr[pos].L].size)
-        {
-            y = pos;
-            splitr(tr[pos].L, k, x, tr[pos].L);
-        }
-        else
-        {
-            x = pos;
-            splitr(tr[pos].R, k - (tr[tr[pos].L].size + tr[tr[pos].L].r - tr[tr[pos].L].l + 1), tr[pos].R, y);
-        }
-        update(pos);
-    }
-
-    inline int merge(int x, int y)
-    {
-        if (!(x && y))
-            return x | y;
-        if (tr[x].key > tr[y].key)
-        {
-            tr[x].R = merge(tr[x].R, y);
-            update(x);
-            return x;
-        }
-        else
-        {
-            tr[y].L = merge(x, tr[y].L);
-            update(y);
-            return y;
-        }
-    }
-
-    inline void splitTree(int p, int k, int &L, int &M, int &R)
-    {
-        L = M = R = 0;
-        if (k > 1)
-        {
-            tr[++tot] = (Tree){0, 0, rand(), tr[p].l, tr[p].l + k - 2, k - 1};
-            L = tot;
-        }
-        if (k < tr[p].size)
-        {
-            tr[++tot] = (Tree){0, 0, rand(), tr[p].l + k, tr[p].r, tr[p].r - tr[p].l - k + 1};
-            R = tot;
-        }
-        tr[++tot] = (Tree){0, 0, rand(), tr[p].l + k - 1, tr[p].l + k - 1, 1};
-        M = tot;
-    }
-
-} fhq;
-
-signed main()
-{
-    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
-    cin >> n >> m >> Q;
-
-    fhq.build();
-    for (int i = 1; i <= Q; i++)
-    {
-        cin >> x >> y;
-        if (y != m)
-        {
-            int a, b, c, d, e, f, g; // 直接拆
-            fhq.splitl(fhq.root[x], y, a, b);
-            fhq.splitr(b, 1, b, c);
-            fhq.splitTree(b, y - fhq.tr[a].size, d, e, f);
-
-            cout << (fhq.tr[e].l) << '\n';
-
-            a = fhq.merge(a, d); // 得合上
-            c = fhq.merge(f, c);
-
-            fhq.splitl(fhq.Root, x, d, f); // 然后再更新
-            fhq.splitr(f, 1, f, g);
-            fhq.root[x] = fhq.merge(fhq.merge(a, c), f);
-            fhq.Root = fhq.merge(fhq.merge(d, g), e);
-        }
-
-        else // 特殊情况特殊处理
-        {
-            int a, b, c;
-
-            fhq.splitl(fhq.Root, x, a, b);
-            fhq.splitr(b, 1, b, c);
-
-            cout << (fhq.tr[b].l) << '\n';
-
-            fhq.Root = fhq.merge(fhq.merge(a, c), b);
-        }
-    }
-
     return 0;
 }

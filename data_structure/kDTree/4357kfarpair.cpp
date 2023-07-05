@@ -1,19 +1,18 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int N = 1e5 + 10;
+constexpr int N = 1e5 + 10;
 long long n, k;
-#define x first
-#define y second
-pair<long long, long long> ps[N];
+struct poi
+{
+    long long x, y;
+} ps[N];
 priority_queue<long long, vector<long long>, greater<>> q;
 
 long long ls[N], rs[N], L[N], R[N], D[N], U[N]; // left/right/down/up
 inline long long squ(long long $) { return $ * $; }
-void maintain(int u)
+void pushup(int u)
 {
-    L[u] = R[u] = ps[u].x;
-    D[u] = U[u] = ps[u].y;
     if (ls[u])
         L[u] = min(L[u], L[ls[u]]), R[u] = max(R[u], R[ls[u]]),
         D[u] = min(D[u], D[ls[u]]), U[u] = max(U[u], U[ls[u]]);
@@ -32,11 +31,13 @@ int build(int l, int r)
     av1 /= (r - l + 1), av2 /= (r - l + 1);
     for (int i = l; i <= r; i++)
         va1 += squ(av1 - ps[i].x), va2 += squ(av2 - ps[i].y);
-    nth_element(ps + l, ps + mid, ps + r + 1,
-                [va1, va2](const auto &a, const auto &b)
+    nth_element(ps + l, ps + mid, ps + r + 1, // 更好的写法：参见4475
+                [va1, va2](const poi &a, const poi &b)
                 { return va1 > va2 ? a.x < b.x : a.y < b.y; });
+    // 该初始化信息了
+    L[mid] = R[mid] = ps[mid].x, D[mid] = U[mid] = ps[mid].y;
     ls[mid] = build(l, mid - 1), rs[mid] = build(mid + 1, r);
-    maintain(mid);
+    pushup(mid);
     return mid;
 }
 

@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int N = 2e5 + 10;
+constexpr int N = 2e5 + 10;
 struct
 {
     int x, y, v;
@@ -12,7 +12,7 @@ int tot, g[N], siz[N], sum[N];
 bool d[N];
 
 inline long long squ(long long $) { return $ * $; }
-void maintain(int u)
+void pushup(int u)
 {
     siz[u] = siz[ls[u]] + siz[rs[u]] + 1;
     sum[u] = sum[ls[u]] + sum[rs[u]] + s[u].v;
@@ -41,7 +41,7 @@ int build(int l, int r)
                 [va1, va2](const auto &a, const auto &b)
                 { return va1 > va2 ? s[a].x < s[b].x : s[a].y < s[b].y; });
     ls[g[mid]] = build(l, mid - 1), rs[g[mid]] = build(mid + 1, r);
-    maintain(g[mid]);
+    pushup(g[mid]);
     return g[mid];
 }
 void inorder(int u)
@@ -58,7 +58,7 @@ void rebuild(int &u)
 void insert(int &u, int v)
 {
     if (!u)
-        return u = v, maintain(u);
+        return u = v, pushup(u);
 
     if (d[u])
     {
@@ -74,7 +74,7 @@ void insert(int &u, int v)
         else
             insert(rs[u], v);
     }
-    maintain(u);
+    pushup(u);
     if (alpha * siz[u] <= max(siz[ls[u]], siz[rs[u]]))
         rebuild(u);
 }

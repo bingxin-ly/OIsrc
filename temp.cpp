@@ -1,77 +1,52 @@
-#include<cstdio>
-#include<cstring>
-#include<algorithm>
-#include<iostream>
-#define maxn 100
+#include <bits/stdc++.h>
+using namespace std;
+#define endl '\n'
+#ifndef ONLINE_JUDGE
+ifstream fin("D:\\OIsrc\\.in");
+ofstream fout("D:\\OIsrc\\std.out");
+#define cin fin
+#define cout fout
+#undef endl
+#endif
 
-inline void qr(int &x) {
-    char ch=getchar();int f=1;
-    while(ch>'9'||ch<'0')    {
-        if(ch=='-')    f=-1;
-        ch=getchar();
-    }
-    while(ch>='0'&&ch<='9')    x=(x<<1)+(x<<3)+(ch^48),ch=getchar();
-    x*=f;
-    return;
-}
-
-inline int max(const int &a,const int &b) {if(a>b) return a;else return b;}
-inline int min(const int &a,const int &b) {if(a<b) return a;else return b;}
-inline int abs(const int &x) {if(x>0) return x;else return -x;}
-
-inline void swap(int &a,int &b) {
-    int c=a;a=b;b=c;return;
-}
-
-int n,a,b,c,frog[maxn];
-
-struct Block {
-    int h,l1,l2;
-};
-Block block[maxn];int top,cnt,ans;
-
-inline void add(int x,int y,int z) {
-    block[++top].h=x;block[top].l1=y;block[top].l2=z;
-    if(block[top].l1<block[top].l2)    swap(block[top].l2,block[top].l1);
-    block[++top].h=y;block[top].l1=x;block[top].l2=z;
-    if(block[top].l1<block[top].l2)    swap(block[top].l2,block[top].l1);
-    block[++top].h=z;block[top].l1=x;block[top].l2=y;
-    if(block[top].l1<block[top].l2)    swap(block[top].l2,block[top].l1);
-}
-
-void clear() {
-    std::memset(block,0,sizeof block);top=0;
-    std::memset(frog,0,sizeof frog);ans=0;
-}
-
-inline bool cmp(const Block &a,const Block &b) {
-    int sa=a.l1+a.l2,sb=b.l1+b.l2;
-    return sa<sb;
-}
-
-inline bool judge(const Block &a,const Block &b) {
-    return (a.l1<b.l1&&a.l2<b.l2)||(a.l2<b.l1&&a.l1<b.l2);
-}
-
-int main() {
-    qr(n);
-    while(n) {
-        clear();
-        for(int i=1;i<=n;++i) {
-            a=b=c=0;qr(a);qr(b);qr(c);
-            add(a,b,c);
+const int N=1e5+1;
+int a[N];
+bool mp[4];
+map<int,map<int,int> >ans;
+signed main(){
+    int n,m;
+    cin >> n >> m;
+    for(int i=0;i<n;i++) cin >> a[i];
+    while(m--){
+        int op,l,r;
+        cin >> op >> l >> r;
+        mp[op]=1;
+//      for(int i=0;i<n;i++) cout<<a[i]<<" ";
+//      puts("");
+        if(!op) fill(a+l,a+r+1,0);
+        else if(op==1) fill(a+l,a+r+1,1);
+        else if(op==2) for(int i=l;i<=r;i++) a[i]=(!a[i]);
+        else if(op==3){
+            int ans=0;
+            for(int i=l;i<=r;i++) ans+=a[i];
+            printf("%d\n",ans);
         }
-        std::sort(block+1,block+1+top,cmp);
-        for(int i=1;i<=top;++i) {
-            int &emm=block[i].h;
-            frog[i]=emm;
-            for(int j=1;j<i;++j) {
-                if(judge(block[j],block[i])) frog[i]=max(frog[i],frog[j]+emm);
+        else{
+            if(!mp[0]&&!mp[1]&&!mp[2]&&ans[l][r]){
+                printf("%d\n",ans[l][r]);
+                continue;
             }
-            ans=max(ans,frog[i]);
+            int anss=0,t=0;
+            for(int i=l;i<=r;i++){
+                if(a[i]) t++;
+                else t=0;
+                anss=max(anss,t);
+            }
+            ans[l][r]=anss;
+            printf("%d\n",anss);
         }
-        printf("Case %d: maximum height = %d\n",++cnt,ans);
-        n=0;qr(n);
+//      for(int i=0;i<n;i++) cout<<a[i]<<" ";
+//      puts("");
     }
     return 0;
 }

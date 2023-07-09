@@ -7,7 +7,7 @@
 .vscode
 pics
 output
-__pycache__
-python/test.py
-notes/temp.md
 temp.cpp
+notes/temp.md
+python/cmp.py
+python/test.py

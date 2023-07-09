@@ -9,7 +9,6 @@ struct
 {
     int id, l, r;
 } q[N];
-inline int pos(int $) { return ($ - 1) / len + 1; }
 inline void add(int x) { res += cnt[x], cnt[x] += 1; }
 inline void del(int x) { cnt[x] -= 1, res -= cnt[x]; }
 
@@ -23,7 +22,7 @@ signed main()
     for (int i = 1; i <= m; i++)
         q[i].id = i, cin >> q[i].l >> q[i].r;
     sort(q + 1, q + m + 1, [](const auto &x, const auto &y)
-         {  int i = pos(x.l), j = pos(y.l);
+         {  int i = x.l / len, j = y.l / len;
             return i < j || (!(j < i) && ((i & 1) ? (x.r < y.r) : (x.r > y.r))); });
 
     int i = 0, j = 1;

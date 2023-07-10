@@ -12,8 +12,9 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int a[505], b[505];
-int f[505][505]; // 表示 A1 ~ Ai 与 B1 ~ Bj 可以构成的以 Bj 为结尾的 LCIS 的长度
+constexpr int N = 3005;
+int a[N], b[N];
+int f[N][N]; // 表示 A1 ~ Ai 与 B1 ~ Bj 可以构成的以 Bj 为结尾的 LCIS 的长度
 signed force()
 {
     ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
@@ -37,7 +38,7 @@ signed force()
     cout << ans;
     return 0;
 }
-int n, pos[505][505];
+int n, m, pos[N][N];
 void print(int p)
 {
     if (!p)
@@ -48,11 +49,11 @@ void print(int p)
 signed main()
 {
     ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
-    int m;
     cin >> n;
     for (int i = 1; i <= n; i++)
         cin >> a[i];
-    cin >> m;
+    // cin >> m;
+    m = n;
     for (int i = 1; i <= m; i++)
         cin >> b[i];
     for (int i = 1; i <= n; i++)
@@ -72,6 +73,7 @@ signed main()
     for (int j = 1; j <= m; j++)
         if (f[n][j] > f[n][p])
             p = j;
-    cout << f[n][p] << '\n', print(p);
+    cout << f[n][p] << '\n';
+    // print(p);
     return 0;
 }

@@ -1,8 +1,8 @@
-/* 这题的状态和转移非常好想：记录三个服务员的位置，(x,y,z)，然后分阶段分别让这三个服务员
-   去服务第 i + 1 个请求，代价取最小值。
+/* 这题的状态和转移非常好想：记录三个服务员的位置 (x,y,z)
+   然后分阶段分别让这三个服务员去服务第 i + 1 个请求，代价取最小值。
    问题是：这个状态储存和转移的量非常大，细想之后可以发现：服务完第 qi 个请求后，
    一定有且仅有一个服务员在第 qi 个请求的位置，所以我们记录三个人其实是多余了，这不是一个好的状态简化。
-   故我们只需记录两个人的位置，剩下那一个人可以推导得出，就像线性代数的线性无关组，减少了状态和转移。
+   故我们只需记录两个人的位置，剩下那一个人可以推导得出，就像线性代数的线性无关组，减少了多余的状态和转移。
  */
 #include <bits/stdc++.h>
 using namespace std;
@@ -12,8 +12,14 @@ constexpr int N = 1005, L = 205;
 int f[N][L][L], c[L][L], q[N];
 inline void ckmin(int &x, int y) { (y < x) && (x = y); }
 
-int solve()
+signed main()
 {
+#ifndef ONLINE_JUDGE
+    freopen("C:\\OIsrc\\.in", "r", stdin);
+    freopen("C:\\OIsrc\\.out", "w", stdout);
+#undef endl
+#endif
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
     int l, n;
     cin >> l >> n;
     for (int i = 1; i <= l; i++)
@@ -41,19 +47,6 @@ int solve()
     for (int y = 1; y <= l; y++)
         for (int z = 1; z <= l; z++)
             ckmin(res, f[n][y][z]);
-    return res;
-}
-signed main()
-{
-#ifndef ONLINE_JUDGE
-    freopen("C:\\OIsrc\\.in", "r", stdin);
-    freopen("C:\\OIsrc\\.out", "w", stdout);
-#undef endl
-#endif
-    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
-    int T;
-    cin >> T;
-    while (T--)
-        cout << solve() << endl;
+    cout << res;
     return 0;
 }

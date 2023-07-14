@@ -4,7 +4,7 @@ using namespace std;
 int n, m, x, y;
 int dx[] = {-2, -2, -1, -1, 0, 1, 1, 2, 2};
 int dy[] = {-1, 1, -2, 2, 0, -2, 2, -1, 1};
-size_t f[30][30];
+long long f[30][30];
 bool check(int a, int b)
 {
     for (int i = 0; i < 9; i++)

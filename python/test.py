@@ -1,6 +1,5 @@
-l, r = map(int, input().split())
-cnt = 0
-for i in range(l, r + 1):
-    for c in str(i):
-        cnt += c == '2'
-print(cnt)
+a, b, c = map(int, input())
+if a + b + c <= 100 and b % 5 == 0 and c % 7 == 0 and a-  b > b - c:
+    print("Yes")
+else:
+    print("No")

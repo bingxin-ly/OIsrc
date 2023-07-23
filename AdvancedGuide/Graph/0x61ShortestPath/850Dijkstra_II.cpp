@@ -1,13 +1,13 @@
-// 迪杰斯特拉老爷子留给后人的宝贵遗产
 #include <bits/stdc++.h>
 using namespace std;
+using pii = pair<int, int>;
 
 constexpr int N = 1.5e5 + 5;
 int n, m;
-vector<pair<int, int>> g[N];
+vector<pii> g[N];
 
 int dis[N], vis[N]; // 记录到某个节点的最短路长度和访问标记
-priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> q;
+priority_queue<pii, vector<pii>, greater<>> q;
 void dijkstra(int s)
 {
     memset(dis, 0x7f, sizeof(dis)), memset(vis, 0, sizeof(vis));

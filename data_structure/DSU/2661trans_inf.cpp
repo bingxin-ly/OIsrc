@@ -1,43 +1,32 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int MAX = 2e5 + 10;
-int f[MAX], d[MAX], n, minn, last;
-
-int fa(int x)
+constexpr int N = 2e5 + 5;
+int n, fa[N], sz[N];
+int find(int x, int &cnt)
 {
-    if (f[x] != x)
-    {
-        int last = f[x];
-        f[x] = fa(f[x]);
-        d[x] += d[last];
-    }
-    return f[x];
+    if (fa[x] == x)
+        return x;
+    int tmp = find(fa[x], cnt);
+    sz[x] += sz[fa[x]];
+    fa[x] = tmp;
+    cnt = sz[x] + 1;
+    return fa[x];
 }
-void check(int a, int b)
+signed main()
 {
-    int x = fa(a), y = fa(b);
-    if (x != y)
-    {
-        f[x] = y;
-        d[a] = d[b] + 1;
-    }
-    else
-        minn = min(minn, d[a] + d[b] + 1);
-    return;
-}
-int main()
-{
-    int i, t;
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
     cin >> n;
-    for (i = 1; i <= n; i++)
-        f[i] = i;
-    minn = INT_MAX;
-    for (i = 1; i <= n; i++)
+    iota(fa + 1, fa + n + 1, 1);
+    int ans = 0x3f3f3f3f;
+    for (int i = 1, f, cnt; i <= n; i++)
     {
-        cin >> t;
-        check(i, t);
+        cin >> f, cnt = 0;
+        if (find(f, cnt) == i)
+            ans = min(ans, cnt);
+        else
+            sz[i] = 1, fa[i] = f;
     }
-    cout << minn;
+    cout << ans;
     return 0;
 }

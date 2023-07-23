@@ -1,3 +1,5 @@
+/* 需要思考：怎样得到的这一个 t 呢？
+ */
 #include <bits/stdc++.h>
 using namespace std;
 

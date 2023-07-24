@@ -1,65 +1,40 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-typedef pair<int, int> int_pair;
-const int MAX = 1e5 + 10;
+constexpr int N = 1e6 + 5, MOD = 1e5 + 3;
+int n, m, d[N], c[N], v[N];
+vector<int> g[N];
 
-int dist[MAX], cnt[MAX], mod = 100003;
-vector<int_pair> graph[MAX];
-bool st[MAX];
-
-inline void add(int a, int b, // 新建一条a->b的边
-                int w = 1)    // 边权为w
+void bfs()
 {
-    graph[a].push_back({b, w});
-    graph[b].push_back({a, w});
-}
-void dijkstra(int start = 1)
-{
-    for (int i = 0; i < MAX; i++)
-        dist[i] = INT_MAX;
-    dist[start] = 0;
-    cnt[1] = 1;
-
-    priority_queue<int_pair, vector<int_pair>, greater<>> heap;
-    heap.push({0, start});
-
-    while (!heap.empty())
+    queue<int> q;
+    q.emplace(1);
+    memset(d, 0x3f, sizeof(d)), d[1] = 0, c[1] = 1;
+    while (!q.empty())
     {
-        auto t = heap.top();
-        heap.pop();
-        int distance = t.first, idx = t.second;
-        if (st[idx])
+        int u = q.front();
+        q.pop();
+        if (v[u])
             continue;
-        st[idx] = true;
-
-        for (auto i : graph[idx])
+        v[u] = true;
+        for (int v : g[u])
         {
-            int j = i.first;
-            if (dist[j] > distance + i.second)
-            {
-                dist[j] = distance + i.second;
-                cnt[j] = cnt[idx];
-                heap.push({dist[j], j});
-            }
-            else if (dist[j] == distance + i.second)
-                cnt[j] += cnt[idx], cnt[j] %= mod;
+            if (d[v] > d[u] + 1)
+                d[v] = d[u] + 1, c[v] = c[u];
+            else if (d[v] == d[u] + 1)
+                (c[v] += c[u]) %= MOD;
+            q.emplace(v);
         }
     }
 }
-
-int main()
+signed main()
 {
-    int n, m;
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
     cin >> n >> m;
-    int u, v;
-    while (m--)
-    {
-        cin >> u >> v;
-        add(u, v);
-    }
-    dijkstra();
+    for (int i = 1, u, v; i <= m; i++)
+        cin >> u >> v, g[u].emplace_back(v), g[v].emplace_back(u);
+    bfs();
     for (int i = 1; i <= n; i++)
-        cout << cnt[i] << endl;
+        cout << c[i] << '\n';
     return 0;
 }

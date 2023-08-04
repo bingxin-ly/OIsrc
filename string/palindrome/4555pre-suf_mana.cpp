@@ -20,11 +20,29 @@ signed main()
             R[i] += 1;
         if (r < i + R[i] - 1)
         {
-            r = i + R[i] - 1, c = i;
             for (int j = r + 1; j <= i + R[i] - 1; j++)
                 if (t[j] != '#')
-                    
+                    ed[j >> 1] = j - i + 1;
+            r = i + R[i] - 1, c = i;
         }
     }
+    c = m, r = m;
+    for (int i = m - 1; i; i--)
+    {
+        R[i] = i >= r ? min(R[2 * c - i], i - r + 1) : 1;
+        while (t[i - R[i]] == t[i + R[i]])
+            R[i] += 1;
+        if (r > i - R[i] + 1)
+        {
+            for (int j = i - R[i] + 1; j < r; j++)
+                if (t[j] != '#')
+                    st[j >> 1] = i - j + 1;
+            r = i - R[i] + 1, c = i;
+        }
+    }
+    int ans = 0;
+    for (int i = 1; i < n; i++)
+        ans = max(ans, ed[i] + st[i + 1]);
+    cout << ans;
     return 0;
 }

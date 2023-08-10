@@ -1,9 +1,10 @@
 #include <bits/stdc++.h>
 using namespace std;
+using pii = pair<int, int>;
 
 constexpr int N = 2e6 + 5, M = 6e6 + 5, S = N - 2, T = N - 1;
 int n, m;
-vector<pair<int, int>> g[N];
+vector<pii> g[N];
 
 int trans(int x, int y, int z)
 {
@@ -11,13 +12,27 @@ int trans(int x, int y, int z)
         return S;
     if (y < 0 || x >= n - 1)
         return T;
-    return z + y * 2 + x * (m - 1) * 2;
+    return 2 * (m - 1) * x + 2 * y + z;
 }
 
 int dis[N];
-void dijkstra()
+priority_queue<pii, vector<pii>, greater<>> q;
+int dijkstra()
 {
     memset(dis, 0x3f, sizeof(dis));
+    q.emplace(dis[S] = 0, S);
+    while (!q.empty())
+    {
+        auto [d, u] = q.top();
+        q.pop();
+        if (dis[u] != d)
+            continue;
+        if (u == T)
+            return d;
+        for (const auto &[v, w] : g[u])
+            if (dis[v] > dis[u] + w)
+                q.emplace(dis[v] = dis[u] + w, v);
+    }
 }
 signed main()
 {
@@ -33,9 +48,8 @@ signed main()
             g[u].emplace_back(v, w), g[v].emplace_back(u, w);
     for (int i = 0, u, v, w; i < n - 1; i++)
         for (int j = 0; j < m - 1; j++)
-            u = trans(i, j, 0), cin >> w,
+            u = trans(i, j, 0), v = u + 1, cin >> w,
             g[u].emplace_back(v, w), g[v].emplace_back(u, w);
-    dijkstra();
-
+    cout << dijkstra();
     return 0;
 }

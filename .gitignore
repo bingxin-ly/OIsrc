@@ -1,13 +1,9 @@
-.in
-.out
+*.in
+*.out
 *.exe
 
-.cph
-.idea
 .vscode
 pics
 output
 temp.cpp
 notes/temp.md
-python/cmp.py
-python/test.py

@@ -1,115 +1,103 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int N = 1e5 + 5,
-          K = N * 50; // 复杂度是对的，但由于我没写空间回收，导致出现这样的情况
-int idx, val[K], ls[K], rs[K];
+constexpr int N = 1e5 + 5;
+int n, m, k, idx;
+struct
+{
+    int ls, rs, val;
+} t[N << 6];
 
+void insert(int &p, int l, int r, int x)
+{
+    t[p = ++idx].val = 1;
+    if (l == r)
+        return;
+    int mid = (l + r) >> 1;
+    if (x <= mid)
+        insert(t[p].ls, l, mid, x);
+    else
+        insert(t[p].rs, mid + 1, r, x);
+}
 void split(int p, int &q, int k)
 {
     if (!p)
         return q = 0, void();
     q = ++idx;
-    if (k < val[ls[p]])
-        swap(rs[p], rs[q]), split(ls[p], ls[q], k);
-    else if (k == val[ls[p]])
-        swap(rs[p], rs[q]);
+    if (t[t[p].ls].val > k)
+        swap(t[p].rs, t[q].rs), split(t[p].ls, t[q].ls, k);
+    else if (t[t[p].ls].val == k)
+        swap(t[p].rs, t[q].rs);
     else
-        split(rs[p], rs[q], k - val[ls[p]]);
-    val[q] = val[p] - k, val[p] = k;
+        split(t[p].rs, t[q].rs, k - t[t[p].ls].val);
+    t[q].val = t[p].val - k, t[p].val = k;
 }
-int merge(int p, int q)
+void merge(int &p, int q)
 {
     if (!p || !q)
-        return p | q;
-    ls[p] = merge(ls[p], ls[q]);
-    rs[p] = merge(rs[p], rs[q]);
-    val[p] += val[q];
-    return p;
+        return p |= q, void();
+    merge(t[p].ls, t[q].ls);
+    merge(t[p].rs, t[q].rs);
+    t[p].val += t[q].val;
 }
-void insert(int &p, int l, int r, int x)
+
+struct tree
 {
-    val[p = ++idx] = 1;
-    if (l == r)
+    int l, r, p, op;
+    bool operator<(const tree &o) const { return l != o.l ? l < o.l : r < o.r; }
+};
+set<tree> s;
+void split(int x)
+{
+    if (!x)
         return;
-    int m = (l + r) >> 1;
-    if (x <= m)
-        insert(ls[p], l, m, x);
+    auto o = --s.lower_bound({x + 1});
+    if (o->r == x)
+        return;
+    int p = o->p, q = 0;
+    if (!o->op)
+        split(p, q, x - o->l + 1);
     else
-        insert(rs[p], m + 1, r, x);
+        split(p, q, o->r - x), swap(p, q);
+    s.insert({o->l, x, p, o->op}), s.insert({x + 1, o->r, q, o->op});
+    s.erase(o);
 }
 int kth(int p, int l, int r, int k)
 {
     if (l == r)
         return l;
-    int m = (l + r) >> 1;
-    if (k <= val[ls[p]])
-        return kth(ls[p], l, m, k);
+    int mid = (l + r) >> 1;
+    if (k <= t[t[p].ls].val)
+        return kth(t[p].ls, l, mid, k);
     else
-        return kth(rs[p], m + 1, r, k - val[ls[p]]);
-}
-struct dat
-{
-    int l, r, tp, rt;
-    bool operator<(const dat &o) const { return l < o.l || (!(o.l < l) && r < o.r); }
-};
-set<dat> s;
-void split(int x)
-{
-    if (!x)
-        return;
-    auto it = --s.lower_bound({x + 1});
-    if (it->r == x)
-        return;
-    int p = it->rt, q = 0;
-    if (!it->tp)
-        split(p, q, x - it->l + 1);
-    else
-        split(p, q, it->r - x), swap(p, q);
-    s.insert({it->l, x, it->tp, p}), s.insert({x + 1, it->r, it->tp, q});
-    s.erase(it);
-}
-void operate(int l, int r, int tp)
-{
-    split(l - 1), split(r);
-    int rt = 0;
-    while (true)
-    {
-        auto it = s.lower_bound({l});
-        if (it == s.end() || it->l > r)
-            break;
-        rt = merge(rt, it->rt);
-        s.erase(it);
-    }
-    s.insert({l, r, tp, rt});
-}
-
-int n, m;
-int query(int pos)
-{
-    auto it = --s.lower_bound({pos + 1});
-    int rnk = !it->tp ? pos - it->l + 1 : it->r - pos + 1;
-    return kth(it->rt, 1, n, rnk);
+        return kth(t[p].rs, mid + 1, r, k - t[t[p].ls].val);
 }
 
 signed main()
 {
     ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
     cin >> n >> m;
-    for (int i = 1; i <= n; i++)
+    for (int i = 1, x, r; i <= n; i++)
     {
-        int x, rt = 0;
-        cin >> x, insert(rt, 1, n, x);
-        s.insert({i, i, 0, rt});
+        cin >> x, r = 0;
+        insert(r, 1, n, x), s.insert({i, i, r, 0});
     }
-    for (int i = 1; i <= m; i++)
+    for (int i = 1, op, l, r; i <= m; i++)
     {
-        int l, r, tp;
-        cin >> tp >> l >> r;
-        operate(l, r, tp);
+        cin >> op >> l >> r;
+        split(l - 1), split(r);
+        int p = 0;
+        while (true)
+        {
+            auto o = s.lower_bound({l});
+            if (o == s.end() || o->l > r)
+                break;
+            merge(p, o->p), s.erase(o);
+        }
+        s.insert({l, r, p, op});
     }
-    int k;
     cin >> k;
-    cout << query(k);
+    auto o = --s.lower_bound({k + 1});
+    cout << kth(o->p, 1, n, o->op ? o->r - k + 1 : k - o->l + 1);
     return 0;
 }

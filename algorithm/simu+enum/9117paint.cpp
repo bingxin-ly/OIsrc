@@ -1,34 +1,33 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int N = 1e5 + 10;
-int cnt;
+int n, m, q;
 unordered_map<int, pair<int, int>> raw, col;
-
-int main()
+void solve()
 {
-    int T, n, m, q;
+    raw.clear(), col.clear();
+    cin >> n >> m >> q;
+    for (int i = 1, op, x, c; i <= q; i++)
+    {
+        cin >> op >> x >> c;
+        if (!op)
+            raw[x] = {i, c};
+        else
+            col[x] = {i, c};
+    }
+    for (int i = 1; i <= n; i++)
+    {
+        for (int j = 1; j <= m; j++)
+            cout << max(raw[i], col[j]).second << ' ';
+        cout << '\n';
+    }
+}
+signed main()
+{
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+    int T;
     cin >> T;
     while (T--)
-    {
-        cnt = 0;
-        raw.clear(), col.clear();
-        cin >> n >> m >> q;
-        while (q--)
-        {
-            int op, x, c;
-            cin >> op >> x >> c;
-            if (op) // raw
-                col[x] = {++cnt, c};
-            else
-                raw[x] = {++cnt, c};
-        }
-        for (int i = 1; i <= n; i++)
-        {
-            for (int j = 1; j <= m; j++)
-                cout << max(raw[i], col[j]).second << ' ';
-            cout << endl;
-        }
-    }
+        solve();
     return 0;
 }

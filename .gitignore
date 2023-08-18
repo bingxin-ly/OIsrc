@@ -3,7 +3,7 @@
 *.exe
 
 .vscode
-pics
 output
+python
 temp.cpp
 notes/temp.md

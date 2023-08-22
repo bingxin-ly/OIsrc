@@ -28,14 +28,14 @@ signed main()
     long long ans = 1;
     for (int _ = 1; _ < n; _++)
     {
-        int u = 0, k = 0;
-        for (int i = 2; i <= n; i++)
-            if (!vis[i] && (!u || dis[i] < dis[u]))
-                u = i;
+        int v = 0, k = 0;
         for (int i = 1; i <= n; i++)
-            if (vis[i] && dis[u] == dis[i] + w[i][u])
+            if (!vis[i] && (!v || dis[i] < dis[v]))
+                v = i;
+        for (int u = 1; u <= n; u++)
+            if (vis[u] && dis[v] == dis[u] + w[u][v])
                 k++;
-        vis[u] = 1, (ans *= k) %= INT_MAX;
+        vis[v] = 1, (ans *= k) %= INT_MAX;
     }
     cout << ans;
     return 0;

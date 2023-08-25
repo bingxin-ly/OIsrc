@@ -8,31 +8,21 @@ struct
 {
     int x, y, z;
 } p[N];
-double s(int i, int j)
-{
-    return sqrt((p[i].x - p[j].x) * (p[i].x - p[j].x) +
-                (p[i].y - p[j].y) * (p[i].y - p[j].y));
-}
 double a[N][N], b[N][N], c[N][N], ner[N];
 bool check(double k)
 {
     for (int i = 1; i <= n; i++)
-        for (int j = i; j <= n; j++)
-            if (i == j)
-                c[i][j] = INF;
-            else
-                c[i][j] = c[j][i] = k * b[i][j] - a[i][j];
+        for (int j = i + 1; j <= n; j++)
+            c[i][j] = c[j][i] = a[i][j] - k * b[i][j];
     memset(vis, 0, sizeof(vis));
     fill(ner + 1, ner + n + 1, INF), ner[1] = 0;
     double ret = 0;
-    while (true)
+    for (int i = 1; i <= n; i++)
     {
         int u = 0;
         for (int i = 1; i <= n; i++)
             if (!vis[i] && (!u || ner[i] < ner[u]))
                 u = i;
-        if (!u)
-            break;
         vis[u] = 1, ret += ner[u];
         for (int i = 1; i <= n; i++)
             ner[i] = min(ner[i], c[u][i]);
@@ -45,10 +35,11 @@ void solve()
         cin >> p[i].x >> p[i].y >> p[i].z;
     double sum = 0;
     for (int i = 1; i <= n; i++)
-        for (int j = 1; j <= n; j++)
+        for (int j = i + 1; j <= n; j++)
         {
             sum += a[i][j] = a[j][i] = abs(p[i].z - p[j].z);
-            b[i][j] = b[j][i] = s(i, j);
+            b[i][j] = b[j][i] = sqrt((p[i].x - p[j].x) * (p[i].x - p[j].x) +
+                                     (p[i].y - p[j].y) * (p[i].y - p[j].y));
         }
     double l = 0, r = sum;
     while (l + eps <= r)

@@ -50,4 +50,36 @@ namespace binary
         return 0;
     }
 }
+namespace std
+{
+    constexpr int N = 2005;
+    int n, m, f[N];
+
+    // 用一个拆出来的物品把 DP 的体积数组更新一遍
+    void update(int v, int w)
+    {
+        for (int j = m; j >= v; j--)
+            f[j] = max(f[j], f[j - v] + w);
+    }
+
+    int main()
+    {
+        cin >> n >> m;
+        for (int i = 1; i <= n; i++)
+        {
+            int v, w, c;
+            cin >> v >> w >> c;
+            // 二进制拆分
+            for (int k = 1; k <= c; k <<= 1)
+            {
+                c -= k;
+                update(k * v, k * w);
+            }
+            // 剩余部分
+            if (c > 0)
+                update(c * v, c * w);
+        }
+        cout << f[m];
+    }
+}
 signed main() { return binary::main(); }

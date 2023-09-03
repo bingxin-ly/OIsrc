@@ -67,7 +67,7 @@ $$
 我们按阶段的划分进行数学归纳，就是一个货仓选址。于是有 $f[i][j]$ 表示完成前 $i$ 个的构造，$B_i = j$ 的最小值。
 
 $$
-F[i, j] = \min\limits_{0 \le k \le j}\{F[i - 1][k] + |A_i - j|\}
+F[i, j] = \min_{0 \le k \le j}\{F[i - 1][k] + |A_i - j|\}
 $$
 
 $j$ 在扩展时，显然只会多出来一个点，所以可以变量维护一下 $O(1)$ 转移
@@ -92,3 +92,64 @@ $$
 
 1. 求解线性 DP 问题，一般先确定“阶段”。若“阶段”不足以表示一个状态，则可以把所需的附加信息也作为状态的维度。无后效性由“阶段”保证。
 2. 确定 DP 状态时，要选择最小的能够覆盖整个状态空间的“维度集合”。
+
+## 0x5A 斜率优化
+
+处理 $val(i, j)$ 中有关于 $i, j$ 乘积时的情况，比较好想好写，问题越单调越好写
+
+### P3628 [APIO2010] 特别行动队
+
+$$val(i, j) = a \times (S_i - S_j)^2 + b \times (S_i - S_j) + c$$
+
+$$
+\begin{aligned}
+    f_i &= \max_{0 \le j < i}\{f_j + val(i, j)\} \\
+        &= f_j + a \times (S_i - S_j)^2 + b \times (S_i - S_j) + c \\
+\end{aligned}
+$$
+
+$$
+f_j + a \times S_j^2 - b \times S_j = 2a \times S_i \times S_j + f_i + a \times S_i^2 + b \times S_i + c
+$$
+
+$$
+\begin{aligned}
+    K_i &= 2a \times S_i \\
+    X_j &= S_j \\
+    B_i &= f_i + a \times S_i^2 + b \times S_i + c \\
+    Y_j &= f_j + a \times S_j^2 - b \times S_j
+\end{aligned}
+$$
+
+则有直线 $K_iX_j + B_i = Y_j$，其中 $K_i$ 单减，$X_j$ 单增
+
+### P3195 [HNOI2008] 玩具装箱
+
+$$
+S(n) = \sum_{i = 1}^n (C_i + 1) \\
+val(j, i) = i - j + \sum_{k = j}^i C_k = S_i - S_{j - 1} - 1
+$$
+
+$$
+\begin{aligned}
+    f_i &= \min_{0 \le j < i}\{f_j + [val(j + 1, i) - L]^2\} \\
+        &= f_j + (S_i - S_j - 1 - L)^2 \text{，接下来为方便起见 $L \gets L + 1$} \\
+        &= f_j + (S_i - S_j)^2 - 2 L \times (S_i - S_j) + L^2 \\
+        &= f_j + S_i^2 - 2 S_i \times S_j + S_j^2 - 2 L \times S_i + 2 L \times S_j + L^2 \\
+\end{aligned}
+$$
+
+$$
+f_j + S_j^2 + 2 L \times S_j = 2 S_i \times S_j + f_i -  S_i^2 + 2 L \times S_i - L^2
+$$
+
+$$
+\begin{aligned}
+    K_i &= 2S_i \\
+    X_j &= S_j \\
+    B_i &= f_i - S_i^2 + 2 L \times S_i - L^2 \\
+    Y_j &= f_j + S_j^2 + 2 L \times S_j
+\end{aligned}
+$$
+
+则有直线 $K_iX_j + B_i = Y_j$，其中 $K_i, X_j$ 单增

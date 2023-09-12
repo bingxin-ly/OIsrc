@@ -72,6 +72,12 @@ bool isprime(int n)
 }
 
 // 埃氏筛
+void sieve(int n) {
+    fill(is_prime, is_prime + n + 1, true), is_prime[0] = is_prime[1] = false;
+    for (int i = 2, u = sqrt(n); i <= u; i++)
+        if (is_prime[i])
+            for (int j = i * i; j <= n; j += i) is_prime[j] = false;
+}
 int eratosthenes(int n)
 {
     int cnt = 0;

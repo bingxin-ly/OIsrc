@@ -1,12 +1,13 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int N = 5e3 + 10;
+constexpr int N = 5e3 + 10;
 int a[N][N];
-int calc(int x1, int y1, int x2, int y2) { return a[x2][y2] - a[x1 - 1][y2] - a[x2][y1 - 1] + a[x1 - 1][y1 - 1]; }
+int calc(int x1, int y1, int x2, int y2) {
+    return a[x2][y2] - a[x1 - 1][y2] - a[x2][y1 - 1] + a[x1 - 1][y1 - 1];
+}
 
-signed main()
-{
+signed main() {
     ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
     int n, m;
     cin >> n >> m;
@@ -17,7 +18,6 @@ signed main()
             mx = max(mx, x), my = max(my, y);
 
     // 有可能 m 过大
-    // m 大过 5k 就没意义了，直接拉 mx 和 my 又会 RE，所以先压一波 m
     m = min(m, 5001), mx = max(mx, m), my = max(my, m);
     for (int i = 1; i <= mx; i++)
         for (int j = 1; j <= my; j++)

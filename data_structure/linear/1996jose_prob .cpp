@@ -1,53 +1,18 @@
-#include <cstdio>
+#include <bits/stdc++.h>
 using namespace std;
 
-bool visit[110];
-int main()
-{
-    int n, m, s = 0;
-    scanf("%d %d", &n, &m);
-    for (int k = 0; k < n; k++)
-    {
-        for (int i = 0; i < m; i++)
-        {
-            if (++s > n)
-                s = 1;
-            if (visit[s])
-                i--;
-        }
-        printf("%d ", s);
-        visit[s] = true;
+constexpr int N = 109;
+int n, m, idx[N], nxt[N];
+signed main() {
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+    cin >> n >> m;
+    for (int i = 1; i <= n; i++) idx[i] = i, nxt[i] = i + 1;
+    nxt[n] = 1;
+    int cur = 1;
+    while (n--) {
+        for (int i = 1; i < m; i++) cur = nxt[cur];
+        cout << idx[cur] << ' ';
+        idx[cur] = idx[nxt[cur]], nxt[cur] = nxt[nxt[cur]];
     }
-    return 0;
-}
-
-#include <iostream>
-#include <queue>
-using namespace std;
-
-int main()
-{
-    int tot, outNum, nowNum = 1;
-    queue<int> q;
-    cin >> tot >> outNum; // 读取数据
-    for (int i = 1; i <= tot; i++)
-        q.push(i); // 初始化队列
-
-    while (!q.empty()) // 在队列不为空时继续模拟
-    {
-        if (nowNum == outNum)
-        {
-            cout << q.front() << " "; // 打印出局的人的编号
-            q.pop();                  // 出局
-            nowNum = 1;               // 初始化现在的数字
-        }
-        else
-        {
-            nowNum++;
-            q.push(q.front()); // 排至队尾，实现循环
-            q.pop();
-        }
-    }
-    // cout << endl;
     return 0;
 }

@@ -1,37 +1,20 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int MAX = 1e5 + 10;
-int n, len;
-int a[MAX], b[MAX];
-int m[MAX], f[MAX];
-
-int main()
-{
+constexpr int N = 1e5 + 9;
+int n, a[N], b[N], c[N];
+signed main() {
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
     cin >> n;
-    for (int i = 1; i <= n; i++)
-        cin >> a[i], m[a[i]] = i;
-    for (int i = 1; i <= n; i++)
-        cin >> b[i], f[i] = INT_MAX;
-    len = 0;
-    for (int i = 1; i <= n; i++)
-    {
-        int l = 0, r = len, mid;
-        if (m[b[i]] > f[len])
-            f[++len] = m[b[i]];
+    for (int i = 1; i <= n; i++) cin >> a[i], c[a[i]] = i;
+    for (int i = 1; i <= n; i++) cin >> b[i], b[i] = c[b[i]];
+    vector<int> s;
+    s.emplace_back(b[1]);
+    for (int i = 2; i <= n; i++)
+        if (b[i] > s.back())
+            s.emplace_back(b[i]);
         else
-        {
-            while (l < r)
-            {
-                mid = (l + r) >> 1;
-                if (f[mid] > m[b[i]])
-                    r = mid;
-                else
-                    l = mid + 1;
-            }
-            f[l] = min(m[b[i]], f[l]);
-        }
-    }
-    cout << len;
+            *lower_bound(s.begin(), s.end(), b[i]) = b[i];
+    cout << s.size();
     return 0;
 }

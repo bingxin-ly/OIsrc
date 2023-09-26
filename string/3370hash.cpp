@@ -1,27 +1,20 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int P = 13331;
-const int M = 998244353; // 有时会卡数据
-size_t get_hash(string &str)
-{
-    size_t hsh = 0;
-    for (auto i : str)
-        hsh = (hsh * P + i) % M;
-    return hsh;
+constexpr long long P = 128, MOD = 1e15 + 37;
+long long BKDR(char *s) {
+    long long hash = 0;
+    for (int i = 0, j = strlen(s); i < j; i++)
+        hash = (hash * P + s[i]) % MOD;
+    return hash;
 }
-
-int main()
-{
+signed main() {
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+    set<long long> vis;
+    char s[1509];
     int n;
     cin >> n;
-    set<size_t> s;
-    string str;
-    while (n--)
-    {
-        cin >> str;
-        s.insert(get_hash(str));
-    }
-    cout << s.size() << endl;
+    while (n--) cin >> s, vis.emplace(BKDR(s));
+    cout << vis.size();
     return 0;
 }

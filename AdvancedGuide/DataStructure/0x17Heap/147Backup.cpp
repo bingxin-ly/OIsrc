@@ -27,13 +27,9 @@ void down(int i) {
     }
 }
 void del_heap(int i) {
-    // if (i == idx) return idx--, void();
-    // swap(h[i], h[idx]), swap(p[h[i].pos].idx, p[h[idx].pos].idx);
-    // idx--, up(i), down(i);
-    if (i == --idx + 1) return;
-    swap(h[i], h[idx + 1]);
-    swap(p[h[i].pos].idx, p[h[idx + 1].pos].idx);
-    up(i), down(i);
+    if (i == idx) return idx--, void();
+    swap(h[i], h[idx]), swap(p[h[i].pos].idx, p[h[idx].pos].idx);
+    idx--, up(i), down(i);
 }
 void del_list(int i) {
     p[p[i].prv].nxt = p[i].nxt;

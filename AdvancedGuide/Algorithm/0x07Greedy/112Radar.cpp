@@ -7,7 +7,7 @@ pair<double, double> r[N];
 signed main() {
     ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
     cin >> n >> d;
-    double z, pos = INT_MIN;
+    double z, pos = -1e18;
     for (int i = 1, x, y; i <= n; i++) {
         cin >> x >> y;
         if (y > d) return cout << -1, 0;

@@ -2,92 +2,57 @@
 #define int long long
 using namespace std;
 
-const int N = 1e5 + 10;
-int tr[N << 2], tag[N << 2], src[N];
+constexpr int N = 1e5 + 9;
+int n, m;
 
+struct {
+    int val, tag;
+} t[N << 2];
 #define ls (p << 1)
 #define rs (p << 1 | 1)
-void pushup(int p)
-{
-    tr[p] = tr[ls] + tr[rs];
+void pushup(int p) { t[p].val = t[ls].val + t[rs].val; }
+void pushtag(int p, int l, int r, int v) {
+    t[p].val += (r - l + 1) * v;
+    t[p].tag += v;
 }
-void pushdown(int p, int l, int r)
-{
-    if (tag[p])
-    {
-        int mid = (l + r) >> 1;
-        tr[ls] += (mid - l + 1) * tag[p], tr[rs] += (r - mid) * tag[p];
-
-        tag[ls] += tag[p], tag[rs] += tag[p];
-        tag[p] = 0;
+void pushdown(int p, int l, int r) {
+    if (t[p].tag) {
+        int m = (l + r) >> 1;
+        pushtag(ls, l, m, t[p].tag), pushtag(rs, m + 1, r, t[p].tag);
+        t[p].tag = 0;
     }
 }
-
-void build(int p, int l, int r)
-{
-    if (l == r)
-        return tr[p] = src[l], void();
-    int mid = (l + r) >> 1;
-    build(ls, l, mid), build(rs, mid + 1, r);
+void build(int p, int l, int r) {
+    if (l == r) return cin >> t[p].val, void();
+    int m = (l + r) >> 1;
+    build(ls, l, m), build(rs, m + 1, r);
     pushup(p);
 }
-void update(int p, int l, int r, int pos, int v)
-{
-    if (l == r)
-        return tr[p] += v, void();
-
+void update(int p, int l, int r, int ql, int qr, int v) {
+    if (ql <= l && r <= qr) return pushtag(p, l, r, v);
     pushdown(p, l, r);
-    int mid = (l + r) >> 1;
-    if (pos <= mid)
-        update(ls, l, mid, pos, v);
-    else
-        update(rs, mid + 1, r, pos, v);
+    int m = (l + r) >> 1;
+    if (ql <= m) update(ls, l, m, ql, qr, v);
+    if (qr > m) update(rs, m + 1, r, ql, qr, v);
     pushup(p);
 }
-void update(int p, int l, int r, int ql, int qr, int v)
-{
-    if (ql <= l && r <= qr)
-        return tr[p] += (r - l + 1) * v, tag[p] += v, void();
-
+int query(int p, int l, int r, int ql, int qr) {
+    if (ql <= l && r <= qr) return t[p].val;
     pushdown(p, l, r);
-    int mid = (l + r) >> 1;
-    if (ql <= mid)
-        update(ls, l, mid, ql, qr, v);
-    if (qr > mid)
-        update(rs, mid + 1, r, ql, qr, v);
-    pushup(p);
+    int m = (l + r) >> 1, ret = 0;
+    if (ql <= m) ret += query(ls, l, m, ql, qr);
+    if (qr > m) ret += query(rs, m + 1, r, ql, qr);
+    return ret;
 }
-int query(int p, int l, int r, int ql, int qr)
-{
-    if (ql <= l && r <= qr)
-        return tr[p];
-
-    pushdown(p, l, r);
-    int mid = (l + r) >> 1;
-    int res = 0;
-    if (ql <= mid)
-        res += query(ls, l, mid, ql, qr);
-    if (qr > mid)
-        res += query(rs, mid + 1, r, ql, qr);
-    pushup(p);
-    return res;
-}
-
-signed main()
-{
-    int n, m;
-    scanf("%lld%lld", &n, &m);
-    for (int i = 1; i <= n; i++)
-        scanf("%lld", src + i);
-    build(1, 1, n);
-
-    for (int opt, x, y, k; m--;)
-    {
-        scanf("%lld%lld%lld", &opt, &x, &y);
-        if (opt == 1)
-            scanf("%lld", &k), update(1, 1, n, x, y, k);
+signed main() {
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+    cin >> n >> m, build(1, 1, n);
+    for (int o, x, y, k; m--;) {
+        cin >> o >> x >> y;
+        if (o == 1)
+            cin >> k, update(1, 1, n, x, y, k);
         else
-            printf("%lld\n", query(1, 1, n, x, y));
+            cout << query(1, 1, n, x, y) << '\n';
     }
     return 0;
 }

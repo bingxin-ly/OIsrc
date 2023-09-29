@@ -1,41 +1,31 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int MAX = 1e5 + 10;
-int n, c, pos[MAX];
-
-bool check(int x)
-{
-    int sum = 0, before = pos[1];
-    for (int i = 2; i <= n; i++)
-    {
-        if (pos[i] - before >= x)
-            sum++, before = pos[i];
+constexpr int N = 1e5 + 9;
+int n, c, p[N];
+bool check(int x) {
+    int sum = 0, pre = p[1];
+    for (int i = 2; i <= n; i++) {
+        if (p[i] - pre >= x)
+            sum++, pre = p[i];
         if (sum >= c)
             return true;
     }
-    if (sum + 1 < c)
-        return false;
+    if (sum + 1 < c) return false;
     return true;
 }
-int main()
-{
-    cin >> n >> c;
-    for (int i = 1; i <= n; i++)
-        cin >> pos[i];
-    sort(pos + 1, pos + n + 1);
 
-    int l = INT_MAX, r = pos[n] - pos[1];
-    for (int i = 2; i <= n; i++)
-        l = min(pos[i] - pos[i - 1], l);
-    while (l <= r)
-    {
-        int mid = (l + r) >> 1;
-        if (check(mid))
-            l = mid + 1;
-        else
-            r = mid - 1;
+signed main() {
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+    cin >> n >> c;
+    for (int i = 1; i <= n; i++) cin >> p[i];
+    sort(p + 1, p + n + 1);
+    int l = 1e9, r = p[n] - p[1];
+    for (int i = 2; i <= n; i++) l = min(l, p[i] - p[i - 1]);
+    while (l <= r) {
+        int m = (l + r) >> 1;
+        check(m) ? l = m + 1 : r = m - 1;
     }
-    cout << r << endl;
+    cout << r;
     return 0;
 }

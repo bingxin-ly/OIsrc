@@ -1,211 +1,125 @@
 #include <bits/stdc++.h>
+#define int long long
 using namespace std;
 
-const int N = 8e5 + 10;
-vector<int> graph[N];
+constexpr int N = 1e5 + 10;
+int n, m, r, mod;
+vector<int> g[N];
 
-int fa[N], dep[N], siz[N];          // normal
-int son[N], top[N], dfn[N], rnk[N]; // decomposition
-
-void dfs1(int o) // build
-{
-    son[o] = -1, siz[o] = 1;
-    for (auto v : graph[o])
-        if (!dep[v])
-        {
-            dep[v] = dep[o] + 1, fa[v] = o;
-            dfs1(v);
-            siz[o] += siz[v];
-            if (son[o] == -1 || siz[v] > siz[son[o]])
-                son[o] = v;
+int fa[N], dep[N], siz[N], son[N];
+void dfs1(int u, int p) {
+    fa[u] = p, dep[u] = dep[p] + 1, siz[u] = 1;
+    for (int v : g[u])
+        if (v != p) {
+            dfs1(v, u), siz[u] += siz[v];
+            if (siz[v] > siz[son[u]]) son[u] = v;
         }
 }
 
-int cnt, w[N], nw[N];
-void dfs2(int o, int t) // decomposition
-{
-    top[o] = t, cnt++;
-    dfn[o] = cnt, rnk[cnt] = o, nw[cnt] = w[o];
-    if (son[o] == -1)
-        return;
-    dfs2(son[o], t);
-    for (auto v : graph[o])
-        if (v != son[o] && v != fa[o])
-            dfs2(v, v);
+int idx, dfn[N], top[N], w[N], nw[N];
+void dfs2(int u, int t) {
+    top[u] = t, dfn[u] = ++idx, nw[idx] = w[u];
+    if (!son[u]) return;
+    dfs2(son[u], t);
+    for (int v : g[u])
+        if (v != fa[u] && v != son[u]) dfs2(v, v);
 }
 
-int lca(int u, int v)
-{
-    while (top[u] != top[v])
-        if (dep[top[u]] > dep[top[v]])
-            u = fa[top[u]];
-        else
-            v = fa[top[v]];
-    return dep[u] > dep[v] ? v : u;
+struct {
+    int val, tag;
+} t[N << 2];
+#define ls (p << 1)
+#define rs (p << 1 | 1)
+void pushup(int p) { t[p].val = (t[ls].val + t[rs].val) % mod; }
+void pushtag(int p, int l, int r, int v) {
+    t[p].val += (r - l + 1) * v % mod, t[p].val %= mod;
+    t[p].tag += v, t[p].tag %= mod;
+}
+void pushdown(int p, int l, int r) {
+    if (t[p].tag) {
+        int m = (l + r) >> 1;
+        pushtag(ls, l, m, t[p].tag), pushtag(rs, m + 1, r, t[p].tag);
+        t[p].tag = 0;
+    }
+}
+void build(int p, int l, int r) {
+    if (l == r) return t[p].val = nw[l], void();
+    int m = (l + r) >> 1;
+    build(ls, l, m), build(rs, m + 1, r);
+    pushup(p);
+}
+void update(int p, int l, int r, int ql, int qr, int v) {
+    if (ql <= l && r <= qr) return pushtag(p, l, r, v);
+    pushdown(p, l, r);
+    int m = (l + r) >> 1;
+    if (ql <= m) update(ls, l, m, ql, qr, v);
+    if (qr > m) update(rs, m + 1, r, ql, qr, v);
+    pushup(p);
+}
+int query(int p, int l, int r, int ql, int qr) {
+    if (ql <= l && r <= qr) return t[p].val;
+    pushdown(p, l, r);
+    int m = (l + r) >> 1, ret = 0;
+    if (ql <= m) ret += query(ls, l, m, ql, qr);
+    if (qr > m) ret += query(rs, m + 1, r, ql, qr), ret %= mod;
+    return ret;
 }
 
-int mod;
-class segment_tree
-{
-    struct node
-    {
-        node *ls, *rs;
-        int l, r, // 维护的左、右端点
-            val, lazy;
-        node(int _l, int _r, int _val = 0) : l(_l), r(_r), val(_val), lazy(0)
-        {
-            ls = rs = nullptr;
-        }
-    } *root;
-
-    static void pushup(node *p)
-    {
-        p->val = (p->ls ? p->ls->val : 0) + (p->rs ? p->rs->val : 0);
-        p->val %= mod;
-    }
-    static void pushdown(node *p)
-    {
-        if (p->lazy)
-        {
-            int mid = (p->l + p->r) >> 1;
-            p->ls->val += (mid - p->l + 1) * p->lazy, p->ls->val %= mod;
-            p->rs->val += (p->r - mid) * p->lazy, p->rs->val %= mod;
-
-            p->ls->lazy += p->lazy, p->rs->lazy += p->lazy;
-            p->lazy = 0;
-        }
-    }
-
-    void build(node *&p, int l, int r, const int *arr)
-    {
-        p = new node(l, r);
-        if (l == r)
-        {
-            p->val = arr[l];
-            return;
-        }
-        int mid = (l + r) >> 1;
-        build(p->ls, l, mid, arr), build(p->rs, mid + 1, r, arr);
-        pushup(p);
-    }
-
-    void update(node *p, int l, int r, int v)
-    {
-        if (l <= p->l && p->r <= r)
-        {
-            p->val += (p->r - p->l + 1) * v;
-            p->lazy += v;
-            return;
-        }
-        pushdown(p);
-        int mid = (p->l + p->r) >> 1;
-        if (l <= mid)
-        {
-            if (!p->ls)
-                p->ls = new node(p->l, mid);
-            update(p->ls, l, r, v);
-        }
-        if (r > mid)
-        {
-            if (!p->rs)
-                p->rs = new node(mid + 1, p->r);
-            update(p->rs, l, r, v);
-        }
-        pushup(p);
-    }
-
-    int query(node *p, int l, int r)
-    {
-        if (!p)
-            return 0;
-        if (l <= p->l && p->r <= r)
-            return p->val;
-
-        pushdown(p);
-        int mid = (p->l + p->r) >> 1;
-        int ans = 0;
-        if (l <= mid)
-            ans += query(p->ls, l, r);
-        if (r > mid)
-            ans += query(p->rs, l, r);
-        return ans % mod;
-    }
-
-public:
-    void build(int n, const int *arr) { build(root, 1, n, arr); }
-    void update(int l, int r, int v) { update(root, l, r, v); }
-    int query(int l, int r) { return query(root, l, r); }
-} segtr;
-
-int q_path(int u, int v)
-{
+int q_path(int u, int v) {
     int tot = 0;
-    while (top[u] != top[v])
-    {
-        if (dep[top[u]] < dep[top[v]])
-            swap(u, v);
-        tot += segtr.query(dfn[top[u]], dfn[u]), tot %= mod;
-        u = fa[top[u]]; // 跳过轻边
+    while (top[u] != top[v]) {
+        if (dep[top[u]] < dep[top[v]]) swap(u, v);
+        tot += query(1, 1, n, dfn[top[u]], dfn[u]), tot %= mod;
+        u = fa[top[u]];
     }
-    if (dep[u] > dep[v])
-        swap(u, v);
-    tot += segtr.query(dfn[u], dfn[v]), tot %= mod;
+    if (dep[u] > dep[v]) swap(u, v);
+    tot += query(1, 1, n, dfn[u], dfn[v]), tot %= mod;
     return tot;
 }
 
-void u_path(int u, int v, int val)
-{
+void u_path(int u, int v, int val) {
     val %= mod;
-    while (top[u] != top[v])
-    {
-        if (dep[top[u]] < dep[top[v]])
-            swap(u, v);
-        segtr.update(dfn[top[u]], dfn[u], val);
-        u = fa[top[u]]; // 跳过轻边
+    while (top[u] != top[v]) {
+        if (dep[top[u]] < dep[top[v]]) swap(u, v);
+        update(1, 1, n, dfn[top[u]], dfn[u], val);
+        u = fa[top[u]];
     }
-    if (dep[u] > dep[v])
-        swap(u, v);
-    segtr.update(dfn[u], dfn[v], val);
+    if (dep[u] > dep[v]) swap(u, v);
+    update(1, 1, n, dfn[u], dfn[v], val);
 }
 
-int q_son(int u) { return segtr.query(dfn[u], dfn[u] + siz[u] - 1); }
+int q_son(int u) { return query(1, 1, n, dfn[u], dfn[u] + siz[u] - 1); }
+void u_son(int u, int k) { update(1, 1, n, dfn[u], dfn[u] + siz[u] - 1, k); }
 
-void u_son(int u, int k) { segtr.update(dfn[u], dfn[u] + siz[u] - 1, k); }
-
-int main()
-{
-    int n, m, r;
+signed main() {
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
     cin >> n >> m >> r >> mod;
     for (int i = 1; i <= n; i++)
         cin >> w[i], w[i] %= mod;
     for (int i = 1, u, v; i < n; i++)
-        cin >> u >> v,
-            graph[u].push_back(v), graph[v].push_back(u);
+        cin >> u >> v, g[u].emplace_back(v), g[v].emplace_back(u);
 
-    dep[r] = 1, dfs1(r), dfs2(r, r);
-    segtr.build(n, nw);
-    while (m--)
-    {
+    dfs1(r, 0), dfs2(r, r), build(1, 1, n);
+    while (m--) {
         int op, x, y, z;
         cin >> op;
-        switch (op)
-        {
-        case 1:
-            cin >> x >> y >> z;
-            u_path(x, y, z);
-            break;
-        case 2:
-            cin >> x >> y;
-            cout << q_path(x, y) << endl;
-            break;
-        case 3:
-            cin >> x >> z;
-            u_son(x, z);
-            break;
-        case 4:
-            cin >> x;
-            cout << q_son(x) << endl;
-            break;
+        switch (op) {
+            case 1:
+                cin >> x >> y >> z;
+                u_path(x, y, z);
+                break;
+            case 2:
+                cin >> x >> y;
+                cout << q_path(x, y) << '\n';
+                break;
+            case 3:
+                cin >> x >> z;
+                u_son(x, z);
+                break;
+            case 4:
+                cin >> x;
+                cout << q_son(x) << '\n';
+                break;
         }
     }
     return 0;

@@ -1,29 +1,20 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-double a, b, c, d, eps = 1e-5;
-double calc(double x)
-{
-    return a * x * x * x + b * x * x + c * x + d;
-}
-signed main()
-{
-    scanf("%lf%lf%lf%lf", &a, &b, &c, &d);
-    for (int i = -100; i < 100; i++)
-    {
-        // 值 > 0 无根，<= 0 有根
+double a, b, c, d, eps = 1e-6;
+double calc(double x) { return a * x * x * x + b * x * x + c * x + d; }
+signed main() {
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+    cin >> a >> b >> c >> d;
+    for (int i = -100; i < 100; i++) {
         double l = i, r = i + 1 - eps;
-        if (calc(l) * calc(r) > eps) // > eps 即大于 0
+        if (calc(l) * calc(r) > eps)
             continue;
-        while (r - l > eps)
-        {
-            double mid = (l + r) / 2;
-            if (calc(mid) * calc(r) < eps) // 不是对 mid 的检验，而是勘根公式的再应用
-                l = mid;                   // 其他地方也有检验一个区间而不是 mid 值的应用
-            else
-                r = mid;
+        while (r - l > eps) {
+            double m = (l + r) / 2;
+            calc(m) * calc(r) < eps ? l = m : r = m;
         }
-        printf("%.2lf ", l);
+        cout << fixed << setprecision(2) << l << ' ';
     }
     return 0;
 }

@@ -25,8 +25,8 @@ signed main() {
         sort(a + 1, a + n + 1);
         while (--m) {
             for (int i = 1; i <= n; i++) cin >> b[i];
-            sort(b + 1, b + n + 1);
-            solve(), memcpy(a, c, sizeof(c));
+            sort(b + 1, b + n + 1), solve();
+            memcpy(a, c, sizeof(c));
         }
         for (int i = 1; i <= n; i++) cout << a[i] << ' ';
         cout << '\n';

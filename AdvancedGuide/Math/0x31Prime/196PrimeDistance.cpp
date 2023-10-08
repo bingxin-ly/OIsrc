@@ -2,7 +2,7 @@
 using namespace std;
 
 constexpr int N = 1e6 + 9;
-int n, v[N];
+int L, R, v[N];
 vector<int> pri;
 void sieve(int n) {
     fill(v, v + n + 1, 1), v[0] = v[1] = 0;
@@ -15,7 +15,6 @@ void sieve(int n) {
 signed main() {
     ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
     sieve(sqrt(INT_MAX));
-    int L, R;
     while (cin >> L >> R) {
         memset(v, 1, sizeof(v));
         if (L == 1) v[0] = 0;

@@ -22,6 +22,7 @@ namespace normal // 循规蹈矩版
                 f[i][j] += f[i - 1][j - w[i]];
         }
         cout << f[n][m];
+        return 0;
     }
 }
 namespace roll // 滚动数组版

@@ -9,13 +9,13 @@ int gcd(int a, int b)  // Euclidean algorithm
     // return __gcd(a, b); C++ 14
     // return std::gcd(a, b); C++ 17 in <numeric>
 }
-// lcm(x,y) = xy/gcd(x,y)
+// lcm(x,y) = xy / gcd(x,y)
 int lcm(int a, int b) { return (a * b) / gcd(a, b); }
 
-// 分解质（只）因数
+// 分解质因数
 void decomp(int n) {
     static unordered_map<int, int> fac;
-    for (int i = 2, j = sqrt(n); i <= j; i++)
+    for (int i = 2, u = sqrt(n); i <= u; i++)
         while (!(n % i)) fac[i] += 1, n /= i;
     if (n != 1) fac[n] += 1;
 }
@@ -26,7 +26,7 @@ void decomp(int n) {
 // 欧拉函数（单个）：在分解质因数过程中求
 int phi(int n) {
     int ans = n;
-    for (int i = 2, j = sqrt(n); i <= j; i++)
+    for (int i = 2, u = sqrt(n); i <= u; i++)
         if (!(n % i)) {
             ans = ans / i * (i - 1);
             while (!(n % i)) n /= i;
@@ -41,7 +41,7 @@ int phi(int n) {
 bool isprime(int n) {
     if (n < 2)
         return 0;
-    for (int i = 2, j = sqrt(n); i <= j; ++i)
+    for (int i = 2, u = sqrt(n); i <= u; ++i)
         if (!(n % i)) return false;
     return true;
 }
@@ -58,145 +58,121 @@ void sieve(int n) {
 
 // 考虑让每个数 x 的最小质因子 p, 让 x 被 (x / p) * p 筛掉
 void euler(int n) {
-    static int m, fac[N], pri[N];
-    memset(fac, 0, sizeof(fac)), m = 0;
+    static int v[N];
+    vector<int> pri;
     for (int i = 2; i <= n; i++) {
-        if (!fac[i]) fac[i] = i, pri[++m] = i;
-        for (int j = 1; j <= m; j++) {
-            if (pri[j] > fac[i] || pri[j] * i > n) break;
-            fac[pri[j] * i] = pri[j];
+        if (!v[i]) v[i] = i, pri.emplace_back(i);
+        for (int p : pri) {
+            if (p > v[i] || p > n / i) break;
+            v[i * p] = p;
         }
     }
 }
 
 // 欧拉函数：在筛质数的同时计算出phi值
-void euler(int n) {
+void phi_1(int n) {
     static int phi[N];
-    iota(phi + 2, phi + n + 1, 2);
+    iota(phi + 1, phi + n + 1, 1);
     for (int i = 2; i <= n; i++)
         if (phi[i] == i)
             for (int j = i; j <= n; j += i)
                 phi[j] = phi[j] / i * (i - 1);
 }
-void euler_phi(int n) {
-    static int m, vis[N], pri[N], phi[N];
+void phi_2(int n) {
+    static int v[N], phi[N];
+    vector<int> pri;
     phi[1] = 1;
     for (int i = 2; i <= n; i++) {
-        if (!vis[i]) vis[i] = i, pri[++m] = i, phi[i] = i - 1;
-        for (int j = 1; j <= m; j++) {
-            if (pri[j] > vis[i] || pri[j] > n / i) break;
-            vis[i * pri[j]] = pri[j];
-            phi[i * pri[j]] = pri[i] * (i % pri[j] ? pri[j] - 1 : pri[j]);
+        if (!v[i]) v[i] = i, phi[i] = i - 1, pri.emplace_back(i);
+        for (int p : pri) {
+            if (p > v[i] || p > n / i) break;
+            v[i * p] = p, phi[i * p] = phi[i] * (i % p ? p - 1 : p);
         }
     }
 }
 
-// 费马小定理：若 (a,n)，则 a ^ phi(n) ≡ 1 (mod n)
+// 费马小定理：若 p 是质数，则对于任意整数 a，有 a ^ p ≡ a (mod p)
+// 欧拉定理：若正整数 (a, n) = 1，则 a ^ φ(n) ≡ 1 (mod n)
 
-// Bézout's lemma，一个关于最大公约数的定理
-// 设 a,b∈ Z∗，则存在整数 x, y, 使得 ax+by=gcd(a,b)
+// Bézout's lemma
+// 对于任意整数 a, b，存在一对整数 x, y，使得 ax + by = gcd(a, b)
 
 // 扩展欧几里得
-// https://img-blog.csdnimg.cn/4e0adc662dd14f509a8204356370c647.png
 int exgcd(int a, int b, int &x, int &y) {
-    if (!b)
-        return x = 1, y = 0, a;
+    if (!b) return x = 1, y = 0, a;
     /* int d = exgcd(b, a % b, x, y);
-    int tmp = x;
-    x = y;
-    y = tmp - (a / b) * y; */
+    int z = x; x = y; y = z - (a / b) * y; */
     int d = exgcd(b, a % b, y, x);
     y -= a / b * x;
     return d;
 }
-void exgcd(int a, int b, loong &x, loong &y) {
-    if (!b)
-        return x = 1, y = 0, void();
-    exgcd(b, a % b, y, x);
-    y -= a / b * x;
-}
+/* void exgcd(int a, int b, int &x, int &y) {
+    if (!b) return x = 1, y = 0, void();
+    exgcd(b, a % b, y, x), y -= a / b * x;
+} */
 
 // 求乘法逆元：在模意义下的倒数
-auto inverse = [](int a, int p) { int x, y; exgcd(a, p, x, y); return (x % p + p) % p; };
-
-// 带模快速幂
-int fast_pow(size_t a, int k, int m) {
-    a %= m;
-    size_t res = 1;
-    while (k) {
-        if (k & 1)
-            res = res * a % m;
-        a = a * a % m;
-        k >>= 1;
-    }
-    return res;
+int pow(int a, int b, int p);
+int inverse_1(int a, int p) {
+    return pow(a, p - 2, p);
 }
-auto inverse = [](int a, int p) { return fast_pow(a, p - 2, p); };  // x是a在mod p下的逆元
+
+int inverse_2(int a, int p) {
+    int x, y;
+    exgcd(a, p, x, y);
+    return (x % p + p) % p;
+}
 
 // 求一段连续区间的乘法逆元（递推）
-void get_inverses(int n, const int p) {
+void inverses(int n, int p) {
     int inv[n + 1];
     inv[1] = 1;
     for (int i = 2; i <= n; i++)
         inv[i] = (p - p / i) * inv[p % i] % p;
 }
 
-// 线性同余方程求解 ax ≡ b (mod n) Congruence equation
-bool solve(int a, int b, int c, int &x, int &y) {
-    int d = exgcd(a, b, x, y);
-    if (c % d)
-        return false;
-    int k = c / d;
-    x *= k, y *= k;
-    return true;
-}
-
-// 中国剩余定理 CRT
-/*  1.计算所有模数的积 n；
-    2.对于第 i 个方程：
-        a.计算 m_i = n / n_i；
-        b.计算 m_i 在模 n_i 意义下的 逆元 m_i ^ -1；
-        c.计算 c_i = m_i * m_i ^ -1（不要对 n_i 取模）。
-    3.方程组在模 n 意义下的唯一解为：
-    x = sum{i=1 -> K} a_i * c_i (mod n)。*/
-// 数据大记得开ssize_t
-int CRT(int k, int *rs,  // 余数
-        int *ps)         // 模数
-{
-    int n = 1, ans = 0;
-    for (int i = 1; i <= k; i++)
-        n = n * ps[i];
-    for (int i = 1; i <= k; i++) {
-        int m = n / ps[i], b, y;
-        exgcd(m, ps[i], b, y);  // b * m mod ps[i] = 1
-        ans = (ans + rs[i] * m * b % n) % n;
+/*  中国剩余定理 CRT
+    1. 计算所有模数的积 M；
+    2. 对于第 i 个方程：
+        a.计算 m_i = M / p_i；
+        b.计算 m_i 在模 p_i 意义下的逆元 t_i；
+    3. 方程组的一个特解即为：x = ∑b_i * m_i * t_i */
+int CRT(int n, int *b, int *p) {
+    int M = 1, X = 0;
+    for (int i = 1; i <= n; i++) M *= p[i];
+    for (int i = 1; i <= n; i++) {
+        int m = M / p[i], x, y;
+        exgcd(m, p[i], x, y);
+        (X += b[i] * m * x % M) %= M;
     }
-    // return (ans % n + n) % n;
-    return mod(ans, n);
+    return (X + M) % M;
 }
 
-/*  x ≡ a1 (mod m1)、x ≡ a2 (mod m2);
-    x = m1 * p + a1 = m2 * q + a2;
-    m1 * p - m2 * q = a2 - a1 */
-/*  解不定方程：可以通过裴蜀定理判断有没有解，
-    可以用扩展欧几里得算法(exgcd)给出(k1,k2)的整个解系 */
-/*  k1p1 - k2p2 = (r2 - r1) / d
-    x = r1 + k1m1 = r1 + (r2 - r1) / d * λ1m1 */
-bool merge_exgcd() {
-    static int a, b, A, B, x, y;
-    int d = exgcd(a, A, x, y);
+int exCRT(int n, int *a, int *b) {
+    int lcm = a[1], ans = b[1];
+    for (int i = 2; i <= n; i++) {
+        b[i] = (b[i] - ans % a[i] + a[i]) % a[i];
+        int x, y, d = exgcd(lcm, a[i], x, y);
+        if (b[i] % d) return false;
 
-    loong c = B - b;
-    if (c % d)
-        return false;  // 裴蜀定理判是否可行
+        int k = x * (b[i] / d) % a[i];
+        ans += k * lcm, lcm = lcm / d * a[i];
+        ans = (ans % lcm + lcm) % lcm;
+    }
+    return ans;
+}
 
-    x = x * c / d % (A / d);
-    if (x < 0)
-        x += A / d;
-    loong p = lcm(a, A);
-    b = (a * x + b) % p;
-    if (b < 0)
-        b += p;
-    a = p;
-    return true;
+// Möbius 函数，当 n 包含相同的质因子时，μ(n) = 0；
+// 剩下情况若 n 有偶数个质因子，μ(n) = 1；否则 μ(n) = -1
+void mobius(int n) {
+    static int v[N], miu[N];
+    fill(miu + 1, miu + n + 1, 1);
+    for (int i = 2; i <= n; i++) {
+        if (v[i]) continue;
+        miu[i] = -1;
+        for (int j = 2 * i; j <= n; j += i) {
+            v[j] = 1;
+            miu[j] = j / i % i ? -miu[j] : 0;
+        }
+    }
 }

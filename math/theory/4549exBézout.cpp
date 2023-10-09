@@ -1,13 +1,15 @@
-// C++ 17
 #include <bits/stdc++.h>
 using namespace std;
 
-int main()
-{
-    int n, ans = 0;
-    cin >> n;
-    for (int i = 1, tmp; i <= n; i++)
-        cin >> tmp, ans = gcd(ans, tmp);
-    cout << ans;
+int gcd(int a, int b) {
+    if (!a || !b) return abs(a | b);
+    return gcd(b, a % b);
+}
+signed main() {
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+    int n, a, b;
+    cin >> n >> a;
+    while (--n) cin >> b, a = gcd(a, b);
+    cout << a;
     return 0;
 }

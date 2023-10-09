@@ -1,45 +1,31 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-double mat[110][110], ans[110], eps = 1e-7;
-int main()
-{
-    int n;
+constexpr int N = 109;
+int n;
+double a[N][N], b[N];
+signed main() {
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
     cin >> n;
-    for (int i = 1; i <= n; i++)
-        for (int j = 1; j <= n + 1; j++)
-            cin >> mat[i][j];
-
-    for (int i = 1; i <= n; i++)
-    {
-        int r = i;
-        for (int j = i + 1; j <= n; j++)
-            if (abs(mat[r][i]) < abs(mat[j][i]))
-                r = j;
-        if (abs(mat[r][i]) < eps)
-            puts("No Solution"), exit(0);
-
-        if (i != r)
-            swap(mat[i], mat[r]);
-        double div = mat[i][i];
-        for (int j = i; j <= n + 1; j++)
-            mat[i][j] /= div;
-        for (int j = i + 1; j <= n; j++)
-        {
-            div = mat[j][i];
-            for (int k = i; k <= n + 1; k++)
-                mat[j][k] -= mat[i][k] * div;
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) cin >> a[i][j];
+        cin >> b[i];
+    }
+    for (int i = 1; i <= n; i++) {
+        for (int j = i; j <= n; j++)
+            if (fabs(a[j][i]) > 1e-8) {
+                swap(a[i], a[j]), swap(b[i], b[j]);
+                break;
+            }
+        if (fabs(a[i][i]) < 1e-8) return cout << "No Solution", 0;
+        for (int j = 1; j <= n; j++) {
+            if (i == j) continue;
+            double r = a[j][i] / a[i][i];
+            for (int k = i; k <= n; k++) a[j][k] -= a[i][k] * r;
+            b[j] -= b[i] * r;
         }
     }
-
-    ans[n] = mat[n][n + 1];
-    for (int i = n - 1; i >= 1; i--)
-    {
-        ans[i] = mat[i][n + 1];
-        for (int j = i + 1; j <= n; j++)
-            ans[i] -= (mat[i][j] * ans[j]);
-    }
     for (int i = 1; i <= n; i++)
-        printf("%.2lf\n", ans[i]);
+        cout << fixed << setprecision(2) << b[i] / a[i][i] + 1e-8 << '\n';
     return 0;
 }

@@ -1,19 +1,13 @@
-// C++ 17
 #include <bits/stdc++.h>
 using namespace std;
 
-int main()
-{
-    int x, y, cnt = 0;
-    cin >> x >> y;
-    int mul = x * y;
-    for (int i = x, up = sqrt(mul); i <= up; i++)
-    {
-        if (mul % i)
-            continue;
-        if (gcd(i, mul / i) == x)
-            cnt += i == mul / i ? 1 : 2;
-    }
-    cout << cnt << endl;
+signed main() {
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+    int x, y, m, ans = 0;
+    cin >> x >> y, m = x * y;
+    for (int i = 1, u = sqrt(m); i <= u; i++)
+        if (!(m % i) && __gcd(i, m / i) == x)
+            ans += i == m / i ? 1 : 2;
+    cout << ans;
     return 0;
 }

@@ -1,77 +1,31 @@
 #include <bits/stdc++.h>
+#define int long long
 using namespace std;
 
-const int P = 1e9 + 7;
-struct matrix
-{
-    int n, m;
-    long long **val;
-    matrix(int _n, int _m) : n(_n), m(_m)
-    {
-        val = new long long *[n];
-        for (int i = 0; i < n; i++)
-            val[i] = new long long[m]();
-    }
-
-    static matrix get_unit(int n)
-    {
-        matrix res(n, n);
-        for (int i = 0; i < n; i++)
-            res[i][i] = 1;
-        return res;
-    }
-
-    long long *operator[](int x) { return val[x]; }
-    matrix operator*(matrix b)
-    {
-        int n = this->n, k = this->m, m = b.m;
-        matrix res(n, m), bb(b.n, b.m);
-        for (int i = 0; i < k; i++)
-            for (int j = 0; j < m; j++)
-                bb[i][j] = b[j][i];
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < m; j++)
-                for (int l = 0; l < k; l++)
-                    res[i][j] = (res[i][j] + val[i][l] * bb[j][l] % P) % P;
-        return res;
-    }
-    friend istream &operator>>(istream &in, matrix &mat)
-    {
-        for (int i = 0; i < mat.n; i++)
-            for (int j = 0; j < mat.m; j++)
-                in >> mat.val[i][j];
-        return in;
-    }
-
-    friend ostream &operator<<(ostream &out, const matrix &mat)
-    {
-        for (int i = 0; i < mat.n; i++, putchar('\n'))
-            for (int j = 0; j < mat.m; j++)
-                out << mat.val[i][j] << ' ';
-        return out;
-    }
-};
-
-matrix fpow(matrix a, long long k)
-{
-    matrix res = matrix::get_unit(a.n);
-    while (k)
-    {
-        if (k & 1)
-            res = res * a;
-        a = a * a;
-        k >>= 1;
-    }
-    return res;
+constexpr int N = 109, M = 1e9 + 7;
+int n, k, a[N][N], b[N][N];
+void mul(int a[][N], int b[][N]) {
+    int c[N][N]{};
+    for (int i = 1; i <= n; i++)
+        for (int j = 1; j <= n; j++)
+            for (int k = 1; k <= n; k++)
+                (c[i][k] += a[i][j] * b[j][k] % M) %= M;
+    memcpy(a, c, sizeof(c));
 }
-
-int main()
-{
-    freopen(".in", "r", stdin);
-    long long n, k;
+signed main() {
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
     cin >> n >> k;
-    matrix mat(n, n);
-    cin >> mat;
-    cout << fpow(mat, k);
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) cin >> a[i][j];
+        b[i][i] = 1;
+    }
+    for (; k; k >>= 1) {
+        if (k & 1) mul(b, a);
+        mul(a, a);
+    }
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) cout << b[i][j] << ' ';
+        cout << '\n';
+    }
     return 0;
 }

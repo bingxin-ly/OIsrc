@@ -1,39 +1,32 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int N = 2 * 5e2 + 10;
-vector<int> graph[N];
+constexpr int N = 1009;
+vector<int> g[N];
 
 bool vis[N];
 int match[N];
-bool find(int u)
-{
-    for (auto i : graph[u])
-        if (!vis[i])
-        {
-            vis[i] = true;
-            if (!match[i] || find(match[i]))
-                return match[i] = u, true;
+bool find(int u) {
+    for (int v : g[u])
+        if (!vis[v]) {
+            vis[v] = true;
+            if (!match[v] || find(match[v]))
+                return match[v] = u, true;
         }
     return false;
 }
-int main()
-{
+int main() {
     int n, m, e;
     cin >> n >> m >> e;
-    for (int i = 1, u, v; i <= e; i++)
-    {
+    for (int i = 1, u, v; i <= e; i++) {
         cin >> u >> v;
-        v += n;
-        graph[u].push_back(v);
+        v += n, g[u].push_back(v);
     }
 
     int res = 0;
-    for (int i = 1; i <= n; i++)
-    {
+    for (int i = 1; i <= n; i++) {
         memset(vis, false, sizeof(vis));
-        if (find(i))
-            res++;
+        res += find(i);
     }
     cout << res;
     return 0;

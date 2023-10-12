@@ -19,7 +19,7 @@ signed main() {
     ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
     mobius();
     int n, a, b, k;
-    for (cin >> n; n; n--) {
+    for (cin >> n; n--;) {
         cin >> a >> b >> k, a /= k, b /= k;
         if (a > b) swap(a, b);
         int ans = 0;

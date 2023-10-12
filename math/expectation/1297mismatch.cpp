@@ -1,9 +1,9 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int n, A, B, C, a[int(1e7 + 10)];
-int main()
-{
+constexpr int N = 1e7 + 9;
+int n, A, B, C, a[N];
+int main() {
     scanf("%d%d%d%d%d", &n, &A, &B, &C, a + 1);
     for (int i = 2; i <= n; i++)
         a[i] = ((long long)a[i - 1] * A + B) % 100000001;

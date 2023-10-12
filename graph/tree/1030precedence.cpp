@@ -1,19 +1,16 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-void solve(string in, string after)
-{
-    if (in.size() <= 0)
-        return;
-    char ch = after[after.size() - 1];
+void solve(string a, string b) {
+    if (a.size() <= 0) return;
+    char ch = b.back();
     cout << ch;
-    int k = in.find(ch);
-    solve(in.substr(0, k), after.substr(0, k));
-    solve(in.substr(k + 1), after.substr(k, in.size() - k - 1));
+    int k = a.find(ch);
+    solve(a.substr(0, k), b.substr(0, k));
+    solve(a.substr(k + 1), b.substr(k, a.size() - k - 1));
 }
 
-int main()
-{
+int main() {
     string mid, last;
     cin >> mid >> last;
     solve(mid, last);

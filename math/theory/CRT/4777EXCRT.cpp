@@ -1,55 +1,28 @@
-// C++ 17
 #include <bits/stdc++.h>
+#define int long long
 using namespace std;
-typedef __int128 lt;
 
-lt x, y, d;
-void exgcd(lt a, lt b, lt &x, lt &y)
-{
-    if (!b)
-        d = a, x = 1, y = 0;
-    else
-        exgcd(b, a % b, y, x), y -= a / b * x;
+int exgcd(int a, int b, int &x, int &y) {
+    if (!b) return x = 1, y = 0, a;
+    int d = exgcd(b, a % b, y, x);
+    y -= a / b * x;
+    return d;
 }
-// __int128的gcd / lcm要自己写！！
-lt gcd(lt a, lt b)
-{
-    return b ? gcd(b, a % b) : a;
-}
-lt lcm(lt a, lt b)
-{
-    return a / gcd(a, b) * b;
-}
-lt a, b, A, B;
-void merge()
-{
-    exgcd(a, A, x, y);
-    lt c = B - b;
-    if (c % d)
-        puts("-1"), exit(0);
-    x = x * c / d % (A / d);
-    if (x < 0)
-        x += A / d;
-    lt mod = lcm(a, A);
-    b = (a * x + b) % mod;
-    if (b < 0)
-        b += mod;
-    a = mod;
-}
-int main()
-{
-    int n;
-    cin >> n;
-    for (int i = 1; i <= n; i++)
-    {
-        ssize_t _A, _B;
-        cin >> _A >> _B;
-        A = _A, B = _B;
-        if (i > 1)
-            merge();
-        else
-            a = A, b = B;
+signed main() {
+    ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+    int n, a, b;
+    cin >> n >> a >> b;
+    int lcm = a, ans = b;
+    while (--n) {
+        cin >> a >> b;
+        b = (b - ans % a + a) % a;
+        int x, y, d = exgcd(lcm, a, x, y);
+        if (b % d) return cout << -1, 0;
+
+        int k = (__int128)x * (b / d) % a;
+        ans += k * lcm, lcm = lcm / d * a;
+        ans = (ans % lcm + lcm) % lcm;
     }
-    cout << (long long)(b % a) << endl;
+    cout << ans;
     return 0;
 }
